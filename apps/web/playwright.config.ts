@@ -1,4 +1,10 @@
+import { fileURLToPath } from "node:url";
 import { defineConfig, devices } from "@playwright/test";
+
+const webRoot = fileURLToPath(new URL(".", import.meta.url));
+const previewCommand = process.env.CI
+  ? "pnpm exec astro preview --host 127.0.0.1 --port 4321"
+  : "pnpm build && pnpm exec astro preview --host 127.0.0.1 --port 4321";
 
 export default defineConfig({
   testDir: "./test/browser",
@@ -11,9 +17,12 @@ export default defineConfig({
     trace: "retain-on-failure",
   },
   webServer: {
-    command: "pnpm build && pnpm preview --host 127.0.0.1 --port 4321",
+    command: previewCommand,
+    cwd: webRoot,
     url: "http://127.0.0.1:4321",
     reuseExistingServer: !process.env.CI,
+    stdout: "pipe",
+    stderr: "pipe",
     timeout: 120_000,
   },
   projects: [
