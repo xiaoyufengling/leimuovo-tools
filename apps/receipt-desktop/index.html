@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#F7F7F8" />
+    <title>Leimuovo 小票验算</title>
+    <script>
+      try {
+        const saved = localStorage.getItem("leimuovo-theme");
+        if (saved === "light" || saved === "dark") document.documentElement.dataset.theme = saved;
+      } catch {}
+    </script>
+  </head>
+  <body>
+    <header class="desktop-header">
+      <a class="desktop-brand" href="#main-content" aria-label="Leimuovo 小票验算">
+        <svg width="30" height="30" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+          <rect width="32" height="32" rx="9" fill="currentColor"></rect>
+          <path d="M10 8.5V21.5C10 22.6046 10.8954 23.5 12 23.5H21.5" stroke="var(--lm-color-background)" stroke-width="3.2" stroke-linecap="round"></path>
+          <circle cx="22.5" cy="9.5" r="2.5" fill="var(--lm-color-accent)"></circle>
+        </svg>
+        <span>Leimuovo <small>小票验算</small></span>
+      </a>
+      <button class="lm-icon-button" data-theme-toggle type="button" aria-label="切换外观" title="切换外观">
+        <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 3a6 6 0 1 0 9 9 9 9 0 1 1-9-9Z"></path>
+        </svg>
+      </button>
+    </header>
+    <main id="main-content" class="desktop-main">
+      <div class="desktop-intro">
+        <div><p>番茄标签导入</p><h1>小票验算</h1></div>
+        <span class="lm-badge">本机处理</span>
+      </div>
+      <div data-receipt-checker></div>
+    </main>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

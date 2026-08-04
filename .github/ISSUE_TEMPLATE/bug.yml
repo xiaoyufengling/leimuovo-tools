@@ -1,0 +1,29 @@
+name: 问题反馈
+description: 报告网站或工具中的可复现问题
+title: "[Bug] "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: 请勿上传包含私人信息的原始文件或截图。
+  - type: input
+    id: tool
+    attributes:
+      label: 工具或页面
+      placeholder: 例如：小票验算 /tools/receipt-checker/
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: 复现步骤
+      description: 请说明做了什么、预期结果和实际结果。
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: 设备与浏览器
+      placeholder: 例如：iPhone 15 / Safari 18
+    validations:
+      required: true

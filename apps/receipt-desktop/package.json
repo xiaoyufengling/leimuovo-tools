@@ -1,0 +1,48 @@
+{
+  "name": "@leimuovo/receipt-desktop",
+  "version": "0.1.0",
+  "description": "Leimuovo 小票验算的本地 Windows 桌面版。",
+  "author": "Leimuovo",
+  "private": true,
+  "type": "module",
+  "main": "desktop/main.js",
+  "scripts": {
+    "dev": "pnpm build:renderer && electron .",
+    "build:renderer": "vite build",
+    "build:portable": "pnpm build:renderer && electron-builder --win portable --x64",
+    "check": "tsc -p tsconfig.json --noEmit && node --check desktop/main.js && node --check desktop/local-server.js && node --check desktop/window-options.js && node --check desktop/workbook-save.js && node --check desktop/preload.cjs",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@leimuovo/design-system": "workspace:*",
+    "@leimuovo/receipt-checker": "workspace:*"
+  },
+  "devDependencies": {
+    "electron": "^43.2.0",
+    "electron-builder": "^26.15.3",
+    "typescript": "^6.0.3",
+    "vite": "^8.2.0",
+    "vitest": "^4.1.10"
+  },
+  "build": {
+    "appId": "com.leimuovo.receiptchecker",
+    "productName": "Leimuovo 小票验算",
+    "asar": true,
+    "directories": {
+      "output": "release",
+      "buildResources": "build"
+    },
+    "files": [
+      "renderer-dist/**/*",
+      "desktop/**/*",
+      "build/app-icon.ico",
+      "package.json",
+      "!node_modules/**/*"
+    ],
+    "win": {
+      "icon": "build/app-icon.ico",
+      "artifactName": "Leimuovo-小票验算-${version}-${arch}-便携版.${ext}",
+      "target": ["portable"]
+    }
+  }
+}

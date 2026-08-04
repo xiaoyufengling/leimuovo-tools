@@ -1,0 +1,15 @@
+node_modules/
+.pnpm-store/
+.astro/
+dist/
+renderer-dist/
+release/
+coverage/
+test-results/
+playwright-report/
+*.log
+.env
+.env.*
+!.env.example
+.DS_Store
+Thumbs.db

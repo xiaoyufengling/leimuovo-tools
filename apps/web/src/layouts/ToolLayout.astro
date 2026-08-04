@@ -1,0 +1,33 @@
+---
+import { ChevronRight, LockKeyhole } from "@lucide/astro";
+import BaseLayout from "./BaseLayout.astro";
+import type { getToolBySlug } from "../modules/tool-catalog";
+
+interface Props {
+  tool: NonNullable<ReturnType<typeof getToolBySlug>>;
+  jsonLd?: Record<string, unknown>;
+}
+
+const { tool, jsonLd } = Astro.props;
+---
+
+<BaseLayout title={`${tool.copy.title}｜Leimuovo`} description={tool.copy.seoDescription} jsonLd={jsonLd}>
+  <section class="tool-hero lm-container">
+    <nav class="breadcrumbs" aria-label="面包屑">
+      <a href="/tools/">工具</a>
+      <ChevronRight size={15} stroke-width={1.75} aria-hidden="true" />
+      <span aria-current="page">{tool.copy.title}</span>
+    </nav>
+    <div class="tool-hero__heading">
+      <div>
+        <p class="eyebrow">{tool.category}</p>
+        <h1>{tool.copy.title}</h1>
+        <p>{tool.copy.summary}</p>
+      </div>
+      {tool.processing === "local" && (
+        <span class="lm-badge"><LockKeyhole size={15} stroke-width={1.75} aria-hidden="true" />数据在本机处理</span>
+      )}
+    </div>
+  </section>
+  <slot />
+</BaseLayout>

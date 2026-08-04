@@ -1,0 +1,15 @@
+{
+  "slug": "receipt-checker",
+  "category": "表格与计算",
+  "status": "active",
+  "icon": "receipt",
+  "processing": "local",
+  "featured": false,
+  "locales": {
+    "zh-CN": {
+      "title": "小票验算",
+      "summary": "从固定格式表格截图提取商品数据，逐项验算并生成 Excel。",
+      "seoDescription": "在浏览器本机识别表格截图，核对单价、数量和金额，并生成番茄标签可导入的 Excel 文件。图片不会上传。"
+    }
+  }
+}

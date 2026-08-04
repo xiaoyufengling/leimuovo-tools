@@ -1,0 +1,26 @@
+---
+import { Moon, Sun } from "@lucide/astro";
+import BrandMark from "./BrandMark.astro";
+
+const pathname = Astro.url.pathname;
+const isTools = pathname.startsWith("/tools");
+const isAbout = pathname.startsWith("/about");
+---
+
+<a class="skip-link" href="#main-content">跳到主要内容</a>
+<header class="site-header">
+  <div class="lm-container site-header__inner">
+    <a class="brand-link" href="/" aria-label="Leimuovo 首页">
+      <BrandMark size={30} />
+      <span>Leimuovo</span>
+    </a>
+    <nav class="site-nav" aria-label="主导航">
+      <a href="/tools/" aria-current={isTools ? "page" : undefined}>工具</a>
+      <a href="/about/" aria-current={isAbout ? "page" : undefined}>关于</a>
+      <button class="lm-icon-button theme-toggle" type="button" data-theme-toggle aria-label="切换外观" title="切换外观">
+        <Moon class="theme-icon theme-icon--moon" size={19} stroke-width={1.75} aria-hidden="true" />
+        <Sun class="theme-icon theme-icon--sun" size={19} stroke-width={1.75} aria-hidden="true" />
+      </button>
+    </nav>
+  </div>
+</header>

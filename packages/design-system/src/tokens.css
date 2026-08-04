@@ -1,0 +1,116 @@
+:root {
+  color-scheme: light dark;
+
+  --lm-color-background: #f7f7f8;
+  --lm-color-surface: #ffffff;
+  --lm-color-surface-muted: #f0f0f2;
+  --lm-color-surface-elevated: rgba(255, 255, 255, 0.82);
+  --lm-color-text: #111113;
+  --lm-color-text-muted: #62626b;
+  --lm-color-text-subtle: #7b7b84;
+  --lm-color-border: rgba(17, 17, 19, 0.12);
+  --lm-color-border-strong: rgba(17, 17, 19, 0.2);
+  --lm-color-accent: #0a66d6;
+  --lm-color-accent-hover: #0755b4;
+  --lm-color-accent-soft: rgba(10, 102, 214, 0.1);
+  --lm-color-on-accent: #ffffff;
+  --lm-color-success: #18733c;
+  --lm-color-success-soft: #eaf6ee;
+  --lm-color-warning: #8a5700;
+  --lm-color-warning-soft: #fff4db;
+  --lm-color-danger: #bd2c2c;
+  --lm-color-danger-soft: #fff0f0;
+  --lm-color-focus: rgba(10, 102, 214, 0.36);
+  --lm-color-overlay: rgba(11, 11, 13, 0.42);
+
+  --lm-font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+    "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  --lm-font-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  --lm-text-xs: 0.75rem;
+  --lm-text-sm: 0.875rem;
+  --lm-text-base: 1rem;
+  --lm-text-lg: 1.125rem;
+  --lm-text-xl: 1.5rem;
+  --lm-text-2xl: 2rem;
+  --lm-text-display: clamp(2.5rem, 7vw, 4rem);
+
+  --lm-space-1: 0.25rem;
+  --lm-space-2: 0.5rem;
+  --lm-space-3: 0.75rem;
+  --lm-space-4: 1rem;
+  --lm-space-6: 1.5rem;
+  --lm-space-8: 2rem;
+  --lm-space-12: 3rem;
+  --lm-space-16: 4rem;
+  --lm-space-24: 6rem;
+
+  --lm-radius-control: 0.625rem;
+  --lm-radius-button: 0.75rem;
+  --lm-radius-card: 1.125rem;
+  --lm-radius-panel: 1.5rem;
+  --lm-radius-pill: 999px;
+
+  --lm-shadow-sm: 0 1px 2px rgba(17, 17, 19, 0.04), 0 4px 14px rgba(17, 17, 19, 0.04);
+  --lm-shadow-md: 0 2px 4px rgba(17, 17, 19, 0.04), 0 18px 44px rgba(17, 17, 19, 0.07);
+
+  --lm-duration-fast: 120ms;
+  --lm-duration-base: 180ms;
+  --lm-duration-slow: 240ms;
+  --lm-ease-standard: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  --lm-content-wide: 75rem;
+  --lm-content-reading: 45rem;
+}
+
+:root[data-theme="dark"] {
+  --lm-color-background: #0b0b0d;
+  --lm-color-surface: #151517;
+  --lm-color-surface-muted: #1d1d20;
+  --lm-color-surface-elevated: rgba(21, 21, 23, 0.82);
+  --lm-color-text: #f5f5f7;
+  --lm-color-text-muted: #a1a1aa;
+  --lm-color-text-subtle: #8b8b94;
+  --lm-color-border: rgba(255, 255, 255, 0.13);
+  --lm-color-border-strong: rgba(255, 255, 255, 0.22);
+  --lm-color-accent: #4da3ff;
+  --lm-color-accent-hover: #75b8ff;
+  --lm-color-accent-soft: rgba(77, 163, 255, 0.14);
+  --lm-color-on-accent: #07111e;
+  --lm-color-success: #69cf91;
+  --lm-color-success-soft: rgba(105, 207, 145, 0.12);
+  --lm-color-warning: #f0bd61;
+  --lm-color-warning-soft: rgba(240, 189, 97, 0.12);
+  --lm-color-danger: #ff8585;
+  --lm-color-danger-soft: rgba(255, 133, 133, 0.12);
+  --lm-color-focus: rgba(77, 163, 255, 0.46);
+  --lm-color-overlay: rgba(0, 0, 0, 0.66);
+  --lm-shadow-sm: 0 1px 0 rgba(255, 255, 255, 0.03);
+  --lm-shadow-md: 0 18px 44px rgba(0, 0, 0, 0.24);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --lm-color-background: #0b0b0d;
+    --lm-color-surface: #151517;
+    --lm-color-surface-muted: #1d1d20;
+    --lm-color-surface-elevated: rgba(21, 21, 23, 0.82);
+    --lm-color-text: #f5f5f7;
+    --lm-color-text-muted: #a1a1aa;
+    --lm-color-text-subtle: #8b8b94;
+    --lm-color-border: rgba(255, 255, 255, 0.13);
+    --lm-color-border-strong: rgba(255, 255, 255, 0.22);
+    --lm-color-accent: #4da3ff;
+    --lm-color-accent-hover: #75b8ff;
+    --lm-color-accent-soft: rgba(77, 163, 255, 0.14);
+    --lm-color-on-accent: #07111e;
+    --lm-color-success: #69cf91;
+    --lm-color-success-soft: rgba(105, 207, 145, 0.12);
+    --lm-color-warning: #f0bd61;
+    --lm-color-warning-soft: rgba(240, 189, 97, 0.12);
+    --lm-color-danger: #ff8585;
+    --lm-color-danger-soft: rgba(255, 133, 133, 0.12);
+    --lm-color-focus: rgba(77, 163, 255, 0.46);
+    --lm-shadow-sm: 0 1px 0 rgba(255, 255, 255, 0.03);
+    --lm-shadow-md: 0 18px 44px rgba(0, 0, 0, 0.24);
+  }
+}

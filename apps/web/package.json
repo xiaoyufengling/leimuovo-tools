@@ -1,0 +1,28 @@
+{
+  "name": "@leimuovo/web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev --host 0.0.0.0",
+    "build": "astro build",
+    "preview": "astro preview --host 0.0.0.0",
+    "check": "astro check",
+    "test": "vitest run",
+    "test:browser": "playwright test"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.3",
+    "@leimuovo/design-system": "workspace:*",
+    "@leimuovo/receipt-checker": "workspace:*",
+    "@vite-pwa/astro": "^1.2.0",
+    "astro": "^7.1.6",
+    "@lucide/astro": "^1.28.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "@playwright/test": "^1.62.1",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.10"
+  }
+}

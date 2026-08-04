@@ -1,0 +1,38 @@
+---
+import ToolLayout from "../../layouts/ToolLayout.astro";
+import { getToolBySlug } from "../../modules/tool-catalog";
+import { site } from "../../config/site";
+
+const tool = getToolBySlug("receipt-checker");
+if (!tool) throw new Error("Receipt checker metadata is missing");
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  name: tool.copy.title,
+  description: tool.copy.seoDescription,
+  url: `${site.url}${tool.href}`,
+  applicationCategory: "UtilitiesApplication",
+  operatingSystem: "Web, Windows",
+  isAccessibleForFree: true,
+  offers: { "@type": "Offer", price: "0", priceCurrency: "CNY" },
+  featureList: ["浏览器本机 OCR", "金额逐项验算", "Excel 导出", "不上传截图"],
+};
+---
+
+<ToolLayout tool={tool} jsonLd={jsonLd}>
+  <section class="tool-canvas lm-container">
+    <div data-receipt-checker></div>
+    <noscript><p class="lm-card" style="padding: 1rem;">小票验算需要启用 JavaScript 才能在浏览器本机识别图片。</p></noscript>
+    <div class="tool-info">
+      <article class="lm-card"><h2>图片会上传吗？</h2><p>不会。识别模型、图片解析和表格生成都在当前设备内运行。</p></article>
+      <article class="lm-card"><h2>为什么首次较慢？</h2><p>浏览器需要首次下载中文 OCR 模型，之后会由 PWA 缓存重复使用。</p></article>
+      <article class="lm-card"><h2>支持什么截图？</h2><p>当前针对固定格式的进销价表设计，请保留完整表头、商品行和汇总行。</p></article>
+    </div>
+  </section>
+  <script>
+    import { mountReceiptChecker } from "@leimuovo/receipt-checker";
+
+    const root = document.querySelector<HTMLElement>("[data-receipt-checker]");
+    if (root) mountReceiptChecker(root, { assetBaseUrl: "/vendor/tesseract/" });
+  </script>
+</ToolLayout>

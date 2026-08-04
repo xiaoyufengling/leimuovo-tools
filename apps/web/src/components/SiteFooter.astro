@@ -1,0 +1,24 @@
+---
+import { site } from "../config/site";
+import BrandMark from "./BrandMark.astro";
+---
+
+<footer class="site-footer">
+  <div class="lm-container site-footer__inner">
+    <div class="site-footer__brand">
+      <BrandMark size={28} />
+      <div>
+        <strong>Leimuovo</strong>
+        <span>安静、快速、尊重隐私。</span>
+      </div>
+    </div>
+    <nav class="site-footer__links" aria-label="页脚导航">
+      <a href="/tools/">工具</a>
+      <a href="/about/">关于</a>
+      <a href="/privacy/">隐私</a>
+      <a href={site.issues} rel="external">反馈</a>
+      <a href={`mailto:${site.email}`}>邮箱</a>
+    </nav>
+    <p class="site-footer__copyright">© {new Date().getFullYear()} Leimuovo</p>
+  </div>
+</footer>

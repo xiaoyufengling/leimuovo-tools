@@ -1,0 +1,65 @@
+body {
+  min-height: 100vh;
+}
+
+.desktop-header {
+  position: sticky;
+  z-index: 30;
+  top: 0;
+  display: flex;
+  height: 4.25rem;
+  align-items: center;
+  justify-content: space-between;
+  padding-inline: 1.5rem;
+  border-bottom: 1px solid var(--lm-color-border);
+  background: var(--lm-color-surface-elevated);
+  backdrop-filter: blur(16px);
+}
+
+.desktop-brand {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  gap: 0.65rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.desktop-brand span {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.desktop-brand small {
+  color: var(--lm-color-text-muted);
+  font-size: var(--lm-text-xs);
+  font-weight: 600;
+}
+
+.desktop-main {
+  width: min(calc(100% - 3rem), var(--lm-content-wide));
+  margin-inline: auto;
+  padding-block: 2rem 4rem;
+}
+
+.desktop-intro {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.desktop-intro p {
+  margin: 0;
+  color: var(--lm-color-accent);
+  font-size: var(--lm-text-xs);
+  font-weight: 700;
+}
+
+.desktop-intro h1 {
+  margin: 0.2rem 0 0;
+  font-size: var(--lm-text-2xl);
+  letter-spacing: -0.035em;
+}

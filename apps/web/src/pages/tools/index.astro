@@ -1,0 +1,35 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import ToolCard from "../../components/ToolCard.astro";
+import { listTools } from "../../modules/tool-catalog";
+import { site } from "../../config/site";
+
+const tools = listTools();
+const title = "工具目录｜Leimuovo";
+const description = "浏览 Leimuovo 的全部工具。每个工具都是独立页面，并遵循统一的隐私、响应式和 Design System 规范。";
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  name: "Leimuovo 工具目录",
+  url: `${site.url}/tools/`,
+  description,
+  inLanguage: "zh-CN",
+  hasPart: tools.map((tool) => ({
+    "@type": "SoftwareApplication",
+    name: tool.copy.title,
+    url: `${site.url}${tool.href}`,
+    applicationCategory: "UtilitiesApplication",
+  })),
+};
+---
+
+<BaseLayout title={title} description={description} jsonLd={jsonLd}>
+  <section class="page-hero lm-container">
+    <p class="eyebrow">全部工具</p>
+    <h1>小而专注的工具。</h1>
+    <p>每个工具解决一个明确问题。没有账号门槛，也不会把无关功能塞进同一个页面。</p>
+  </section>
+  <section class="tool-list lm-container" aria-label="工具列表">
+    {tools.map((tool) => <ToolCard tool={tool} />)}
+  </section>
+</BaseLayout>
