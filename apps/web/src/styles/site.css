@@ -64,8 +64,11 @@ main {
   text-decoration: none;
 }
 
-.brand-link svg {
+.brand-mark {
+  display: block;
   flex: 0 0 auto;
+  border-radius: 50%;
+  object-fit: cover;
 }
 
 .site-nav {

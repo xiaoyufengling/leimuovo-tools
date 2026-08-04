@@ -40,7 +40,7 @@ const analyticsToken = import.meta.env.PUBLIC_CF_WEB_ANALYTICS_TOKEN;
     <meta name="generator" content={Astro.generator} />
     {noindex && <meta name="robots" content="noindex, nofollow" />}
     <link rel="canonical" href={canonical} />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/manifest.webmanifest" />
@@ -73,7 +73,7 @@ const analyticsToken = import.meta.env.PUBLIC_CF_WEB_ANALYTICS_TOKEN;
       <slot />
     </main>
     {!hideChrome && <SiteFooter />}
-    <button class="pwa-install lm-button lm-button--secondary" type="button" data-pwa-install hidden>安装 Leimuovo</button>
+    <button class="pwa-install lm-button lm-button--secondary" type="button" data-pwa-install hidden>安装 {site.name}</button>
     <script is:inline src="/scripts/site.js" defer></script>
   </body>
 </html>

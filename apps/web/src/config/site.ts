@@ -1,8 +1,8 @@
 export const site = {
-  name: "Leimuovo",
+  name: "小鱼",
   url: "https://leimuovo.com",
   locale: "zh-CN",
-  title: "Leimuovo｜安静、快速、尊重隐私的个人工具集",
+  title: "小鱼｜安静、快速、尊重隐私的个人工具集",
   description: "一组在浏览器本机运行的实用工具。无需注册，尽量不上传数据，适配手机、平板和桌面设备。",
   email: "xiaoyuqaq69@gmail.com",
   github: "https://github.com/xiaoyufengling/leimuovo-tools",

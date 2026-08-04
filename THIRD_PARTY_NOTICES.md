@@ -1,6 +1,6 @@
 # Third-party notices
 
-Leimuovo uses the following third-party software in the browser and desktop
+小鱼 uses the following third-party software in the browser and desktop
 applications. The listed projects remain the property of their respective
 copyright holders. This file is informational and does not change their
 license terms.

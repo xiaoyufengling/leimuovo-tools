@@ -5,12 +5,12 @@ import { listTools } from "../../modules/tool-catalog";
 import { site } from "../../config/site";
 
 const tools = listTools();
-const title = "工具目录｜Leimuovo";
-const description = "浏览 Leimuovo 的全部工具。每个工具都是独立页面，并遵循统一的隐私、响应式和 Design System 规范。";
+const title = `工具目录｜${site.name}`;
+const description = `浏览${site.name}的全部工具。每个工具都是独立页面，并遵循统一的隐私、响应式和 Design System 规范。`;
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "CollectionPage",
-  name: "Leimuovo 工具目录",
+  name: `${site.name}工具目录`,
   url: `${site.url}/tools/`,
   description,
   inLanguage: "zh-CN",

@@ -3,14 +3,14 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import { site } from "../config/site";
 ---
 
-<BaseLayout title="隐私说明｜Leimuovo" description="Leimuovo 如何处理工具数据、缓存和基础访问统计。">
+<BaseLayout title={`隐私说明｜${site.name}`} description={`${site.name}如何处理工具数据、缓存和基础访问统计。`}>
   <article class="content-page lm-container lm-reading">
     <p class="eyebrow">隐私说明</p>
     <h1>你的内容，尽量留在你的设备。</h1>
     <p>最后更新：2026 年 8 月 4 日。</p>
 
     <h2>工具数据</h2>
-    <p>标注“本机处理”的工具不会把你选择的文件、识别结果或编辑内容上传到 Leimuovo。小票验算的图片识别和 Excel 生成均在当前浏览器或桌面应用内完成。</p>
+    <p>标注“本机处理”的工具不会把你选择的文件、识别结果或编辑内容上传到{site.name}。小票验算的图片识别和 Excel 生成均在当前浏览器或桌面应用内完成。</p>
 
     <h2>本地存储与 PWA 缓存</h2>
     <p>网站会在本地保存外观偏好，并缓存网站代码、页面和 OCR 模型以改善离线体验。Service Worker 不会缓存你上传的图片、识别结果或导出表格。</p>

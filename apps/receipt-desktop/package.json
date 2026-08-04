@@ -1,8 +1,8 @@
 {
   "name": "@leimuovo/receipt-desktop",
   "version": "0.1.0",
-  "description": "Leimuovo 小票验算的本地 Windows 桌面版。",
-  "author": "Leimuovo",
+  "description": "小鱼小票验算的本地 Windows 桌面版。",
+  "author": "小鱼",
   "private": true,
   "type": "module",
   "main": "desktop/main.js",
@@ -26,7 +26,7 @@
   },
   "build": {
     "appId": "com.leimuovo.receiptchecker",
-    "productName": "Leimuovo 小票验算",
+    "productName": "小鱼 小票验算",
     "asar": true,
     "directories": {
       "output": "release",
@@ -41,7 +41,7 @@
     ],
     "win": {
       "icon": "build/app-icon.ico",
-      "artifactName": "Leimuovo-小票验算-${version}-${arch}-便携版.${ext}",
+      "artifactName": "小鱼-小票验算-${version}-${arch}-便携版.${ext}",
       "target": ["portable"]
     }
   }

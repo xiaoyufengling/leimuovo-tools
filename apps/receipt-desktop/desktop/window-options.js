@@ -1,6 +1,6 @@
 export function createWindowOptions(iconPath, preloadPath) {
   return {
-    title: "Leimuovo 小票验算",
+    title: "小鱼 小票验算",
     width: 1280,
     height: 840,
     minWidth: 960,

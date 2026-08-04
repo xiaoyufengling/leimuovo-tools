@@ -1,4 +1,4 @@
-# Leimuovo Design System
+# 小鱼 Design System
 
 本文档是 Design System 的使用说明；可执行真源位于 `packages/design-system/src`。
 

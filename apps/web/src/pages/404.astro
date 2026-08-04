@@ -1,8 +1,9 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { site } from "../config/site";
 ---
 
-<BaseLayout title="页面不存在｜Leimuovo" description="没有找到你访问的页面。" noindex>
+<BaseLayout title={`页面不存在｜${site.name}`} description="没有找到你访问的页面。" noindex>
   <section class="not-found-card lm-card lm-container lm-reading">
     <p class="eyebrow">404</p>
     <h1>这里没有工具。</h1>

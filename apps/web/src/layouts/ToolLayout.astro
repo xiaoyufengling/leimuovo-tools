@@ -2,6 +2,7 @@
 import { ChevronRight, LockKeyhole } from "@lucide/astro";
 import BaseLayout from "./BaseLayout.astro";
 import type { getToolBySlug } from "../modules/tool-catalog";
+import { site } from "../config/site";
 
 interface Props {
   tool: NonNullable<ReturnType<typeof getToolBySlug>>;
@@ -11,7 +12,7 @@ interface Props {
 const { tool, jsonLd } = Astro.props;
 ---
 
-<BaseLayout title={`${tool.copy.title}｜Leimuovo`} description={tool.copy.seoDescription} jsonLd={jsonLd}>
+<BaseLayout title={`${tool.copy.title}｜${site.name}`} description={tool.copy.seoDescription} jsonLd={jsonLd}>
   <section class="tool-hero lm-container">
     <nav class="breadcrumbs" aria-label="面包屑">
       <a href="/tools/">工具</a>

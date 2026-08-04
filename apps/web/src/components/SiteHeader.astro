@@ -1,6 +1,7 @@
 ---
 import { Moon, Sun } from "@lucide/astro";
 import BrandMark from "./BrandMark.astro";
+import { site } from "../config/site";
 
 const pathname = Astro.url.pathname;
 const isTools = pathname.startsWith("/tools");
@@ -10,9 +11,9 @@ const isAbout = pathname.startsWith("/about");
 <a class="skip-link" href="#main-content">跳到主要内容</a>
 <header class="site-header">
   <div class="lm-container site-header__inner">
-    <a class="brand-link" href="/" aria-label="Leimuovo 首页">
+    <a class="brand-link" href="/" aria-label={`${site.name}首页`}>
       <BrandMark size={30} />
-      <span>Leimuovo</span>
+      <span>{site.name}</span>
     </a>
     <nav class="site-nav" aria-label="主导航">
       <a href="/tools/" aria-current={isTools ? "page" : undefined}>工具</a>

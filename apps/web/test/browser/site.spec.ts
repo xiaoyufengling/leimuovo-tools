@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 
 test("brand homepage remains focused and responsive", async ({ page }) => {
   await page.goto("/");
-  await expect(page).toHaveTitle(/Leimuovo/);
+  await expect(page).toHaveTitle(/小鱼/);
   await expect(page.getByRole("heading", { level: 1, name: "把麻烦的小事，留给工具。" })).toBeVisible();
   await expect(page.locator(".principle-card")).toHaveCount(3);
   await expect(page.locator(".tool-card")).toHaveCount(0);
@@ -105,7 +105,9 @@ test("SEO and PWA artifacts are discoverable", async ({ page, request }) => {
   expect(structuredData).toContain("WebSite");
   const manifestHref = await page.locator('link[rel="manifest"]').getAttribute("href");
   expect(manifestHref).toBeTruthy();
-  expect((await request.get(manifestHref!)).ok()).toBe(true);
+  const manifestResponse = await request.get(manifestHref!);
+  expect(manifestResponse.ok()).toBe(true);
+  expect(await manifestResponse.json()).toMatchObject({ name: "小鱼", short_name: "小鱼" });
   expect((await request.get("/robots.txt")).ok()).toBe(true);
   expect((await request.get("/sitemap-index.xml")).ok()).toBe(true);
 });

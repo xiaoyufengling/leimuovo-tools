@@ -8,7 +8,7 @@ import BrandMark from "./BrandMark.astro";
     <div class="site-footer__brand">
       <BrandMark size={28} />
       <div>
-        <strong>Leimuovo</strong>
+        <strong>{site.name}</strong>
         <span>安静、快速、尊重隐私。</span>
       </div>
     </div>
@@ -19,6 +19,6 @@ import BrandMark from "./BrandMark.astro";
       <a href={site.issues} rel="external">反馈</a>
       <a href={`mailto:${site.email}`}>邮箱</a>
     </nav>
-    <p class="site-footer__copyright">© {new Date().getFullYear()} Leimuovo</p>
+    <p class="site-footer__copyright">© {new Date().getFullYear()} {site.name}</p>
   </div>
 </footer>

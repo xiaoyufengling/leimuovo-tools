@@ -3,14 +3,14 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import { site } from "../config/site";
 ---
 
-<BaseLayout title="关于 Leimuovo" description="了解 Leimuovo 的产品原则、技术选择和反馈方式。">
+<BaseLayout title={`关于${site.name}`} description={`了解${site.name}的产品原则、技术选择和反馈方式。`}>
   <article class="content-page lm-container lm-reading">
     <p class="eyebrow">关于</p>
     <h1>一个会持续生长的个人工具站。</h1>
-    <p>Leimuovo 收集那些值得被认真做好、又不需要复杂账号体系的小工具。每个工具拥有独立页面，但共享同一套视觉、交互、隐私和质量标准。</p>
+    <p>{site.name}收集那些值得被认真做好、又不需要复杂账号体系的小工具。每个工具拥有独立页面，但共享同一套视觉、交互、隐私和质量标准。</p>
 
     <h2>为什么本机优先</h2>
-    <p>当浏览器已经能完成计算、转换或文件处理时，上传数据只会增加等待和隐私风险。因此 Leimuovo 默认在你的设备上完成工作；只有浏览器确实无法胜任时，才会考虑 Cloudflare Workers，并清楚说明网络行为。</p>
+    <p>当浏览器已经能完成计算、转换或文件处理时，上传数据只会增加等待和隐私风险。因此{site.name}默认在你的设备上完成工作；只有浏览器确实无法胜任时，才会考虑 Cloudflare Workers，并清楚说明网络行为。</p>
 
     <h2>技术选择</h2>
     <p>网站使用静态优先的 Astro 和 TypeScript，部署在 Cloudflare Pages。静态内容不会为了统一技术栈而依赖 React；未来需要复杂交互的单个工具可以渐进使用独立 island。</p>

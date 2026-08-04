@@ -1,8 +1,9 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { site } from "../config/site";
 ---
 
-<BaseLayout title="当前处于离线状态｜Leimuovo" description="网络恢复后可继续浏览 Leimuovo。" noindex>
+<BaseLayout title={`当前处于离线状态｜${site.name}`} description={`网络恢复后可继续浏览${site.name}。`} noindex>
   <section class="offline-card lm-card lm-container lm-reading">
     <p class="eyebrow">离线状态</p>
     <h1>网络暂时不可用。</h1>

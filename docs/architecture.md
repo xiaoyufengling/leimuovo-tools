@@ -1,6 +1,6 @@
 # Architecture
 
-Leimuovo 是静态优先的工具站。`apps/web` 负责页面和 SEO，`packages` 中的深模块负责可复用行为，`apps/receipt-desktop` 是小票工具的第二个宿主。
+小鱼是静态优先的工具站。`apps/web` 负责页面和 SEO，`packages` 中的深模块负责可复用行为，`apps/receipt-desktop` 是小票工具的第二个宿主。
 
 ## 模块与 seam
 

@@ -9,7 +9,7 @@
 ```powershell
 git init -b main
 git add .
-git commit -m "feat: launch Leimuovo tools platform"
+git commit -m "feat: launch 小鱼 tools platform"
 git remote add origin https://github.com/xiaoyufengling/leimuovo-tools.git
 git push -u origin main
 ```

@@ -1,6 +1,6 @@
-# Leimuovo Tools
+# 小鱼 Tools
 
-Leimuovo 是一个静态优先、隐私优先的个人工具站。网站部署到 Cloudflare Pages，文件类工具优先在浏览器本机处理。
+小鱼是一个静态优先、隐私优先的个人工具站。网站部署到 Cloudflare Pages，文件类工具优先在浏览器本机处理。
 
 ## 开发
 

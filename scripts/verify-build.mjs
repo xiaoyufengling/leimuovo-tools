@@ -18,9 +18,10 @@ const requiredFiles = [
   "sitemap-index.xml",
   "sitemap-0.xml",
   "manifest.webmanifest",
-  "favicon.svg",
+  "favicon.ico",
   "favicon-32.png",
   "apple-touch-icon.png",
+  "icons/brand-avatar-64.png",
   "icons/icon-192.png",
   "icons/icon-512.png",
   "icons/icon-maskable-512.png",
@@ -58,7 +59,9 @@ const [home, tools, receipt, robots, sitemap, manifestSource, serviceWorker, hea
 
 assert(home.includes('rel="canonical" href="https://leimuovo.com/"'), "首页 canonical 缺失或不正确");
 assert(home.includes('rel="manifest" href="/manifest.webmanifest"'), "页面未声明 PWA manifest");
+assert(home.includes('rel="icon" href="/favicon.ico"'), "页面未声明新版 favicon");
 assert(home.includes('"@type":"WebSite"'), "首页 WebSite JSON-LD 缺失");
+assert(home.includes('"name":"小鱼"'), "首页品牌名称不正确");
 assert(tools.includes('"@type":"CollectionPage"'), "工具目录 CollectionPage JSON-LD 缺失");
 assert(receipt.includes('"@type":"SoftwareApplication"'), "工具页 SoftwareApplication JSON-LD 缺失");
 
@@ -70,6 +73,7 @@ assert(!sitemap.includes("/en/"), "首发 sitemap 不应包含未发布英文路
 
 const manifest = JSON.parse(manifestSource);
 assert(manifest.lang === "zh-CN", "PWA 默认语言必须是 zh-CN");
+assert(manifest.name === "小鱼" && manifest.short_name === "小鱼", "PWA 品牌名称不正确");
 assert(manifest.start_url === "/" && manifest.scope === "/", "PWA scope/start_url 不正确");
 assert(manifest.icons?.some((icon) => icon.purpose === "maskable"), "PWA 缺少 maskable 图标");
 
