@@ -28,7 +28,7 @@ function developmentControlApi(): Plugin {
       server.middlewares.use(async (request, response, next) => {
         const pathname = new URL(request.url ?? "/", "http://localhost").pathname;
         if (pathname === "/control" || pathname === "/control/") {
-          request.url = "/control/control/index.html";
+          request.url = "/control/index.html";
           return next();
         }
         if (!pathname.startsWith("/api/control/")) return next();
@@ -81,7 +81,7 @@ function developmentControlApi(): Plugin {
 }
 
 export default defineConfig({
-  base: "/control/",
+  base: "/",
   publicDir: "public",
   plugins: [developmentControlApi()],
   build: {
@@ -93,9 +93,9 @@ export default defineConfig({
         denied: resolve(import.meta.dirname, "control/403.html"),
       },
       output: {
-        assetFileNames: "assets/[name]-[hash][extname]",
-        chunkFileNames: "assets/[name]-[hash].js",
-        entryFileNames: "assets/[name]-[hash].js",
+        assetFileNames: "control/assets/[name]-[hash][extname]",
+        chunkFileNames: "control/assets/[name]-[hash].js",
+        entryFileNames: "control/assets/[name]-[hash].js",
       },
     },
   },
