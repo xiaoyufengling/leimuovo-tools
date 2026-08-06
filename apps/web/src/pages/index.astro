@@ -1,7 +1,6 @@
 ---
 import { ArrowRight, Laptop, LockKeyhole, UserRoundX } from "@lucide/astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
-import BrandMark from "../components/BrandMark.astro";
 import { site } from "../config/site";
 
 const jsonLd = {
@@ -27,7 +26,6 @@ const jsonLd = {
           <a class="lm-button lm-button--secondary" href="/about/">了解{site.name}</a>
         </div>
       </div>
-      <div class="hero__brand lm-motion-enter lm-motion-enter--2" aria-hidden="true"><BrandMark size={160} /></div>
     </section>
 
     <section class="principles lm-page-section lm-container" aria-labelledby="principles-title">

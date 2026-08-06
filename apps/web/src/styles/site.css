@@ -131,7 +131,6 @@ main {
   min-height: clamp(32rem, 74svh, 42rem);
   grid-template-columns: minmax(0, 1fr);
   align-items: center;
-  gap: var(--lm-space-12);
   padding-block: var(--lm-space-12);
 }
 
@@ -168,16 +167,6 @@ main {
   flex-wrap: wrap;
   gap: var(--lm-space-3);
   margin-top: var(--lm-space-8);
-}
-
-.hero__brand {
-  display: none;
-  justify-self: end;
-}
-
-.hero__brand .brand-mark {
-  border: 1px solid var(--lm-color-border);
-  box-shadow: var(--lm-shadow-md);
 }
 
 .principles {
@@ -461,17 +450,8 @@ main {
 }
 
 @media (min-width: 64rem) {
-  .hero {
-    grid-template-columns: minmax(0, 1fr) auto;
-  }
-
   .hero__content {
     margin-left: 4vw;
-  }
-
-  .hero__brand {
-    display: block;
-    margin-right: 7vw;
   }
 
   .tool-list {
