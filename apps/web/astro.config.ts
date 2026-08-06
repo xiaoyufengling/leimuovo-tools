@@ -71,7 +71,9 @@ export default defineConfig({
         globIgnores: ["**/vendor/tesseract/**", "**/_astro/receipt-checker*"],
         runtimeCaching: [
           {
-            urlPattern: ({ request }) => request.mode === "navigate",
+            urlPattern: ({ request, url }) => request.mode === "navigate"
+              && !url.pathname.startsWith("/control/")
+              && !url.pathname.startsWith("/api/control/"),
             handler: "NetworkFirst",
             options: {
               cacheName: "leimuovo-pages",

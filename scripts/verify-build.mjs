@@ -66,6 +66,8 @@ assert(tools.includes('"@type":"CollectionPage"'), "工具目录 CollectionPage 
 assert(receipt.includes('"@type":"SoftwareApplication"'), "工具页 SoftwareApplication JSON-LD 缺失");
 
 assert(robots.includes("Disallow: /offline/"), "robots.txt 未排除离线页");
+assert(robots.includes("Disallow: /control/"), "robots.txt 未排除私人控制中心");
+assert(robots.includes("Disallow: /api/control/"), "robots.txt 未排除控制中心 API");
 assert(robots.includes("Sitemap: https://leimuovo.com/sitemap-index.xml"), "robots.txt 未声明 sitemap");
 assert(!sitemap.includes("/offline/"), "sitemap 不应包含离线页");
 assert(!sitemap.includes("/404/"), "sitemap 不应包含 404");
@@ -79,6 +81,8 @@ assert(manifest.icons?.some((icon) => icon.purpose === "maskable"), "PWA 缺少 
 
 assert(!serviceWorker.includes("NavigationRoute"), "Service Worker 不应启用 SPA 首页导航回退");
 assert(serviceWorker.includes("NetworkFirst"), "Service Worker 缺少 Network First 页面策略");
+assert(serviceWorker.includes('/control/'), "Service Worker 未显式排除私人控制中心路由");
+assert(serviceWorker.includes('/api/control/'), "Service Worker 未显式排除控制中心 API 路由");
 assert(serviceWorker.includes("PrecacheFallbackPlugin") && serviceWorker.includes("/offline/"), "离线回退未配置");
 assert(serviceWorker.includes('/vendor/tesseract/'), "OCR 资源缺少按需运行时缓存");
 assert(!serviceWorker.includes('_astro/receipt-checker.'), "小票工具 JS/CSS 不应进入全站预缓存");

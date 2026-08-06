@@ -9,16 +9,21 @@
   },
   "scripts": {
     "dev": "pnpm --filter @leimuovo/web dev",
+    "dev:control": "pnpm --filter @leimuovo/control-worker dev",
     "dev:desktop": "pnpm --filter @leimuovo/receipt-desktop dev",
     "new:tool": "node scripts/new-tool.mjs",
     "check": "pnpm -r --if-present check",
     "test": "pnpm -r --if-present test",
     "test:browser": "pnpm --filter @leimuovo/web test:browser",
+    "test:browser:control": "pnpm --filter @leimuovo/control-worker test:browser",
     "build:web": "pnpm --filter @leimuovo/web build",
+    "build:control": "pnpm --filter @leimuovo/control-worker build",
+    "verify:control-deploy": "pnpm --filter @leimuovo/control-worker verify:deploy",
+    "control:hash-password": "node packages/control-core/src/hash-password-cli.ts",
     "verify:build": "node scripts/verify-build.mjs",
     "build:desktop": "pnpm --filter @leimuovo/receipt-desktop build:portable",
     "cf:build": "pnpm check && pnpm test && pnpm build:web && pnpm verify:build",
-    "verify": "pnpm check && pnpm test && pnpm build:web && pnpm verify:build"
+    "verify": "pnpm check && pnpm test && pnpm build:web && pnpm verify:build && pnpm build:control && pnpm verify:control-deploy"
   },
   "devDependencies": {
     "@types/node": "^26.1.2",

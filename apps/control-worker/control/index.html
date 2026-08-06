@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="robots" content="noindex, nofollow, noarchive" />
+    <meta name="theme-color" content="#F7F7F8" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0B0B0D" media="(prefers-color-scheme: dark)" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <title>小鱼控制中心</title>
+    <script src="/control/theme-init.js"></script>
+  </head>
+  <body>
+    <a class="control-skip-link" href="#control-main">跳到主要内容</a>
+    <div class="control-app" data-control-app data-view="loading">
+      <header class="control-header">
+        <div class="control-container control-header__inner">
+          <a class="control-brand" href="/" aria-label="返回小鱼首页">
+            <img src="/icons/brand-avatar-64.png" width="32" height="32" alt="" />
+            <span>小鱼</span>
+            <span class="control-brand__section">控制中心</span>
+          </a>
+          <div class="control-header-controls">
+            <div class="control-actions" data-dashboard-actions hidden>
+              <span class="control-identity" data-access-email></span>
+              <button class="control-icon-button" type="button" data-refresh aria-label="刷新状态" title="刷新状态">
+                <i data-lucide="refresh-cw" aria-hidden="true"></i>
+              </button>
+              <button class="control-icon-button" type="button" data-logout aria-label="退出控制中心" title="退出控制中心">
+                <i data-lucide="log-out" aria-hidden="true"></i>
+              </button>
+            </div>
+            <button class="control-icon-button" type="button" data-theme-toggle aria-label="切换外观" title="切换外观">
+              <i class="theme-icon theme-icon--moon" data-lucide="moon" aria-hidden="true"></i>
+              <i class="theme-icon theme-icon--sun" data-lucide="sun" aria-hidden="true"></i>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <main id="control-main" class="control-main">
+        <section class="control-state control-state--loading" data-loading-view aria-live="polite">
+          <span class="loading-mark" aria-hidden="true"></span>
+          <p>正在确认私人访问权限</p>
+        </section>
+
+        <section class="login-view" data-login-view hidden>
+          <div class="login-card">
+            <div class="login-card__mark" aria-hidden="true"><i data-lucide="lock-keyhole"></i></div>
+            <p class="control-eyebrow">仅限私人访问</p>
+            <h1>小鱼控制中心</h1>
+            <p class="login-card__lede">输入独立凭据，继续查看你的设备与服务状态。</p>
+            <form class="login-form" data-login-form novalidate>
+              <div class="form-field">
+                <label for="control-username">用户名</label>
+                <input id="control-username" class="lm-input" name="username" type="text" autocomplete="username" maxlength="128" required />
+              </div>
+              <div class="form-field">
+                <label for="control-password">密码</label>
+                <span class="password-field">
+                  <input id="control-password" class="lm-input" name="password" type="password" autocomplete="current-password" maxlength="256" required data-password />
+                  <button type="button" class="password-toggle" data-password-toggle aria-label="显示密码" title="显示密码">
+                    <i data-lucide="eye" aria-hidden="true"></i>
+                  </button>
+                </span>
+              </div>
+              <p class="form-error" data-login-error role="alert" hidden></p>
+              <button class="lm-button lm-button--primary login-submit" type="submit" data-login-submit>
+                <span>进入控制中心</span>
+                <i data-lucide="arrow-right" aria-hidden="true"></i>
+              </button>
+            </form>
+            <p class="privacy-note"><i data-lucide="shield-check" aria-hidden="true"></i><span>已通过 Cloudflare Access 验证：<strong data-login-email></strong></span></p>
+          </div>
+        </section>
+
+        <section class="dashboard" data-dashboard-view hidden>
+          <div class="control-container">
+            <div class="dashboard-intro">
+              <div>
+                <p class="control-eyebrow">私人状态</p>
+                <h1>现在，一目了然。</h1>
+              </div>
+              <div class="dashboard-summary" aria-live="polite">
+                <strong data-summary>正在获取最新状态</strong>
+                <span data-last-refresh>尚未刷新</span>
+              </div>
+            </div>
+
+            <div class="status-notice" data-status-notice role="status" hidden>
+              <i data-lucide="triangle-alert" aria-hidden="true"></i>
+              <span>更新失败，正在显示上一次结果。</span>
+            </div>
+
+            <section class="dashboard-section" aria-labelledby="network-heading">
+              <div class="section-title">
+                <div><p>此设备</p><h2 id="network-heading">网络状态</h2></div>
+                <span>每 30 秒更新</span>
+              </div>
+              <div class="network-grid">
+                <article class="status-card status-card--network" data-status-card="ipv4" data-state="unknown">
+                  <div class="status-card__top">
+                    <span class="feature-icon"><i data-lucide="wifi" aria-hidden="true"></i></span>
+                    <span class="status-label"><i data-status-icon data-lucide="circle-help" aria-hidden="true"></i><span data-state-label>检测中</span></span>
+                  </div>
+                  <h3>IPv4</h3>
+                  <p data-message>正在检查当前设备的 IPv4 连接。</p>
+                  <div class="status-meta"><span data-latency>--</span><span data-checked-at>尚未检测</span></div>
+                </article>
+                <article class="status-card status-card--network" data-status-card="ipv6" data-state="unknown">
+                  <div class="status-card__top">
+                    <span class="feature-icon"><i data-lucide="radio" aria-hidden="true"></i></span>
+                    <span class="status-label"><i data-status-icon data-lucide="circle-help" aria-hidden="true"></i><span data-state-label>检测中</span></span>
+                  </div>
+                  <h3>IPv6</h3>
+                  <p data-message>正在检查当前设备的 IPv6 连接。</p>
+                  <div class="status-meta"><span data-latency>--</span><span data-checked-at>尚未检测</span></div>
+                </article>
+              </div>
+            </section>
+
+            <section class="service-grid" aria-label="服务状态">
+              <article class="status-panel">
+                <div class="panel-heading"><span class="feature-icon"><i data-lucide="globe-2" aria-hidden="true"></i></span><div><p>leimuovo.com</p><h2>网站状态</h2></div></div>
+                <div class="status-rows">
+                  <div class="status-row" data-status-card="website-site" data-state="unknown"><span class="status-row__name"><i data-lucide="panel-top" aria-hidden="true"></i>网站</span><span class="status-row__result"><span data-message>检测中</span><span class="status-label"><i data-status-icon data-lucide="circle-help" aria-hidden="true"></i><span data-state-label>检测中</span></span></span></div>
+                  <div class="status-row" data-status-card="website-https" data-state="unknown"><span class="status-row__name"><i data-lucide="lock" aria-hidden="true"></i>HTTPS</span><span class="status-row__result"><span data-message>检测中</span><span class="status-label"><i data-status-icon data-lucide="circle-help" aria-hidden="true"></i><span data-state-label>检测中</span></span></span></div>
+                  <div class="status-row" data-status-card="website-cloudflare" data-state="unknown"><span class="status-row__name"><i data-lucide="cloud" aria-hidden="true"></i>Cloudflare</span><span class="status-row__result"><span data-message>检测中</span><span class="status-label"><i data-status-icon data-lucide="circle-help" aria-hidden="true"></i><span data-state-label>检测中</span></span></span></div>
+                  <div class="status-row status-row--placeholder"><span class="status-row__name"><i data-lucide="git-commit-horizontal" aria-hidden="true"></i>最近部署</span><span class="status-row__result"><span>后续接入</span><span class="status-label"><i data-lucide="minus" aria-hidden="true"></i><span>未配置</span></span></span></div>
+                </div>
+              </article>
+
+              <article class="status-panel" data-status-card="vps" data-state="not_configured">
+                <div class="panel-heading panel-heading--spread"><div class="panel-heading__title"><span class="feature-icon"><i data-lucide="server" aria-hidden="true"></i></span><div><p>远程服务</p><h2>VPS 状态</h2></div></div><span class="status-label"><i data-status-icon data-lucide="minus" aria-hidden="true"></i><span data-state-label>未配置</span></span></div>
+                <p class="panel-message" data-message>VPS 检测尚未配置</p>
+                <div class="status-meta"><span data-latency>延迟 --</span><span data-checked-at>尚未检测</span></div>
+                <div class="metric-list" aria-label="预留性能指标">
+                  <div><span><i data-lucide="cpu" aria-hidden="true"></i>CPU</span><strong>--</strong></div>
+                  <div><span><i data-lucide="memory-stick" aria-hidden="true"></i>内存</span><strong>--</strong></div>
+                  <div><span><i data-lucide="hard-drive" aria-hidden="true"></i>磁盘</span><strong>--</strong></div>
+                </div>
+              </article>
+            </section>
+
+            <section class="dashboard-section dashboard-section--devices" aria-labelledby="devices-heading">
+              <div class="section-title"><div><p>预留连接</p><h2 id="devices-heading">家庭设备</h2></div><span>暂未建立真实连接</span></div>
+              <div class="device-grid">
+                <article class="device-card" data-status-card="device-home-pc" data-state="not_configured"><div class="device-card__top"><span class="feature-icon"><i data-lucide="monitor" aria-hidden="true"></i></span><span class="status-label"><i data-status-icon data-lucide="minus" aria-hidden="true"></i><span data-state-label>未配置</span></span></div><h3>家里电脑</h3><p data-message>尚未配置</p></article>
+                <article class="device-card" data-status-card="device-moonlight-host" data-state="not_configured"><div class="device-card__top"><span class="feature-icon"><i data-lucide="gamepad-2" aria-hidden="true"></i></span><span class="status-label"><i data-status-icon data-lucide="minus" aria-hidden="true"></i><span data-state-label>未配置</span></span></div><h3>Moonlight 主机</h3><p data-message>尚未配置</p></article>
+                <article class="device-card" data-status-card="device-nas" data-state="not_configured"><div class="device-card__top"><span class="feature-icon"><i data-lucide="database" aria-hidden="true"></i></span><span class="status-label"><i data-status-icon data-lucide="minus" aria-hidden="true"></i><span data-state-label>未配置</span></span></div><h3>NAS</h3><p data-message>尚未配置</p></article>
+              </div>
+            </section>
+          </div>
+        </section>
+      </main>
+    </div>
+    <script type="module" src="/src/client/main.ts"></script>
+  </body>
+</html>

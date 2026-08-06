@@ -31,6 +31,19 @@
   systemDark.addEventListener?.("change", syncThemeButtons);
   syncThemeButtons();
 
+  const hasControlHint = document.cookie
+    .split(";")
+    .some((cookie) => cookie.trim() === "control_hint=1");
+  const siteNav = document.querySelector(".site-nav");
+  const themeToggle = siteNav?.querySelector("[data-theme-toggle]");
+  if (hasControlHint && siteNav && !siteNav.querySelector("[data-control-entry]")) {
+    const controlEntry = document.createElement("a");
+    controlEntry.href = "/control/";
+    controlEntry.textContent = "控制中心";
+    controlEntry.dataset.controlEntry = "";
+    siteNav.insertBefore(controlEntry, themeToggle ?? null);
+  }
+
   let installPrompt;
   const installButton = document.querySelector("[data-pwa-install]");
   window.addEventListener("beforeinstallprompt", (event) => {

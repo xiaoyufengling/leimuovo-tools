@@ -44,6 +44,21 @@ test("theme choice persists without hiding keyboard focus", async ({ browserName
   await expect(skipLink).toBeFocused();
 });
 
+test("private control entry appears only after the non-sensitive login hint", async ({ context, page }) => {
+  await page.goto("/");
+  await expect(page.getByRole("link", { name: "控制中心" })).toHaveCount(0);
+
+  await context.addCookies([{
+    name: "control_hint",
+    value: "1",
+    domain: "127.0.0.1",
+    path: "/",
+    sameSite: "Strict",
+  }]);
+  await page.reload();
+  await expect(page.getByRole("link", { name: "控制中心" })).toHaveAttribute("href", "/control/");
+});
+
 test("invalid local file shows inline feedback without a POST request", async ({ page }) => {
   const postRequests: string[] = [];
   page.on("request", (request) => { if (request.method() === "POST") postRequests.push(request.url()); });

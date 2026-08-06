@@ -1,0 +1,29 @@
+{
+  "name": "@leimuovo/control-worker",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "check": "tsc --project tsconfig.json",
+    "deploy": "pnpm build && wrangler deploy",
+    "dev": "vite --host 0.0.0.0",
+    "test": "vitest run",
+    "test:browser": "playwright test",
+    "verify:deploy": "wrangler deploy --dry-run --outdir dist/worker-bundle"
+  },
+  "dependencies": {
+    "@leimuovo/control-core": "workspace:*",
+    "@leimuovo/design-system": "workspace:*",
+    "jose": "^6.2.8",
+    "lucide": "^1.28.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260804.1",
+    "@playwright/test": "^1.62.1",
+    "typescript": "^6.0.3",
+    "vite": "^8.2.0",
+    "vitest": "^4.1.10",
+    "wrangler": "^4.119.0"
+  }
+}

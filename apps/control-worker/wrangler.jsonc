@@ -1,0 +1,40 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "xiaoyu-control",
+  "main": "src/worker.ts",
+  "compatibility_date": "2026-08-01",
+  "workers_dev": false,
+  "preview_urls": false,
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "run_worker_first": true
+  },
+  "routes": [
+    {
+      "pattern": "leimuovo.com/control/*",
+      "zone_name": "leimuovo.com"
+    },
+    {
+      "pattern": "leimuovo.com/api/control/*",
+      "zone_name": "leimuovo.com"
+    }
+  ],
+  "vars": {
+    "CONTROL_SITE_ORIGIN": "https://leimuovo.com"
+  },
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "LOGIN_THROTTLE",
+        "class_name": "LoginThrottle"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": ["LoginThrottle"]
+    }
+  ]
+}

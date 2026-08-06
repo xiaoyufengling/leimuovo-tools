@@ -1,6 +1,6 @@
 # Architecture
 
-小鱼是静态优先的工具站。`apps/web` 负责页面和 SEO，`packages` 中的深模块负责可复用行为，`apps/receipt-desktop` 是小票工具的第二个宿主。
+小鱼是静态优先的工具站。`apps/web` 负责页面和 SEO，`packages` 中的深模块负责可复用行为，`apps/receipt-desktop` 是小票工具的第二个宿主。私人控制中心由 `apps/control-worker` 按路径接管，不改变公开站点的静态输出。
 
 ## 模块与 seam
 
@@ -8,6 +8,8 @@
 - 小票模块只暴露挂载/销毁接口以及纯计算接口。
 - 工作簿保存 seam 有两个真实 adapter：浏览器下载和 Electron IPC。
 - OCR、文件内容和识别结果不跨网络 seam。
+- 控制中心只通过 `control-core` 的认证和状态 interface 使用业务能力；Access JWT、Durable Object、浏览器网络探测和网站请求都是 adapter。
+- `/control/*` 与 `/api/control/*` 由 Cloudflare Access 和应用会话双重保护，并明确排除 PWA 缓存与公开 Analytics。
 
 ## 渐进升级
 
