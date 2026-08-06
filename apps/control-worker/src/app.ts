@@ -21,6 +21,7 @@ export interface ControlConfig {
   passwordHash: string;
   sessionSecret: string;
   siteOrigin: string;
+  logoutUrl: string;
 }
 
 export interface LoginThrottle {
@@ -256,7 +257,7 @@ export function createControlApp(dependencies: ControlAppDependencies): ControlA
         if (request.headers.get("Origin") !== dependencies.config.siteOrigin) {
           return error("INVALID_ORIGIN", "请求来源无效", 403);
         }
-        const response = json({ authenticated: false, accessLogoutUrl: "/cdn-cgi/access/logout" });
+        const response = json({ authenticated: false, logoutUrl: dependencies.config.logoutUrl });
         appendCookie(response, clearCookie(SESSION_COOKIE, true));
         appendCookie(response, clearCookie(HINT_COOKIE));
         return response;

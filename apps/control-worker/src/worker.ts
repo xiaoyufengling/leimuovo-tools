@@ -1,5 +1,5 @@
 import type { ThrottleRecord } from "./rate-limit";
-import { createAccessVerifier } from "./access";
+import { createAuthenticationVerifier } from "./authentication";
 import { createControlApp, type LoginThrottle as LoginThrottlePort } from "./app";
 import { createLoginThrottle } from "./rate-limit";
 import { createWebsiteStatusProvider } from "./website";
@@ -10,8 +10,9 @@ interface Env {
   CONTROL_USERNAME: string;
   CONTROL_PASSWORD_HASH: string;
   CONTROL_SESSION_SECRET: string;
-  CONTROL_ACCESS_TEAM_DOMAIN: string;
-  CONTROL_ACCESS_AUD: string;
+  CONTROL_AUTH_MODE?: string;
+  CONTROL_ACCESS_TEAM_DOMAIN?: string;
+  CONTROL_ACCESS_AUD?: string;
   CONTROL_ALLOWED_EMAIL: string;
   CONTROL_SITE_ORIGIN: string;
 }
@@ -62,17 +63,20 @@ function createDurableThrottle(env: Env): LoginThrottlePort {
 
 function productionApp(env: Env) {
   const siteOrigin = required(env.CONTROL_SITE_ORIGIN, "CONTROL_SITE_ORIGIN");
+  const authMode = required(env.CONTROL_AUTH_MODE, "CONTROL_AUTH_MODE");
   return createControlApp({
     config: {
       username: required(env.CONTROL_USERNAME, "CONTROL_USERNAME"),
       passwordHash: required(env.CONTROL_PASSWORD_HASH, "CONTROL_PASSWORD_HASH"),
       sessionSecret: required(env.CONTROL_SESSION_SECRET, "CONTROL_SESSION_SECRET"),
       siteOrigin,
+      logoutUrl: authMode === "cloudflare-access" ? "/cdn-cgi/access/logout" : "/",
     },
-    verifyAccess: createAccessVerifier({
-      teamDomain: required(env.CONTROL_ACCESS_TEAM_DOMAIN, "CONTROL_ACCESS_TEAM_DOMAIN"),
-      audience: required(env.CONTROL_ACCESS_AUD, "CONTROL_ACCESS_AUD"),
-      allowedEmail: required(env.CONTROL_ALLOWED_EMAIL, "CONTROL_ALLOWED_EMAIL"),
+    verifyAccess: createAuthenticationVerifier({
+      mode: authMode,
+      teamDomain: env.CONTROL_ACCESS_TEAM_DOMAIN,
+      audience: env.CONTROL_ACCESS_AUD,
+      allowedEmail: env.CONTROL_ALLOWED_EMAIL,
     }),
     throttle: createDurableThrottle(env),
     website: createWebsiteStatusProvider({ targetUrl: `${siteOrigin}/` }),

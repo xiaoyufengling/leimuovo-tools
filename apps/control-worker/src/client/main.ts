@@ -43,7 +43,7 @@ interface LoginResponse extends SessionResponse {}
 
 interface LogoutResponse {
   authenticated: false;
-  accessLogoutUrl: string;
+  logoutUrl: string;
 }
 
 interface ErrorResponse {
@@ -406,7 +406,7 @@ required<HTMLButtonElement>("[data-logout]").addEventListener("click", async () 
       headers: { "Content-Type": "application/json" },
       body: "{}",
     });
-    window.location.assign(result.accessLogoutUrl);
+    window.location.assign(result.logoutUrl);
   } catch {
     window.location.assign("/");
   }

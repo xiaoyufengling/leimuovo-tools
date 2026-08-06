@@ -48,7 +48,7 @@ function developmentControlApi(): Plugin {
           ]);
         }
         if (pathname === "/api/control/logout" && request.method === "POST") {
-          return sendJson(response, 200, { authenticated: false, accessLogoutUrl: "/control/" }, [
+          return sendJson(response, 200, { authenticated: false, logoutUrl: "/" }, [
             "dev_control_session=; Max-Age=0; Path=/; SameSite=Strict",
             "control_hint=; Max-Age=0; Path=/; SameSite=Strict",
           ]);

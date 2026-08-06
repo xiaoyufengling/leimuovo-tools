@@ -21,7 +21,8 @@
     }
   ],
   "vars": {
-    "CONTROL_SITE_ORIGIN": "https://leimuovo.com"
+    "CONTROL_SITE_ORIGIN": "https://leimuovo.com",
+    "CONTROL_AUTH_MODE": "password-only"
   },
   "durable_objects": {
     "bindings": [

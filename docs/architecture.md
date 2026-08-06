@@ -9,10 +9,10 @@
 - 工作簿保存 seam 有两个真实 adapter：浏览器下载和 Electron IPC。
 - OCR、文件内容和识别结果不跨网络 seam。
 - 控制中心只通过 `control-core` 的认证和状态 interface 使用业务能力；Access JWT、Durable Object、浏览器网络探测和网站请求都是 adapter。
-- `/control/*` 与 `/api/control/*` 由 Cloudflare Access 和应用会话双重保护，并明确排除 PWA 缓存与公开 Analytics。
+- `/control/*` 与 `/api/control/*` 默认由 Worker 原生密码会话保护；有条件时可通过认证 adapter 升级为 Cloudflare Access 加应用会话双重保护，并明确排除 PWA 缓存与公开 Analytics。
 
 ## 渐进升级
 
 - React 不是基础依赖。首个明确需要 React 的工具出现时，再在 `apps/web` 加入 `@astrojs/react`，并仅对该工具启用 island。
-- 第一版没有 Worker。未来只有在浏览器无法完成某项能力时，才定义 port，并用 Cloudflare Worker adapter 与测试 adapter 实现。
+- 公开工具第一版不依赖 Worker；私人控制中心使用一个按路径接管的 Worker。未来只有在公开工具确实无法由浏览器完成时，才定义 port，并增加 Cloudflare Worker adapter 与测试 adapter。
 - 不引入 Turborepo；pnpm workspace 已足以管理当前规模。出现可测量的构建瓶颈后再评估任务缓存。

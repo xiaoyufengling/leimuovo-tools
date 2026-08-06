@@ -90,6 +90,21 @@ test("private control entry appears only after the non-sensitive login hint", as
   await expect(page.getByRole("link", { name: "控制中心" })).toHaveAttribute("href", "/control/");
 });
 
+test("footer privacy link reveals the private control route only after five quick clicks", async ({ page }) => {
+  await page.goto("/");
+  const privacyLink = page.getByRole("link", { name: "隐私", exact: true });
+
+  await privacyLink.click({ clickCount: 5, delay: 60 });
+
+  await expect(page).toHaveURL(/\/control\/$/);
+});
+
+test("a normal privacy click keeps the footer link behavior unchanged", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("link", { name: "隐私", exact: true }).click();
+  await expect(page).toHaveURL(/\/privacy\/$/);
+});
+
 test("invalid local file shows inline feedback without a POST request", async ({ page }) => {
   const postRequests: string[] = [];
   page.on("request", (request) => { if (request.method() === "POST") postRequests.push(request.url()); });

@@ -44,6 +44,39 @@
     siteNav.insertBefore(controlEntry, themeToggle ?? null);
   }
 
+  const controlGesture = document.querySelector("[data-control-gesture]");
+  if (controlGesture instanceof HTMLAnchorElement) {
+    let gestureClicks = 0;
+    let gestureTimer;
+
+    const openPrivacyPage = () => {
+      gestureClicks = 0;
+      window.location.assign(controlGesture.href);
+    };
+
+    controlGesture.addEventListener("click", (event) => {
+      const isPlainPointerClick = event.button === 0
+        && event.detail > 0
+        && !event.altKey
+        && !event.ctrlKey
+        && !event.metaKey
+        && !event.shiftKey;
+      if (!isPlainPointerClick) return;
+
+      event.preventDefault();
+      gestureClicks += 1;
+      window.clearTimeout(gestureTimer);
+
+      if (gestureClicks >= 5) {
+        gestureClicks = 0;
+        window.location.assign("/control/");
+        return;
+      }
+
+      gestureTimer = window.setTimeout(openPrivacyPage, gestureClicks === 1 ? 500 : 1_200);
+    });
+  }
+
   let installPrompt;
   const installButton = document.querySelector("[data-pwa-install]");
   window.addEventListener("beforeinstallprompt", (event) => {

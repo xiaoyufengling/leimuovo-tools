@@ -1,6 +1,7 @@
 import { beforeAll, describe, expect, it } from "vitest";
 import { hashPassword, type WebsiteStatus } from "@leimuovo/control-core";
 import { createControlApp, type AccessIdentity, type ControlAppDependencies } from "../src/app";
+import { createAuthenticationVerifier } from "../src/authentication";
 
 const accessIdentity: AccessIdentity = {
   subject: "verified-access-user",
@@ -27,6 +28,7 @@ function dependencies(): ControlAppDependencies {
       passwordHash,
       sessionSecret: "a-session-secret-that-is-long-enough",
       siteOrigin: "https://leimuovo.com",
+      logoutUrl: "/",
     },
     verifyAccess: async (request) => request.headers.get("x-test-access") === "valid" ? accessIdentity : null,
     throttle: {
@@ -60,6 +62,24 @@ describe("control worker HTTP interface", () => {
     expect(response.status).toBe(403);
     expect(response.headers.get("Cache-Control")).toBe("no-store");
     await expect(response.text()).resolves.toContain("当前身份无法访问");
+  });
+
+  it("allows the explicit password-only mode to show login without exposing status", async () => {
+    const app = createControlApp({
+      ...dependencies(),
+      verifyAccess: createAuthenticationVerifier({
+        mode: "password-only",
+        allowedEmail: accessIdentity.email,
+        teamDomain: undefined,
+        audience: undefined,
+      }),
+    });
+
+    const page = await app.fetch(new Request("https://leimuovo.com/control/"));
+    const status = await app.fetch(new Request("https://leimuovo.com/api/control/status"));
+
+    expect(page.status).toBe(200);
+    expect(status.status).toBe(401);
   });
 
   it("reveals the login state but protects status until the inner login succeeds", async () => {

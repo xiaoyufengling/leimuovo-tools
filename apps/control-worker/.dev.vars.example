@@ -1,6 +1,7 @@
 CONTROL_USERNAME=xiaoyu
 CONTROL_PASSWORD_HASH=pbkdf2-sha256$600000$replace-with-generated-salt$replace-with-generated-digest
 CONTROL_SESSION_SECRET=replace-with-at-least-32-random-characters
+CONTROL_AUTH_MODE=password-only
 CONTROL_ACCESS_TEAM_DOMAIN=your-team.cloudflareaccess.com
 CONTROL_ACCESS_AUD=replace-with-access-application-audience
 CONTROL_ALLOWED_EMAIL=xiaoyuqaq69@gmail.com

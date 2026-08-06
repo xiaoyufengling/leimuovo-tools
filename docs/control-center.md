@@ -1,6 +1,18 @@
 # 小鱼控制中心
 
-控制中心由 Cloudflare Access、Cloudflare Worker 和应用内用户名密码共同保护。公开 Astro 站点仍由 Pages 静态部署，Worker 只接管 `/control/*` 与 `/api/control/*`。
+控制中心是只给主人使用的私人状态总览。公开站点仍由 Cloudflare Pages 静态部署，Cloudflare Worker 只接管 `/control/*` 与 `/api/control/*`。
+
+## 当前访问方式
+
+第一版使用 Worker 原生用户名和密码登录。由于 Cloudflare Zero Trust Access 的免费激活需要账单方式，当前不启用 Access，也不依赖信用卡。
+
+- 公开网站没有静态“控制中心”入口。
+- 在页脚“隐私”链接上快速连续点击 5 次，会打开 `/control/` 登录页。
+- 这个手势只是隐藏入口，不是安全边界；直接访问路径仍由 Worker 登录保护。
+- 登录成功后会临时显示公开导航入口；退出后会清除入口标记。
+- 控制中心不进入 sitemap、PWA 缓存或 Analytics。
+
+后续启用 Cloudflare Access 时，只需把 Worker 变量 `CONTROL_AUTH_MODE` 改成 `cloudflare-access`，再补齐 Access 的两个 Secret。页面、应用会话和状态接口不需要重写。
 
 ## 本地预览
 
@@ -8,71 +20,80 @@
 pnpm dev:control
 ```
 
-打开 `http://localhost:4322/control/`。开发服务器接受任意非空用户名和密码，只提供本地模拟状态；这段逻辑只存在于 Vite 开发中，不会进入生产构建。
+打开 `http://localhost:4322/control/`。开发服务器接受任意非空用户名和密码，只提供本地模拟状态；这段逻辑只存在于 Vite 开发中，不会进入生产 Worker。
 
-## 1. 创建 Cloudflare Access 应用
+## 生成凭据
 
-1. Cloudflare Zero Trust 进入 **Access → Applications → Add an application → Self-hosted**。
-2. 名称填写“小鱼控制中心”，会话时长设为 12 小时。
-3. 在同一个应用中添加 `leimuovo.com/control/*` 与 `leimuovo.com/api/control/*` 两个 Public hostname/path。
-4. 建立 Allow 策略，仅允许 Emails `xiaoyuqaq69@gmail.com`，登录方式启用 One-time PIN。
-5. 记录应用的 AUD Tag，以及 Zero Trust 的 Team domain，例如 `xiaoyu.cloudflareaccess.com`。如果控制台只能建立两个独立 Access 应用，将两个 AUD Tag 用英文逗号连接后写入 `CONTROL_ACCESS_AUD`。
-
-必须先完成 Access 再部署 Worker 路由。Worker 仍会独立验证 Access JWT，所以直接 Worker 请求和伪造邮箱请求头都会被拒绝。
-
-## 2. 生成凭据
-
-在本地交互式终端运行：
+密码使用 PBKDF2-HMAC-SHA-256、随机盐和 600,000 次迭代。先在本地交互式终端生成哈希：
 
 ```powershell
 pnpm control:hash-password
 ```
 
-输入不会显示。命令只输出 PBKDF2 哈希，明文不会写入文件。另行生成至少 32 字节随机会话密钥：
+输入不会显示。命令只输出哈希，明文不会写入文件。另行生成至少 32 字节随机会话密钥：
 
 ```powershell
 [Convert]::ToBase64String([Security.Cryptography.RandomNumberGenerator]::GetBytes(48))
 ```
 
-不要把用户名、哈希或会话密钥提交到 Git。
+密码和会话密钥不会写入 Git、`.env`、`.dev.vars`、命令参数或日志。之前在聊天中出现过的密码已经暴露，正式上线前请生成并使用一个全新的密码。
 
-## 3. 设置 Worker secrets
+## 设置生产 Secret
 
-在仓库根目录登录 Wrangler，然后逐项输入值：
+先登录 Wrangler：
 
 ```powershell
 pnpm --filter @leimuovo/control-worker exec wrangler login
+```
+
+然后逐项执行命令，在 Wrangler 的隐藏输入提示中粘贴对应值。不要把值发到聊天：
+
+```powershell
 pnpm --filter @leimuovo/control-worker exec wrangler secret put CONTROL_USERNAME
 pnpm --filter @leimuovo/control-worker exec wrangler secret put CONTROL_PASSWORD_HASH
 pnpm --filter @leimuovo/control-worker exec wrangler secret put CONTROL_SESSION_SECRET
-pnpm --filter @leimuovo/control-worker exec wrangler secret put CONTROL_ACCESS_TEAM_DOMAIN
-pnpm --filter @leimuovo/control-worker exec wrangler secret put CONTROL_ACCESS_AUD
 pnpm --filter @leimuovo/control-worker exec wrangler secret put CONTROL_ALLOWED_EMAIL
 ```
 
-`CONTROL_ALLOWED_EMAIL` 固定填写 `xiaoyuqaq69@gmail.com`。生产普通变量 `CONTROL_SITE_ORIGIN` 已在 `wrangler.jsonc` 固定为 `https://leimuovo.com`。
+`CONTROL_ALLOWED_EMAIL` 固定填写主人的邮箱。`CONTROL_SITE_ORIGIN` 和 `CONTROL_AUTH_MODE=password-only` 已写入 `apps/control-worker/wrangler.jsonc`，不是 Secret。
 
-## 4. 首次部署与自动部署
+单层模式暂时不设置：
 
-首次部署前执行：
+```text
+CONTROL_ACCESS_TEAM_DOMAIN
+CONTROL_ACCESS_AUD
+```
+
+未来切换 Access 时再设置这两个值，并把 `CONTROL_AUTH_MODE` 改成 `cloudflare-access`。Worker 会验证签名、issuer、audience、邮箱和过期时间，绝不信任普通请求头。
+
+## 首次部署
+
+完成 Secret 后，在仓库根目录执行：
 
 ```powershell
 pnpm verify
 pnpm --filter @leimuovo/control-worker deploy
 ```
 
-在 GitHub 仓库 **Settings → Secrets and variables → Actions** 添加：
+部署成功后检查：
+
+- 直接打开 `https://leimuovo.com/control/` 能看到登录页。
+- 错误凭据返回统一错误，不泄露用户名是否存在。
+- 登录前请求 `/api/control/status` 返回 401，登录后返回 200。
+- 控制页面响应包含 `Cache-Control: no-store` 和 `X-Robots-Tag: noindex, nofollow, noarchive`。
+
+## GitHub 自动部署
+
+`.github/workflows/control-deploy.yml` 会在控制中心代码变更时运行检查、测试、构建和部署。需要在 GitHub 仓库添加：
 
 - `CLOUDFLARE_ACCOUNT_ID`
 - `CLOUDFLARE_API_TOKEN`
 
-API Token 只授予该账户的 Workers Scripts Edit、Workers Routes Edit、Durable Objects Edit，以及 `leimuovo.com` Zone Read。设置后，`main` 分支中控制中心相关代码发生变化会自动部署 Worker；未设置时工作流会安全跳过部署。
+Token 只授予 Workers Scripts Edit、Workers Routes Edit、Durable Objects Edit，以及 `leimuovo.com` Zone Read。未设置时工作流只验证和构建，不会尝试部署。
 
-## 5. 上线验收
+## 安全边界
 
-- 无痕窗口访问 `/control/` 必须先出现 Cloudflare Access。
-- 非允许邮箱无法通过；错误用户名和密码显示同一条错误。
-- 连续五次失败后返回 15 分钟锁定。
-- 登录后公开站点动态显示“控制中心”；完全退出后入口消失。
-- `workers.dev` 和 Preview URLs 保持关闭。
-- 控制页面响应包含 `no-store`、严格 CSP 和 `X-Robots-Tag`，且不进入 PWA 缓存或 Analytics。
+- 会话使用 HMAC-SHA-256 签名，12 小时有效，Cookie 为 `Secure; HttpOnly; SameSite=Strict`。
+- Durable Object 记录短期失败次数：10 分钟内失败 5 次后锁定 15 分钟，成功后清零。
+- 状态数据没有历史存储；网站、VPS 和家庭设备检测结果只在请求期间生成。
+- VPS 和家庭设备仍是 `not_configured` 占位，后续接入时优先使用 Cloudflare Tunnel、Access Service Token 或设备主动上报，不开放家庭公网端口。
