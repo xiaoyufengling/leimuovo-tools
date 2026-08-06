@@ -1,0 +1,20 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import StatePanel from "../components/StatePanel.astro";
+import { site } from "../config/site";
+---
+
+<BaseLayout title={`没有访问权限｜${site.name}`} description="当前身份没有访问此页面的权限。" noindex>
+  <div class="lm-page lm-container">
+    <section class="lm-state-page">
+      <StatePanel
+        variant="forbidden"
+        eyebrow="权限不足"
+        title="当前身份无法访问。"
+        description="请确认登录身份是否正确，或返回公开工具目录继续使用其他功能。"
+        primary={{ href: "/", label: "返回首页" }}
+        secondary={{ href: `mailto:${site.email}`, label: "联系反馈" }}
+      />
+    </section>
+  </div>
+</BaseLayout>

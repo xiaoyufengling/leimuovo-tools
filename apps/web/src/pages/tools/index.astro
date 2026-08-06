@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import ToolCard from "../../components/ToolCard.astro";
+import StatePanel from "../../components/StatePanel.astro";
 import { listTools } from "../../modules/tool-catalog";
 import { site } from "../../config/site";
 
@@ -24,12 +25,23 @@ const jsonLd = {
 ---
 
 <BaseLayout title={title} description={description} jsonLd={jsonLd}>
-  <section class="page-hero lm-container">
-    <p class="eyebrow">全部工具</p>
-    <h1>小而专注的工具。</h1>
-    <p>每个工具解决一个明确问题。没有账号门槛，也不会把无关功能塞进同一个页面。</p>
-  </section>
-  <section class="tool-list lm-container" aria-label="工具列表">
-    {tools.map((tool) => <ToolCard tool={tool} />)}
-  </section>
+  <div class="lm-page">
+    <section class="page-hero lm-page-header lm-container">
+      <p class="eyebrow">全部工具</p>
+      <h1>小而专注的工具。</h1>
+      <p class="lm-page-header__lede">每个工具解决一个明确问题。没有账号门槛，也不会把无关功能塞进同一个页面。</p>
+    </section>
+    <section class="tool-list lm-page-section lm-container" aria-label="工具列表">
+      {tools.length > 0 ? tools.map((tool) => <ToolCard tool={tool} />) : (
+        <StatePanel
+          variant="empty"
+          eyebrow="工具目录"
+          title="新的工具正在准备中。"
+          description="这里会展示已经完成并通过质量检查的工具。"
+          primary={{ href: "/", label: "返回首页" }}
+          headingLevel={2}
+        />
+      )}
+    </section>
+  </div>
 </BaseLayout>

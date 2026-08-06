@@ -35,7 +35,12 @@ function dependencies(): ControlAppDependencies {
       success: async () => undefined,
     },
     website: { check: async () => website },
-    assets: { fetch: async () => new Response("<main>小鱼控制中心</main>", { headers: { "Content-Type": "text/html" } }) },
+    assets: {
+      fetch: async (request) => new Response(
+        new URL(request.url).pathname.endsWith("/403.html") ? "<main>当前身份无法访问</main>" : "<main>小鱼控制中心</main>",
+        { headers: { "Content-Type": "text/html" } },
+      ),
+    },
     now: () => Date.UTC(2026, 7, 6, 9, 0, 0),
     clientAddress: () => "203.0.113.8",
   };
@@ -54,6 +59,7 @@ describe("control worker HTTP interface", () => {
 
     expect(response.status).toBe(403);
     expect(response.headers.get("Cache-Control")).toBe("no-store");
+    await expect(response.text()).resolves.toContain("当前身份无法访问");
   });
 
   it("reveals the login state but protects status until the inner login succeeds", async () => {

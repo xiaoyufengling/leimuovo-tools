@@ -97,6 +97,18 @@ function error(code: string, message: string, status: number, extraHeaders?: Hea
   return json({ error: { code, message } }, status, extraHeaders);
 }
 
+async function deniedPage(dependencies: ControlAppDependencies, request: Request): Promise<Response> {
+  const assetRequest = new Request(new URL("/control/403.html", request.url), request);
+  const asset = await dependencies.assets.fetch(assetRequest);
+  if (!asset.ok) {
+    return secureResponse(new Response("访问被拒绝", {
+      status: 403,
+      headers: { "Content-Type": "text/plain; charset=utf-8" },
+    }));
+  }
+  return secureResponse(new Response(asset.body, { status: 403, headers: asset.headers }));
+}
+
 function readCookie(request: Request, name: string): string | null {
   const source = request.headers.get("Cookie");
   if (!source) return null;
@@ -190,7 +202,7 @@ export function createControlApp(dependencies: ControlAppDependencies): ControlA
       if (!identity) {
         return isApi
           ? error("ACCESS_DENIED", "访问被拒绝", 403)
-          : secureResponse(new Response("访问被拒绝", { status: 403, headers: { "Content-Type": "text/plain; charset=utf-8" } }));
+          : deniedPage(dependencies, request);
       }
 
       if (url.pathname === "/control") {

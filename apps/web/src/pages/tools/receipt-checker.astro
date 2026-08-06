@@ -20,9 +20,9 @@ const jsonLd = {
 ---
 
 <ToolLayout tool={tool} jsonLd={jsonLd}>
-  <section class="tool-canvas lm-container">
+  <section class="tool-canvas lm-page-section lm-container">
     <div data-receipt-checker></div>
-    <noscript><p class="lm-card" style="padding: 1rem;">小票验算需要启用 JavaScript 才能在浏览器本机识别图片。</p></noscript>
+    <noscript><p class="tool-noscript lm-callout">小票验算需要启用 JavaScript 才能在浏览器本机识别图片。</p></noscript>
     <div class="tool-info">
       <article class="lm-card"><h2>图片会上传吗？</h2><p>不会。识别模型、图片解析和表格生成都在当前设备内运行。</p></article>
       <article class="lm-card"><h2>为什么首次较慢？</h2><p>浏览器需要首次下载中文 OCR 模型，之后会由 PWA 缓存重复使用。</p></article>

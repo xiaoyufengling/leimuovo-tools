@@ -1,13 +1,20 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import StatePanel from "../components/StatePanel.astro";
 import { site } from "../config/site";
 ---
 
 <BaseLayout title={`页面不存在｜${site.name}`} description="没有找到你访问的页面。" noindex>
-  <section class="not-found-card lm-card lm-container lm-reading">
-    <p class="eyebrow">404</p>
-    <h1>这里没有工具。</h1>
-    <p>地址可能已经改变，或者这个工具还没有发布。</p>
-    <a class="lm-button lm-button--primary" href="/tools/">返回工具目录</a>
-  </section>
+  <div class="lm-page lm-container">
+    <section class="lm-state-page">
+      <StatePanel
+        variant="not-found"
+        eyebrow="404"
+        title="这里没有找到页面。"
+        description="地址可能已经改变，或者这个工具还没有发布。你可以返回工具目录继续浏览。"
+        primary={{ href: "/tools/", label: "返回工具目录" }}
+        secondary={{ href: "/", label: "返回首页" }}
+      />
+    </section>
+  </div>
 </BaseLayout>

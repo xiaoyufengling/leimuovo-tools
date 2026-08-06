@@ -88,7 +88,10 @@ export default defineConfig({
     outDir: "dist",
     emptyOutDir: true,
     rollupOptions: {
-      input: resolve(import.meta.dirname, "control/index.html"),
+      input: {
+        control: resolve(import.meta.dirname, "control/index.html"),
+        denied: resolve(import.meta.dirname, "control/403.html"),
+      },
       output: {
         assetFileNames: "assets/[name]-[hash][extname]",
         chunkFileNames: "assets/[name]-[hash].js",

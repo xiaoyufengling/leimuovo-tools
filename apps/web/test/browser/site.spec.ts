@@ -4,7 +4,9 @@ import { expect, test } from "@playwright/test";
 test("brand homepage remains focused and responsive", async ({ page }) => {
   await page.goto("/");
   await expect(page).toHaveTitle(/小鱼/);
-  await expect(page.getByRole("heading", { level: 1, name: "把麻烦的小事，留给工具。" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "小鱼" })).toBeVisible();
+  await expect(page.getByText("把麻烦的小事，留给工具。")).toBeVisible();
+  await expect(page.locator(".hero__content")).toHaveCSS("animation-name", "lm-motion-enter");
   await expect(page.locator(".principle-card")).toHaveCount(3);
   await expect(page.locator(".tool-card")).toHaveCount(0);
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
@@ -23,6 +25,34 @@ test("tool catalog exposes the receipt checker only on the secondary page", asyn
   await expect(page).toHaveURL(/\/tools\/receipt-checker\/$/);
   await expect(page.getByRole("heading", { level: 1, name: "小票验算" })).toBeVisible();
   await expect(page.getByText("选择表格截图")).toBeVisible();
+});
+
+test("public pages share one page rhythm and typography contract", async ({ page }) => {
+  for (const pathname of ["/", "/tools/", "/tools/receipt-checker/", "/about/", "/privacy/"]) {
+    await page.goto(pathname);
+    await expect(page.locator("main > .lm-page").first()).toBeVisible();
+    const pageHeading = page.getByRole("heading", { level: 1 });
+    await expect(pageHeading).toBeVisible();
+    await expect(pageHeading).toHaveCSS("letter-spacing", "normal");
+    expect(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth)).toBe(false);
+  }
+});
+
+test("offline and error routes use the same branded recovery state", async ({ page }) => {
+  for (const pathname of ["/offline/", "/404/", "/403/", "/500/"]) {
+    await page.goto(pathname);
+    const state = page.locator(".lm-state");
+    await expect(state).toBeVisible();
+    await expect(state.locator(".lm-state__icon")).toBeVisible();
+    await expect(state.locator(".lm-state__actions .lm-button").first()).toBeVisible();
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex, nofollow");
+  }
+});
+
+test("receipt loading keeps a branded skeleton layout ready", async ({ page }) => {
+  await page.goto("/tools/receipt-checker/");
+  await expect(page.locator("[data-progress-section] .lm-skeleton")).toHaveCount(3);
+  await expect(page.locator("[data-receipt-checker] .lm-toast")).toHaveCount(1);
 });
 
 test("theme choice persists without hiding keyboard focus", async ({ browserName, page }) => {

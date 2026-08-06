@@ -9,7 +9,7 @@ interface Props {
 const { tool } = Astro.props;
 ---
 
-<a class="tool-card lm-card" href={tool.href}>
+<a class="tool-card lm-card lm-card--interactive lm-motion-enter" href={tool.href}>
   <div class="tool-card__icon" aria-hidden="true">
     <FileSpreadsheet size={23} stroke-width={1.75} />
   </div>

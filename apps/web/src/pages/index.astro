@@ -1,6 +1,7 @@
 ---
 import { ArrowRight, Laptop, LockKeyhole, UserRoundX } from "@lucide/astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
+import BrandMark from "../components/BrandMark.astro";
 import { site } from "../config/site";
 
 const jsonLd = {
@@ -14,48 +15,52 @@ const jsonLd = {
 ---
 
 <BaseLayout jsonLd={jsonLd}>
-  <section class="hero lm-container">
-    <div class="hero__content">
-      <p class="eyebrow">小鱼 · 个人工具集</p>
-      <h1>把麻烦的小事，留给工具。</h1>
-      <p class="hero__lede">一组安静、快速、尊重隐私的浏览器工具。无需注册，数据尽量只在你的设备中处理。</p>
-      <div class="hero__actions">
-        <a class="lm-button lm-button--primary" href="/tools/">浏览工具 <ArrowRight size={17} stroke-width={1.75} aria-hidden="true" /></a>
-        <a class="lm-button lm-button--secondary" href="/about/">了解{site.name}</a>
+  <div class="lm-page lm-page--home">
+    <section class="hero lm-container">
+      <div class="hero__content lm-motion-enter">
+        <p class="eyebrow">个人工具集</p>
+        <h1>{site.name}</h1>
+        <p class="hero__statement">把麻烦的小事，留给工具。</p>
+        <p class="hero__lede">一组安静、快速、尊重隐私的浏览器工具。无需注册，数据尽量只在你的设备中处理。</p>
+        <div class="hero__actions">
+          <a class="lm-button lm-button--primary" href="/tools/">浏览工具 <ArrowRight size={17} stroke-width={1.75} aria-hidden="true" /></a>
+          <a class="lm-button lm-button--secondary" href="/about/">了解{site.name}</a>
+        </div>
       </div>
-    </div>
-  </section>
+      <div class="hero__brand lm-motion-enter lm-motion-enter--2" aria-hidden="true"><BrandMark size={160} /></div>
+    </section>
 
-  <section class="principles lm-container" aria-labelledby="principles-title">
-    <div class="section-heading">
-      <p class="eyebrow">产品原则</p>
-      <h2 id="principles-title">少一点打扰，多一点确定。</h2>
-      <p>每个工具都从速度、隐私和跨设备体验出发。</p>
-    </div>
-    <div class="principle-grid">
-      <article class="principle-card lm-card">
-        <div class="principle-card__icon"><LockKeyhole size={22} stroke-width={1.75} aria-hidden="true" /></div>
-        <h3>优先本机处理</h3>
-        <p>文件类数据尽可能留在当前浏览器，不为了实现简单功能而上传你的内容。</p>
-      </article>
-      <article class="principle-card lm-card">
-        <div class="principle-card__icon"><UserRoundX size={22} stroke-width={1.75} aria-hidden="true" /></div>
-        <h3>无需注册</h3>
-        <p>打开即用，不先索取账号、手机号或不必要的个人信息。</p>
-      </article>
-      <article class="principle-card lm-card">
-        <div class="principle-card__icon"><Laptop size={22} stroke-width={1.75} aria-hidden="true" /></div>
-        <h3>跨设备一致</h3>
-        <p>手机、平板和桌面端采用同一套设计语言和清晰的操作反馈。</p>
-      </article>
-    </div>
-  </section>
+    <section class="principles lm-page-section lm-container" aria-labelledby="principles-title">
+      <div class="lm-section-heading">
+        <p class="eyebrow">产品原则</p>
+        <h2 id="principles-title">少一点打扰，多一点确定。</h2>
+        <p>每个工具都从速度、隐私和跨设备体验出发。</p>
+      </div>
+      <div class="principle-grid">
+        <article class="principle-card lm-card lm-motion-enter">
+          <div class="principle-card__icon"><LockKeyhole size={22} stroke-width={1.75} aria-hidden="true" /></div>
+          <h3>优先本机处理</h3>
+          <p>文件类数据尽可能留在当前浏览器，不为了实现简单功能而上传你的内容。</p>
+        </article>
+        <article class="principle-card lm-card lm-motion-enter lm-motion-enter--1">
+          <div class="principle-card__icon"><UserRoundX size={22} stroke-width={1.75} aria-hidden="true" /></div>
+          <h3>无需注册</h3>
+          <p>打开即用，不先索取账号、手机号或不必要的个人信息。</p>
+        </article>
+        <article class="principle-card lm-card lm-motion-enter lm-motion-enter--2">
+          <div class="principle-card__icon"><Laptop size={22} stroke-width={1.75} aria-hidden="true" /></div>
+          <h3>跨设备一致</h3>
+          <p>手机、平板和桌面端采用同一套设计语言和清晰的操作反馈。</p>
+        </article>
+      </div>
+    </section>
 
-  <section class="cta-band lm-container">
-    <div>
-      <h2>真正有用，才值得留在工具箱里。</h2>
-      <p>{site.name}会持续增加小而专注的工具，不用重新学习整套界面。</p>
-    </div>
-    <a class="lm-button" href="/tools/">打开工具目录 <ArrowRight size={17} stroke-width={1.75} aria-hidden="true" /></a>
-  </section>
+    <section class="cta-band lm-container lm-motion-enter lm-motion-enter--3">
+      <div>
+        <h2>真正有用，才值得留在工具箱里。</h2>
+        <p>{site.name}会持续增加小而专注的工具，不用重新学习整套界面。</p>
+      </div>
+      <a class="lm-button lm-button--primary" href="/tools/">打开工具目录 <ArrowRight size={17} stroke-width={1.75} aria-hidden="true" /></a>
+    </section>
+  </div>
 </BaseLayout>

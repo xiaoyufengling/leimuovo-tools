@@ -77,9 +77,13 @@ button:disabled {
   text-decoration: none;
 }
 
-.control-brand img {
+.control-brand-mark {
+  display: block;
+  width: 2rem;
+  height: 2rem;
   flex: 0 0 auto;
   border-radius: 50%;
+  background: url("@leimuovo/design-system/brand-avatar.png") center / cover no-repeat;
 }
 
 .control-brand__section {
@@ -177,13 +181,15 @@ button:disabled {
   margin: 0;
 }
 
-.loading-mark {
-  width: 0.75rem;
-  height: 0.75rem;
-  border-radius: 50%;
-  background: var(--lm-color-text);
-  box-shadow: 0 0 0 0.45rem var(--lm-color-surface-muted);
-  animation: loading-pulse 1.4s var(--lm-ease-standard) infinite;
+.control-state .lm-skeleton-layout {
+  width: min(100%, 29rem);
+  min-height: 35rem;
+  align-content: start;
+  padding: var(--lm-space-8);
+  border: 1px solid var(--lm-color-border);
+  border-radius: var(--lm-radius-panel);
+  background: var(--lm-color-surface);
+  box-shadow: var(--lm-shadow-md);
 }
 
 .login-view {
@@ -767,16 +773,11 @@ button:disabled {
   to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes loading-pulse {
-  50% { opacity: 0.42; transform: scale(0.86); }
-}
-
 @keyframes refresh-turn {
   to { transform: rotate(360deg); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .loading-mark,
   .control-icon-button[data-refresh][aria-busy="true"] svg {
     animation: none;
   }

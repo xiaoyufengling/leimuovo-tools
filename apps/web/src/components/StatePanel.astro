@@ -1,0 +1,62 @@
+---
+import {
+  ArrowLeft,
+  ArrowRight,
+  CircleOff,
+  CloudOff,
+  Inbox,
+  LockKeyhole,
+  ServerCrash,
+} from "@lucide/astro";
+
+interface Action {
+  href: string;
+  label: string;
+}
+
+interface Props {
+  variant: "empty" | "offline" | "not-found" | "forbidden" | "server-error";
+  eyebrow: string;
+  title: string;
+  description: string;
+  primary: Action;
+  secondary?: Action;
+  headingLevel?: 1 | 2;
+}
+
+const {
+  variant,
+  eyebrow,
+  title,
+  description,
+  primary,
+  secondary,
+  headingLevel = 1,
+} = Astro.props;
+const icons = {
+  empty: Inbox,
+  offline: CloudOff,
+  "not-found": CircleOff,
+  forbidden: LockKeyhole,
+  "server-error": ServerCrash,
+};
+const Icon = icons[variant];
+const Heading = `h${headingLevel}`;
+---
+
+<div class="lm-state" data-state-variant={variant}>
+  <span class="lm-state__icon" aria-hidden="true"><Icon /></span>
+  <p class="lm-state__eyebrow">{eyebrow}</p>
+  <Heading>{title}</Heading>
+  <p class="lm-state__description">{description}</p>
+  <div class="lm-state__actions">
+    <a class="lm-button lm-button--primary" href={primary.href}>
+      {primary.label}<ArrowRight aria-hidden="true" />
+    </a>
+    {secondary && (
+      <a class="lm-button lm-button--secondary" href={secondary.href}>
+        <ArrowLeft aria-hidden="true" />{secondary.label}
+      </a>
+    )}
+  </div>
+</div>

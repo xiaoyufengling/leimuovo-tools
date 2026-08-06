@@ -52,7 +52,7 @@ function markup(): string {
         <div class="receipt-workflow__step" data-step="3"><span>3</span>导出表格</div>
       </section>
 
-      <section class="receipt-upload lm-card" data-upload-section>
+      <section class="receipt-upload lm-card lm-card--interactive" data-upload-section>
         <label class="receipt-upload__control" for="receipt-image-input">
           <i data-lucide="image-up" aria-hidden="true"></i>
           <strong>选择表格截图</strong>
@@ -70,6 +70,11 @@ function markup(): string {
           <span data-progress-bar></span>
         </div>
         <p data-progress-detail>首次使用需要加载中文识别模型。</p>
+        <div class="receipt-progress__skeletons" aria-hidden="true">
+          <span class="lm-skeleton lm-skeleton--title"></span>
+          <span class="lm-skeleton lm-skeleton--text"></span>
+          <span class="lm-skeleton lm-skeleton--text-short"></span>
+        </div>
       </section>
 
       <section class="receipt-error lm-card" data-error-section hidden role="alert">
@@ -113,7 +118,7 @@ function markup(): string {
         <div><span>导出金额</span><strong data-export-total>0.00 元</strong></div>
         <button class="lm-button receipt-export__button" data-export type="button" disabled><i data-lucide="file-down" aria-hidden="true"></i>生成 Excel</button>
       </div>
-      <div class="receipt-toast" data-toast hidden role="status" aria-live="polite"></div>
+      <div class="lm-toast receipt-toast" data-toast data-tone="success" hidden role="status" aria-live="polite"></div>
     </div>`;
 }
 
@@ -226,8 +231,9 @@ export function mountReceiptChecker(root: HTMLElement, options: MountReceiptChec
     elements.progressTrack.setAttribute("aria-valuenow", String(percent));
   }
 
-  function showToast(message: string) {
+  function showToast(message: string, tone: "success" | "danger" = "success") {
     elements.toast.textContent = message;
+    elements.toast.dataset.tone = tone;
     elements.toast.hidden = false;
     if (toastTimer !== undefined) window.clearTimeout(toastTimer);
     toastTimer = window.setTimeout(() => { elements.toast.hidden = true; }, 2800);
@@ -255,11 +261,11 @@ export function mountReceiptChecker(root: HTMLElement, options: MountReceiptChec
       return `
         <article class="receipt-row${stateClass}" data-row-id="${escapeHtml(row.id)}">
           <div class="receipt-row__index" aria-label="第 ${row.order} 行">${row.order}</div>
-          <label class="receipt-field receipt-field--name"><span>商品名称</span><input class="lm-input" data-field="name" type="text" value="${escapeHtml(row.name)}" autocomplete="off" /></label>
-          <label class="receipt-field"><span>售价</span><input class="lm-input" data-field="price" type="number" inputmode="decimal" min="0" step="0.01" value="${formatNumber(row.price)}" /></label>
-          <label class="receipt-field"><span>数量/重量（${measurementLabel(row)}）</span><input class="lm-input" data-field="quantity" type="number" inputmode="decimal" min="0" step="0.01" value="${formatNumber(row.quantity)}" /></label>
-          <label class="receipt-field"><span>单位</span><input class="lm-input" data-field="unit" type="text" value="${escapeHtml(row.unit)}" autocomplete="off" /></label>
-          <label class="receipt-field receipt-field--source"><span>原表金额</span><input class="lm-input" data-field="sourceAmount" type="number" inputmode="decimal" min="0" step="0.01" value="${formatNumber(row.sourceAmount)}" /></label>
+          <label class="receipt-field lm-field receipt-field--name"><span class="lm-label">商品名称</span><input class="lm-input" data-field="name" type="text" value="${escapeHtml(row.name)}" autocomplete="off" /></label>
+          <label class="receipt-field lm-field"><span class="lm-label">售价</span><input class="lm-input" data-field="price" type="number" inputmode="decimal" min="0" step="0.01" value="${formatNumber(row.price)}" /></label>
+          <label class="receipt-field lm-field"><span class="lm-label">数量/重量（${measurementLabel(row)}）</span><input class="lm-input" data-field="quantity" type="number" inputmode="decimal" min="0" step="0.01" value="${formatNumber(row.quantity)}" /></label>
+          <label class="receipt-field lm-field"><span class="lm-label">单位</span><input class="lm-input" data-field="unit" type="text" value="${escapeHtml(row.unit)}" autocomplete="off" /></label>
+          <label class="receipt-field lm-field receipt-field--source"><span class="lm-label">原表金额</span><input class="lm-input" data-field="sourceAmount" type="number" inputmode="decimal" min="0" step="0.01" value="${formatNumber(row.sourceAmount)}" /></label>
           <div class="receipt-amount"><span>验算金额</span><strong>${amount === null ? "--" : amount.toFixed(2)}</strong>${statusMarkup(row)}</div>
           <button class="receipt-delete" type="button" data-action="delete" aria-label="删除第 ${row.order} 行" title="删除此行"><i data-lucide="trash-2" aria-hidden="true"></i></button>
         </article>`;
@@ -373,7 +379,7 @@ export function mountReceiptChecker(root: HTMLElement, options: MountReceiptChec
       showToast(result.status === "cancelled" ? "已取消保存" : "Excel 已保存，可以导入番茄标签");
     } catch (error) {
       console.error("Workbook save failed", error);
-      showToast("Excel 保存失败，请重试");
+      showToast("Excel 保存失败，请重试", "danger");
     }
   }, { signal });
 

@@ -1,0 +1,20 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import StatePanel from "../components/StatePanel.astro";
+import { site } from "../config/site";
+---
+
+<BaseLayout title={`服务暂时不可用｜${site.name}`} description="服务暂时无法完成请求。" noindex>
+  <div class="lm-page lm-container">
+    <section class="lm-state-page">
+      <StatePanel
+        variant="server-error"
+        eyebrow="服务错误"
+        title="这次请求没有完成。"
+        description="可能是短暂的网络或服务异常。请稍后重试；如果问题持续，可以向我们反馈。"
+        primary={{ href: "", label: "重新加载" }}
+        secondary={{ href: `mailto:${site.email}`, label: "联系反馈" }}
+      />
+    </section>
+  </div>
+</BaseLayout>

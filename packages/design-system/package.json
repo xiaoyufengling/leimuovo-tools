@@ -6,6 +6,7 @@
   "exports": {
     "./tokens.css": "./src/tokens.css",
     "./base.css": "./src/base.css",
-    "./components.css": "./src/components.css"
+    "./components.css": "./src/components.css",
+    "./brand-avatar.png": "./assets/brand-avatar.png"
   }
 }

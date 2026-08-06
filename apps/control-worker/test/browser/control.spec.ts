@@ -39,5 +39,13 @@ test("theme choice persists and reduced motion disables decorative animation", a
   const selected = await page.locator("html").getAttribute("data-theme");
   await page.reload();
   await expect(page.locator("html")).toHaveAttribute("data-theme", selected ?? "dark");
-  await expect(page.locator(".loading-mark")).toHaveCSS("animation-name", "none");
+  await expect(page.locator(".lm-skeleton").first()).toHaveCSS("animation-name", "none");
+});
+
+test("control center consumes shared form, card and feedback primitives", async ({ page }) => {
+  await page.goto("/control/");
+  await expect(page.locator(".login-card")).toHaveClass(/lm-card/);
+  await expect(page.locator(".form-field").first()).toHaveClass(/lm-field/);
+  await expect(page.locator("[data-login-error]")).toHaveClass(/lm-field-error/);
+  await expect(page.locator("[data-loading-view] .lm-skeleton")).toHaveCount(4);
 });

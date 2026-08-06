@@ -24,6 +24,7 @@ import {
   Radio,
   RefreshCw,
   Server,
+  ServerCrash,
   ShieldCheck,
   Sun,
   TriangleAlert,
@@ -79,6 +80,7 @@ const icons = {
   Radio,
   RefreshCw,
   Server,
+  ServerCrash,
   ShieldCheck,
   Sun,
   TriangleAlert,
@@ -323,7 +325,20 @@ async function initialize(): Promise<void> {
     if (session.authenticated) showDashboard(session);
     else showLogin(session);
   } catch (failure) {
-    loadingView.innerHTML = `<p>${failure instanceof Error ? failure.message : "控制中心暂时不可用"}</p><button class="lm-button lm-button--secondary" type="button" data-retry>重试</button>`;
+    loadingView.innerHTML = `<div class="lm-state" data-state-variant="server-error">
+      <span class="lm-state__icon" aria-hidden="true"><i data-lucide="server-crash"></i></span>
+      <p class="lm-state__eyebrow">控制中心</p>
+      <h1>暂时无法确认访问状态。</h1>
+      <p class="lm-state__description" data-loading-error-message></p>
+      <div class="lm-state__actions"><button class="lm-button lm-button--primary" type="button" data-retry>重新尝试<i data-lucide="refresh-cw" aria-hidden="true"></i></button></div>
+    </div>`;
+    const loadingErrorMessage = loadingView.querySelector<HTMLElement>("[data-loading-error-message]");
+    if (loadingErrorMessage) {
+      loadingErrorMessage.textContent = failure instanceof Error
+        ? failure.message
+        : "请稍后重试，控制中心不会保存离线状态。";
+    }
+    renderIcons();
     loadingView.querySelector<HTMLButtonElement>("[data-retry]")?.addEventListener("click", () => window.location.reload());
   }
 }
@@ -361,7 +376,8 @@ loginForm.addEventListener("submit", async (event) => {
   }
 
   loginButton.disabled = true;
-  loginButton.querySelector("span")!.textContent = "正在验证";
+  loginButton.setAttribute("aria-busy", "true");
+  loginButton.innerHTML = '<span>正在验证</span><span class="lm-button__spinner" aria-hidden="true"></span>';
   loginError.hidden = true;
   try {
     const session = await api<LoginResponse>("/api/control/login", {
@@ -376,7 +392,9 @@ loginForm.addEventListener("submit", async (event) => {
     loginError.hidden = false;
   } finally {
     loginButton.disabled = false;
-    loginButton.querySelector("span")!.textContent = "进入控制中心";
+    loginButton.removeAttribute("aria-busy");
+    loginButton.innerHTML = '<span>进入控制中心</span><i data-lucide="arrow-right" aria-hidden="true"></i>';
+    renderIcons();
   }
 });
 
