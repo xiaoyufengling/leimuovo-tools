@@ -1,5 +1,10 @@
 import { beforeAll, describe, expect, it } from "vitest";
-import { hashPassword, type WebsiteStatus } from "@leimuovo/control-core";
+import {
+  derivePasswordProof,
+  getPasswordDerivationParameters,
+  hashPassword,
+  type WebsiteStatus,
+} from "@leimuovo/control-core";
 import { createControlApp, type AccessIdentity, type ControlAppDependencies } from "../src/app";
 import { createAuthenticationVerifier } from "../src/authentication";
 
@@ -16,9 +21,15 @@ const website: WebsiteStatus = {
 };
 
 let passwordHash = "";
+let correctPasswordProof = "";
+let wrongPasswordProof = "";
 
 beforeAll(async () => {
   passwordHash = await hashPassword("correct horse battery staple");
+  const parameters = getPasswordDerivationParameters(passwordHash);
+  if (!parameters) throw new Error("Test password hash is invalid");
+  correctPasswordProof = await derivePasswordProof("correct horse battery staple", parameters);
+  wrongPasswordProof = await derivePasswordProof("wrong password", parameters);
 });
 
 function dependencies(): ControlAppDependencies {
@@ -92,12 +103,24 @@ describe("control worker HTTP interface", () => {
     expect(status.status).toBe(401);
   });
 
+  it("returns browser derivation parameters without exposing the stored digest", async () => {
+    const app = createControlApp(dependencies());
+    const response = await app.fetch(new Request("https://leimuovo.com/api/control/password-parameters", {
+      headers: accessHeaders(),
+    }));
+    const body = await response.text();
+
+    expect(response.status).toBe(200);
+    expect(body).toContain("pbkdf2-sha256");
+    expect(body).not.toContain(passwordHash.split("$").at(-1));
+  });
+
   it("sets secure cookies after login and returns the status snapshot", async () => {
     const app = createControlApp(dependencies());
     const login = await app.fetch(new Request("https://leimuovo.com/api/control/login", {
       method: "POST",
       headers: accessHeaders({ Origin: "https://leimuovo.com", "Content-Type": "application/json" }),
-      body: JSON.stringify({ username: "xiaoyu", password: "correct horse battery staple" }),
+      body: JSON.stringify({ username: "xiaoyu", passwordProof: correctPasswordProof }),
     }));
     const setCookie = login.headers.get("Set-Cookie") ?? "";
     const sessionCookie = setCookie.match(/xiaoyu_control_session=([^;,]+)/u)?.[1];
@@ -124,7 +147,7 @@ describe("control worker HTTP interface", () => {
     const response = await app.fetch(new Request("https://leimuovo.com/api/control/login", {
       method: "POST",
       headers: accessHeaders({ Origin: "https://leimuovo.com", "Content-Type": "application/json" }),
-      body: JSON.stringify({ username: "xiaoyu", password: "wrong password" }),
+      body: JSON.stringify({ username: "xiaoyu", passwordProof: wrongPasswordProof }),
     }));
 
     expect(response.status).toBe(401);

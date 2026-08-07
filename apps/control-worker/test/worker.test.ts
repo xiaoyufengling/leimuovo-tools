@@ -8,7 +8,6 @@ function environment(authMode?: string) {
         headers: { "Content-Type": "text/html; charset=utf-8" },
       }),
     },
-    LOGIN_THROTTLE: {} as DurableObjectNamespace,
     CONTROL_USERNAME: "re0leimu520",
     CONTROL_PASSWORD_HASH: "pbkdf2-sha256$600000$salt$digest",
     CONTROL_SESSION_SECRET: "a-session-secret-that-is-long-enough",
@@ -35,5 +34,22 @@ describe("production control worker authentication configuration", () => {
     );
 
     expect(response.status).toBe(500);
+  });
+
+  it("temporarily locks repeated failures without a stateful Cloudflare binding", async () => {
+    const request = () => new Request("https://leimuovo.com/api/control/login", {
+      method: "POST",
+      headers: { Origin: "https://leimuovo.com", "Content-Type": "application/json" },
+      body: JSON.stringify({ username: "wrong", passwordProof: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" }),
+    });
+    const env = environment("password-only");
+
+    for (let attempt = 0; attempt < 5; attempt += 1) {
+      const response = await worker.fetch(request(), env);
+      expect(response.status).toBe(401);
+    }
+
+    const response = await worker.fetch(request(), env);
+    expect(response.status).toBe(429);
   });
 });

@@ -1,9 +1,12 @@
 import { describe, expect, it } from "vitest";
 import {
   createSessionToken,
+  derivePasswordProof,
+  getPasswordDerivationParameters,
   hashPassword,
   PASSWORD_HASH_ITERATIONS,
   verifyPassword,
+  verifyPasswordProof,
   verifySessionToken,
 } from "../src/index";
 
@@ -19,6 +22,18 @@ describe("control authentication", () => {
 
   it("rejects malformed password hashes instead of throwing", async () => {
     await expect(verifyPassword("password", "not-a-valid-hash")).resolves.toBe(false);
+  });
+
+  it("derives a browser proof without exposing the stored digest", async () => {
+    const encoded = await hashPassword("a deliberately long private password");
+    const parameters = getPasswordDerivationParameters(encoded);
+
+    expect(parameters).not.toBeNull();
+    expect(JSON.stringify(parameters)).not.toContain(encoded.split("$").at(-1));
+
+    const proof = await derivePasswordProof("a deliberately long private password", parameters!);
+    expect(verifyPasswordProof(proof, encoded)).toBe(true);
+    expect(verifyPasswordProof(`${proof.slice(0, -1)}A`, encoded)).toBe(false);
   });
 
   it("issues a session bound to the verified Access identity", async () => {

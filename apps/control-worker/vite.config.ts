@@ -37,9 +37,21 @@ function developmentControlApi(): Plugin {
         if (pathname === "/api/control/session" && request.method === "GET") {
           return sendJson(response, 200, { authenticated, accessEmail: "xiaoyuqaq69@gmail.com" });
         }
+        if (pathname === "/api/control/password-parameters" && request.method === "GET") {
+          return sendJson(response, 200, {
+            algorithm: "pbkdf2-sha256",
+            iterations: 1,
+            salt: "AAAAAAAAAAAAAAAAAAAAAA",
+          });
+        }
         if (pathname === "/api/control/login" && request.method === "POST") {
           const body = await readBody(request);
-          if (typeof body.username !== "string" || !body.username || typeof body.password !== "string" || !body.password) {
+          if (
+            typeof body.username !== "string"
+            || !body.username
+            || typeof body.passwordProof !== "string"
+            || !body.passwordProof
+          ) {
             return sendJson(response, 401, { error: { code: "INVALID_CREDENTIALS", message: "用户名或密码不正确" } });
           }
           return sendJson(response, 200, { authenticated: true, accessEmail: "xiaoyuqaq69@gmail.com" }, [

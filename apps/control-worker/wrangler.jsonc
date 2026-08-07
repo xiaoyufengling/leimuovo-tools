@@ -24,18 +24,18 @@
     "CONTROL_SITE_ORIGIN": "https://leimuovo.com",
     "CONTROL_AUTH_MODE": "password-only"
   },
-  "durable_objects": {
-    "bindings": [
-      {
-        "name": "LOGIN_THROTTLE",
-        "class_name": "LoginThrottle"
-      }
-    ]
-  },
   "migrations": [
     {
       "tag": "v1",
       "new_sqlite_classes": ["LoginThrottle"]
+    },
+    {
+      "tag": "v2",
+      "new_sqlite_classes": ["LoginThrottleV2"]
+    },
+    {
+      "tag": "v3",
+      "deleted_classes": ["LoginThrottle", "LoginThrottleV2"]
     }
   ]
 }

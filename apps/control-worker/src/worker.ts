@@ -6,7 +6,6 @@ import { createWebsiteStatusProvider } from "./website";
 
 interface Env {
   ASSETS: Fetcher;
-  LOGIN_THROTTLE: DurableObjectNamespace;
   CONTROL_USERNAME: string;
   CONTROL_PASSWORD_HASH: string;
   CONTROL_SESSION_SECRET: string;
@@ -16,6 +15,8 @@ interface Env {
   CONTROL_ALLOWED_EMAIL: string;
   CONTROL_SITE_ORIGIN: string;
 }
+
+const ephemeralThrottleState = new Map<string, ThrottleRecord>();
 
 function required(value: string | undefined, name: string): string {
   if (!value) throw new Error(`Missing Worker binding: ${name}`);
@@ -37,26 +38,25 @@ async function opaqueKey(value: string, secret: string): Promise<string> {
   return btoa(binary).replaceAll("+", "-").replaceAll("/", "_").replace(/=+$/u, "");
 }
 
-function createDurableThrottle(env: Env): LoginThrottlePort {
-  async function call(key: string, action: "check" | "failure" | "success") {
-    const safeKey = await opaqueKey(key, env.CONTROL_SESSION_SECRET);
-    const id = env.LOGIN_THROTTLE.idFromName(safeKey);
-    return env.LOGIN_THROTTLE.get(id).fetch(`https://login-throttle/${action}`, { method: "POST" });
-  }
+async function scopedEphemeralThrottle(env: Env, key: string) {
+  const safeKey = await opaqueKey(key, env.CONTROL_SESSION_SECRET);
+  return createLoginThrottle({
+    get: async () => ephemeralThrottleState.get(safeKey),
+    put: async (value) => { ephemeralThrottleState.set(safeKey, value); },
+    clear: async () => { ephemeralThrottleState.delete(safeKey); },
+  });
+}
 
+function createEphemeralThrottle(env: Env): LoginThrottlePort {
   return {
     async check(key) {
-      const response = await call(key, "check");
-      if (!response.ok) return { allowed: false, retryAfterSeconds: 60 };
-      return response.json<{ allowed: boolean; retryAfterSeconds: number }>();
+      return (await scopedEphemeralThrottle(env, key)).check();
     },
     async failure(key) {
-      const response = await call(key, "failure");
-      if (!response.ok) throw new Error("Login throttle rejected the failure update");
+      await (await scopedEphemeralThrottle(env, key)).failure();
     },
     async success(key) {
-      const response = await call(key, "success");
-      if (!response.ok) throw new Error("Login throttle rejected the success update");
+      await (await scopedEphemeralThrottle(env, key)).success();
     },
   };
 }
@@ -78,7 +78,7 @@ function productionApp(env: Env) {
       audience: env.CONTROL_ACCESS_AUD,
       allowedEmail: env.CONTROL_ALLOWED_EMAIL,
     }),
-    throttle: createDurableThrottle(env),
+    throttle: createEphemeralThrottle(env),
     website: createWebsiteStatusProvider({ targetUrl: `${siteOrigin}/` }),
     assets: env.ASSETS,
   });
@@ -101,43 +101,3 @@ export default {
     }
   },
 } satisfies ExportedHandler<Env>;
-
-export class LoginThrottle {
-  constructor(private readonly state: DurableObjectState) {}
-
-  private storage() {
-    return {
-      get: () => this.state.storage.get<ThrottleRecord>("state"),
-      put: async (value: ThrottleRecord) => {
-        await this.state.storage.put("state", value);
-        const lastFailure = value.failures.at(-1);
-        const cleanupAt = value.lockedUntil ?? (lastFailure ? lastFailure + 10 * 60 * 1_000 + 1 : null);
-        if (cleanupAt) await this.state.storage.setAlarm(cleanupAt);
-      },
-      clear: async () => {
-        await this.state.storage.delete("state");
-        await this.state.storage.deleteAlarm();
-      },
-    };
-  }
-
-  async fetch(request: Request): Promise<Response> {
-    if (request.method !== "POST") return new Response("Method not allowed", { status: 405 });
-    const action = new URL(request.url).pathname.slice(1);
-    const throttle = createLoginThrottle(this.storage());
-    if (action === "check") return Response.json(await throttle.check());
-    if (action === "failure") {
-      await throttle.failure();
-      return new Response(null, { status: 204 });
-    }
-    if (action === "success") {
-      await throttle.success();
-      return new Response(null, { status: 204 });
-    }
-    return new Response("Not found", { status: 404 });
-  }
-
-  async alarm(): Promise<void> {
-    await this.state.storage.deleteAll();
-  }
-}

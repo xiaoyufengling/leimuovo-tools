@@ -12,6 +12,12 @@ export interface SessionIdentity {
   email: string;
 }
 
+export interface PasswordDerivationParameters {
+  algorithm: typeof PASSWORD_ALGORITHM;
+  iterations: number;
+  salt: string;
+}
+
 export interface SessionClaims extends SessionIdentity {
   issuedAt: number;
   expiresAt: number;
@@ -28,7 +34,8 @@ function decodeBase64Url(value: string): Uint8Array | null {
     const normalized = value.replaceAll("-", "+").replaceAll("_", "/");
     const padded = normalized.padEnd(Math.ceil(normalized.length / 4) * 4, "=");
     const binary = atob(padded);
-    return Uint8Array.from(binary, (character) => character.charCodeAt(0));
+    const bytes = Uint8Array.from(binary, (character) => character.charCodeAt(0));
+    return encodeBase64Url(bytes) === value ? bytes : null;
   } catch {
     return null;
   }
@@ -41,6 +48,32 @@ function constantTimeEqual(left: Uint8Array, right: Uint8Array): boolean {
     mismatch |= (left[index] ?? 0) ^ (right[index] ?? 0);
   }
   return mismatch === 0;
+}
+
+interface ParsedPasswordHash {
+  parameters: PasswordDerivationParameters;
+  salt: Uint8Array;
+  digest: Uint8Array;
+}
+
+function parsePasswordHash(encodedHash: string): ParsedPasswordHash | null {
+  const [algorithm, iterationSource, saltSource, digestSource, extra] = encodedHash.split("$");
+  if (extra !== undefined || algorithm !== PASSWORD_ALGORITHM || !iterationSource || !saltSource || !digestSource) {
+    return null;
+  }
+
+  const iterations = Number.parseInt(iterationSource, 10);
+  const salt = decodeBase64Url(saltSource);
+  const digest = decodeBase64Url(digestSource);
+  if (iterations !== PASSWORD_HASH_ITERATIONS || !salt || salt.length < 16 || !digest || digest.length !== 32) {
+    return null;
+  }
+
+  return {
+    parameters: { algorithm: PASSWORD_ALGORITHM, iterations, salt: encodeBase64Url(salt) },
+    salt,
+    digest,
+  };
 }
 
 async function derivePassword(password: string, salt: Uint8Array, iterations: number): Promise<Uint8Array> {
@@ -65,21 +98,39 @@ export async function hashPassword(password: string): Promise<string> {
   ].join("$");
 }
 
+export function getPasswordDerivationParameters(encodedHash: string): PasswordDerivationParameters | null {
+  return parsePasswordHash(encodedHash)?.parameters ?? null;
+}
+
+export async function derivePasswordProof(
+  password: string,
+  parameters: PasswordDerivationParameters,
+): Promise<string> {
+  const salt = decodeBase64Url(parameters.salt);
+  if (
+    parameters.algorithm !== PASSWORD_ALGORITHM
+    || !Number.isSafeInteger(parameters.iterations)
+    || parameters.iterations < 1
+    || parameters.iterations > PASSWORD_HASH_ITERATIONS
+    || !salt
+    || salt.length < 16
+  ) {
+    throw new Error("密码派生参数无效");
+  }
+  return encodeBase64Url(await derivePassword(password, salt, parameters.iterations));
+}
+
+export function verifyPasswordProof(proof: string, encodedHash: string): boolean {
+  const parsed = parsePasswordHash(encodedHash);
+  const provided = decodeBase64Url(proof);
+  return Boolean(parsed && provided && constantTimeEqual(provided, parsed.digest));
+}
+
 export async function verifyPassword(password: string, encodedHash: string): Promise<boolean> {
-  const [algorithm, iterationSource, saltSource, digestSource, extra] = encodedHash.split("$");
-  if (extra !== undefined || algorithm !== PASSWORD_ALGORITHM || !iterationSource || !saltSource || !digestSource) {
-    return false;
-  }
-
-  const iterations = Number.parseInt(iterationSource, 10);
-  const salt = decodeBase64Url(saltSource);
-  const expected = decodeBase64Url(digestSource);
-  if (iterations !== PASSWORD_HASH_ITERATIONS || !salt || salt.length < 16 || !expected || expected.length !== 32) {
-    return false;
-  }
-
-  const actual = await derivePassword(password, salt, iterations);
-  return constantTimeEqual(actual, expected);
+  const parsed = parsePasswordHash(encodedHash);
+  if (!parsed) return false;
+  const actual = await derivePassword(password, parsed.salt, parsed.parameters.iterations);
+  return constantTimeEqual(actual, parsed.digest);
 }
 
 async function createHmac(value: string, secret: string): Promise<Uint8Array> {

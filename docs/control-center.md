@@ -38,6 +38,8 @@ pnpm control:hash-password
 
 密码和会话密钥不会写入 Git、`.env`、`.dev.vars`、命令参数或日志。之前在聊天中出现过的密码已经暴露，正式上线前请生成并使用一个全新的密码。
 
+登录时，PBKDF2 在用户浏览器本地完成，Worker 只返回公开的盐与迭代参数并校验 32 字节派生证明。密码明文不会离开浏览器，也避免在 Workers Free 的 10ms CPU 限额内执行高强度 PBKDF2。
+
 ## 设置生产 Secret
 
 先登录 Wrangler：
@@ -94,6 +96,6 @@ Token 只授予 Workers Scripts Edit、Workers Routes Edit、Durable Objects Edi
 ## 安全边界
 
 - 会话使用 HMAC-SHA-256 签名，12 小时有效，Cookie 为 `Secure; HttpOnly; SameSite=Strict`。
-- Durable Object 记录短期失败次数：10 分钟内失败 5 次后锁定 15 分钟，成功后清零。
+- Worker 实例内存记录短期失败次数：10 分钟内失败 5 次后锁定 15 分钟，成功后清零。该保护不依赖付费状态服务，会随实例重启或跨 Cloudflare 节点重置；未来启用 Cloudflare Access 后再升级为全局限速。
 - 状态数据没有历史存储；网站、VPS 和家庭设备检测结果只在请求期间生成。
 - VPS 和家庭设备仍是 `not_configured` 占位，后续接入时优先使用 Cloudflare Tunnel、Access Service Token 或设备主动上报，不开放家庭公网端口。

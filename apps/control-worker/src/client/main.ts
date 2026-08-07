@@ -1,4 +1,10 @@
-import { countAttentionStatuses, type ServerStatusSnapshot, type StatusCheck } from "@leimuovo/control-core";
+import {
+  countAttentionStatuses,
+  derivePasswordProof,
+  type PasswordDerivationParameters,
+  type ServerStatusSnapshot,
+  type StatusCheck,
+} from "@leimuovo/control-core";
 import {
   ArrowRight,
   Check,
@@ -380,10 +386,12 @@ loginForm.addEventListener("submit", async (event) => {
   loginButton.innerHTML = '<span>正在验证</span><span class="lm-button__spinner" aria-hidden="true"></span>';
   loginError.hidden = true;
   try {
+    const parameters = await api<PasswordDerivationParameters>("/api/control/password-parameters");
+    const passwordProof = await derivePasswordProof(password, parameters);
     const session = await api<LoginResponse>("/api/control/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password }),
+      body: JSON.stringify({ username, passwordProof }),
     });
     loginForm.reset();
     showDashboard(session);

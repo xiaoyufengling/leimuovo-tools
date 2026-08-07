@@ -1,7 +1,8 @@
 import {
   createServerStatusSnapshot,
   createSessionToken,
-  verifyPassword,
+  getPasswordDerivationParameters,
+  verifyPasswordProof,
   verifySessionToken,
   type StatusProvider,
   type WebsiteStatus,
@@ -50,7 +51,7 @@ export interface ControlApp {
 
 interface LoginBody {
   username: string;
-  password: string;
+  passwordProof: string;
 }
 
 function controlHeaders(): HeadersInit {
@@ -162,13 +163,13 @@ async function readLoginBody(request: Request): Promise<LoginBody | null> {
     const body = value as Record<string, unknown>;
     if (
       typeof body.username !== "string"
-      || typeof body.password !== "string"
+      || typeof body.passwordProof !== "string"
       || body.username.length < 1
       || body.username.length > 128
-      || body.password.length < 1
-      || body.password.length > 256
+      || body.passwordProof.length < 1
+      || body.passwordProof.length > 128
     ) return null;
-    return { username: body.username, password: body.password };
+    return { username: body.username, passwordProof: body.passwordProof };
   } catch {
     return null;
   }
@@ -221,6 +222,13 @@ export function createControlApp(dependencies: ControlAppDependencies): ControlA
           : { authenticated: false, accessEmail: identity.email });
       }
 
+      if (url.pathname === "/api/control/password-parameters" && request.method === "GET") {
+        const parameters = getPasswordDerivationParameters(dependencies.config.passwordHash);
+        return parameters
+          ? json(parameters)
+          : error("INTERNAL_ERROR", "控制中心暂时不可用", 500);
+      }
+
       if (url.pathname === "/api/control/login" && request.method === "POST") {
         if (request.headers.get("Origin") !== dependencies.config.siteOrigin) {
           return error("INVALID_ORIGIN", "请求来源无效", 403);
@@ -236,10 +244,8 @@ export function createControlApp(dependencies: ControlAppDependencies): ControlA
           });
         }
 
-        const [usernameMatches, passwordMatches] = await Promise.all([
-          Promise.resolve(constantTimeStringEqual(body.username, dependencies.config.username)),
-          verifyPassword(body.password, dependencies.config.passwordHash),
-        ]);
+        const usernameMatches = constantTimeStringEqual(body.username, dependencies.config.username);
+        const passwordMatches = verifyPasswordProof(body.passwordProof, dependencies.config.passwordHash);
         if (!usernameMatches || !passwordMatches) {
           await dependencies.throttle.failure(throttleKey);
           return error("INVALID_CREDENTIALS", "用户名或密码不正确", 401);
