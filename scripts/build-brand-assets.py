@@ -7,7 +7,7 @@ DESKTOP = ROOT / "apps" / "receipt-desktop" / "build"
 BRAND_SOURCE = ROOT / "packages" / "design-system" / "assets" / "brand-avatar.png"
 BRAND_BACKGROUND = "#101940"
 
-source = Image.open(BRAND_SOURCE).convert("RGB")
+source = Image.open(BRAND_SOURCE).convert("RGBA")
 
 def avatar(size: int) -> Image.Image:
     return ImageOps.fit(
@@ -19,11 +19,12 @@ def avatar(size: int) -> Image.Image:
 
 
 def maskable_avatar(size: int) -> Image.Image:
-    image = Image.new("RGB", (size, size), BRAND_BACKGROUND)
+    image = Image.new("RGBA", (size, size), BRAND_BACKGROUND)
     inner_size = round(size * 0.8)
     inset = (size - inner_size) // 2
-    image.paste(avatar(inner_size), (inset, inset))
-    return image
+    icon = avatar(inner_size)
+    image.alpha_composite(icon, (inset, inset))
+    return image.convert("RGB")
 
 
 def font(size: int, bold: bool = False) -> ImageFont.FreeTypeFont:
@@ -54,9 +55,7 @@ og = Image.new("RGB", (1200, 630), "#F7F7F8")
 draw = ImageDraw.Draw(og)
 icon_size = 144
 icon = avatar(icon_size)
-icon_mask = Image.new("L", (icon_size, icon_size), 0)
-ImageDraw.Draw(icon_mask).ellipse((0, 0, icon_size - 1, icon_size - 1), fill=255)
-og.paste(icon, (96, 104), icon_mask)
+og.paste(icon, (96, 104), icon.getchannel("A"))
 draw.text((96, 282), "小鱼", fill="#111113", font=font(74, bold=True))
 draw.text((96, 390), "安静、快速、尊重隐私的个人工具集", fill="#62626B", font=font(34))
 draw.ellipse((1030, 96, 1050, 116), fill="#0A66D6")
