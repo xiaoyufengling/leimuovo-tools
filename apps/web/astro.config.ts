@@ -30,14 +30,14 @@ export default defineConfig({
         id: "/",
         name: "小鱼",
         short_name: "小鱼",
-        description: "安静、快速、尊重隐私的个人浏览器工具集。",
+        description: "小鱼的个人网站。记录正在做的事、偶尔出现的想法，以及一些顺手做出来的小工具。",
         lang: "zh-CN",
         start_url: "/",
         scope: "/",
         display: "standalone",
-        background_color: "#F7F7F8",
-        theme_color: "#F7F7F8",
-        categories: ["utilities", "productivity"],
+        background_color: "#0B0B0D",
+        theme_color: "#0B0B0D",
+        categories: ["lifestyle", "productivity"],
         icons: [
           {
             src: "/icons/icon-192.png",

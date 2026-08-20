@@ -1,5 +1,4 @@
 ---
-import { ArrowRight, Laptop, LockKeyhole, UserRoundX } from "@lucide/astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { site } from "../config/site";
 
@@ -15,50 +14,217 @@ const jsonLd = {
 
 <BaseLayout jsonLd={jsonLd}>
   <div class="lm-page lm-page--home">
-    <section class="hero lm-container">
+    <section class="hero lm-container" data-home-hero aria-labelledby="home-title">
+      <div class="hero__ambient" aria-hidden="true"></div>
+
       <div class="hero__content lm-motion-enter">
-        <p class="eyebrow">个人工具集</p>
-        <h1>{site.name}</h1>
-        <p class="hero__statement">把麻烦的小事，留给工具。</p>
-        <p class="hero__lede">一组安静、快速、尊重隐私的浏览器工具。无需注册，数据尽量只在你的设备中处理。</p>
-        <div class="hero__actions">
-          <a class="lm-button lm-button--primary" href="/tools/">浏览工具 <ArrowRight size={17} stroke-width={1.75} aria-hidden="true" /></a>
-          <a class="lm-button lm-button--secondary" href="/about/">了解{site.name}</a>
+        <div class="hero__copy" data-hero-copy>
+          <p class="eyebrow">小鱼的个人网站</p>
+          <h1 id="home-title">{site.name}</h1>
+          <p class="hero__statement"><span>把想法留下，</span><span>让时间慢慢整理。</span></p>
+          <p class="hero__lede">这里记录我正在做的事、偶尔写下的想法，以及一些顺手做出来的小工具。</p>
+          <div class="hero__actions">
+            <a class="lm-button lm-button--primary" href="/about/">认识小鱼 <span aria-hidden="true">→</span></a>
+            <a class="lm-button lm-button--secondary" href="/tools/">看看工具</a>
+          </div>
+          <ul class="hero__facts" aria-label="网站内容">
+            <li><span>01</span> 记录</li>
+            <li><span>02</span> 创造</li>
+            <li><span>03</span> 分享</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="hero__visual lm-motion-enter lm-motion-enter--2" data-hero-visual aria-hidden="true">
+        <div class="hero-window">
+          <div class="hero-window__bar">
+            <span></span><span></span><span></span>
+            <p>leimuovo.com</p>
+            <span class="hero-window__status">个人空间</span>
+          </div>
+          <div class="hero-window__body">
+            <div class="personal-index__heading">
+              <div><span>PERSONAL INDEX</span><strong>慢慢建立自己的坐标。</strong></div>
+              <span>2026 —</span>
+            </div>
+            <div class="personal-index__grid">
+              <div class="personal-index__item">
+                <span>01 / ABOUT</span>
+                <strong>关于我</strong>
+                <small>经历、兴趣，以及此刻的自己</small>
+              </div>
+              <div class="personal-index__item">
+                <span>02 / MAKING</span>
+                <strong>正在创造</strong>
+                <small>做过与正在做的东西</small>
+              </div>
+              <div class="personal-index__item">
+                <span>03 / NOTES</span>
+                <strong>一些想法</strong>
+                <small>偶尔值得写下来的片段</small>
+              </div>
+              <div class="personal-index__item">
+                <span>04 / TOOLS</span>
+                <strong>小工具</strong>
+                <small>顺手解决一些具体问题</small>
+              </div>
+            </div>
+            <p class="personal-index__note">一页一页，慢慢补完。</p>
+          </div>
+        </div>
+      </div>
+
+      <a class="hero__scroll-hint" href="#personal-story" data-scroll-hint>
+        <span>往下滑</span>
+        <i aria-hidden="true"></i>
+      </a>
+    </section>
+
+    <section class="home-metrics" aria-label="个人网站的组成" data-reveal="0">
+      <div class="lm-container home-metrics__inner">
+        <div><strong>记录</strong><span>把值得记住的留在这里</span></div>
+        <div><strong>创造</strong><span>让兴趣慢慢长成作品</span></div>
+        <div><strong>分享</strong><span>把有用的东西交给别人</span></div>
+        <div><strong>留白</strong><span>给以后发生的事留位置</span></div>
+      </div>
+    </section>
+
+    <section class="privacy-story" id="personal-story" data-scroll-story aria-labelledby="personal-story-title">
+      <div class="privacy-story__stage" data-story-stage>
+        <div class="privacy-story__grid lm-container">
+          <div class="privacy-story__copy">
+            <p class="eyebrow">关于这个空间</p>
+            <h2 id="personal-story-title">它不急着完整，<br /><span>只想慢慢成为我。</span></h2>
+            <p class="privacy-story__lede">个人网站不必像一份写完的简历。它可以跟着人一起变化，也允许有些地方暂时空着。</p>
+
+            <ol class="privacy-story__steps">
+              <li data-story-step>
+                <span>01</span>
+                <div><strong>记录当下</strong><p>留下经历、片段和当时真实的想法。</p></div>
+              </li>
+              <li data-story-step>
+                <span>02</span>
+                <div><strong>做点东西</strong><p>把兴趣变成项目、实验，或者一个小工具。</p></div>
+              </li>
+              <li data-story-step>
+                <span>03</span>
+                <div><strong>留下痕迹</strong><p>不追求填满，只保留真正值得留下的部分。</p></div>
+              </li>
+            </ol>
+          </div>
+
+          <div class="workflow-scene" data-story-scene aria-hidden="true">
+            <div class="workflow-scene__path"><i></i></div>
+
+            <article class="workflow-card workflow-card--source" data-story-card="source">
+              <span class="workflow-card__mark">NOW</span>
+              <div><span>此刻</span><strong>正在发生的事</strong><small>生活、变化和想记住的片段</small></div>
+            </article>
+
+            <article class="workflow-card workflow-card--process" data-story-card="process">
+              <span class="workflow-card__mark">MAKE</span>
+              <div><span>创造</span><strong>把兴趣做成东西</strong><small>项目、实验与偶尔出现的小工具</small></div>
+              <div class="workflow-card__scan"></div>
+            </article>
+
+            <article class="workflow-card workflow-card--result" data-story-card="result">
+              <span class="workflow-card__mark">KEEP</span>
+              <div><span>留下</span><strong>属于自己的痕迹</strong><small>想法、作品，以及一路上的变化</small></div>
+              <span class="workflow-card__done">03</span>
+            </article>
+
+            <div class="workflow-scene__caption">
+              <span>这个网站会和我一起，慢慢生长。</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="personal-shelf lm-container" aria-labelledby="shelf-title">
+      <div class="personal-shelf__copy" data-reveal="0">
+        <p class="eyebrow">内容会慢慢出现</p>
+        <h2 id="shelf-title">先留一点空白，<br />给以后发生的事。</h2>
+        <p>这里不会为了看起来丰富而填满内容。等一件事真的值得记录，它自然会拥有自己的位置。</p>
+        <a class="lm-button lm-button--primary" href="/about/">关于这个网站 <span aria-hidden="true">→</span></a>
+      </div>
+
+      <div class="personal-shelf__visual" data-reveal="1">
+        <div class="shelf-preview" data-parallax="16">
+          <div class="shelf-preview__top">
+            <div><span>PERSONAL ARCHIVE</span><strong>未完待续</strong></div>
+            <span>OPEN ENDED</span>
+          </div>
+          <div class="shelf-preview__grid">
+            <article class="shelf-preview__card">
+              <span>01 / NOW</span>
+              <strong>近况</strong>
+              <p>留给正在发生的事情。</p>
+              <small>待记录</small>
+            </article>
+            <article class="shelf-preview__card">
+              <span>02 / WORK</span>
+              <strong>项目</strong>
+              <p>留给做过和正在做的东西。</p>
+              <small>持续整理</small>
+            </article>
+            <article class="shelf-preview__card">
+              <span>03 / NOTES</span>
+              <strong>想法</strong>
+              <p>留给偶尔想认真写下的话。</p>
+              <small>慢慢写</small>
+            </article>
+            <article class="shelf-preview__card shelf-preview__card--quiet">
+              <span>04 / NEXT</span>
+              <strong>下一页</strong>
+              <p>暂时空着也没有关系。</p>
+              <small>—</small>
+            </article>
+          </div>
+          <p class="shelf-preview__footer">LEIMUOVO.COM · A PERSONAL SPACE</p>
         </div>
       </div>
     </section>
 
     <section class="principles lm-page-section lm-container" aria-labelledby="principles-title">
-      <div class="lm-section-heading">
-        <p class="eyebrow">产品原则</p>
-        <h2 id="principles-title">少一点打扰，多一点确定。</h2>
-        <p>每个工具都从速度、隐私和跨设备体验出发。</p>
+      <div class="lm-section-heading" data-reveal="0">
+        <p class="eyebrow">我的网站</p>
+        <h2 id="principles-title">不用什么都说，也能留下些什么。</h2>
+        <p>内容会跟着我一起变化，这里只保留几条不会轻易改变的原则。</p>
       </div>
       <div class="principle-grid">
-        <article class="principle-card lm-card lm-motion-enter">
-          <div class="principle-card__icon"><LockKeyhole size={22} stroke-width={1.75} aria-hidden="true" /></div>
-          <h3>优先本机处理</h3>
-          <p>文件类数据尽可能留在当前浏览器，不为了实现简单功能而上传你的内容。</p>
+        <article class="principle-card lm-card" data-reveal="0">
+          <span class="principle-card__number">01</span>
+          <p class="principle-card__label">HONEST</p>
+          <h3>真诚一点</h3>
+          <p>不把自己包装成一个完整答案，只记录当时真正相信和在意的东西。</p>
         </article>
-        <article class="principle-card lm-card lm-motion-enter lm-motion-enter--1">
-          <div class="principle-card__icon"><UserRoundX size={22} stroke-width={1.75} aria-hidden="true" /></div>
-          <h3>无需注册</h3>
-          <p>打开即用，不先索取账号、手机号或不必要的个人信息。</p>
+        <article class="principle-card lm-card" data-reveal="1">
+          <span class="principle-card__number">02</span>
+          <p class="principle-card__label">SLOW</p>
+          <h3>慢一点</h3>
+          <p>宁可暂时留白，也不为了更新而填满页面，让内容自然长出来。</p>
         </article>
-        <article class="principle-card lm-card lm-motion-enter lm-motion-enter--2">
-          <div class="principle-card__icon"><Laptop size={22} stroke-width={1.75} aria-hidden="true" /></div>
-          <h3>跨设备一致</h3>
-          <p>手机、平板和桌面端采用同一套设计语言和清晰的操作反馈。</p>
+        <article class="principle-card lm-card" data-reveal="2">
+          <span class="principle-card__number">03</span>
+          <p class="principle-card__label">USEFUL</p>
+          <h3>有用一点</h3>
+          <p>做出来的东西如果刚好也能帮助别人，就把它留在这里分享出去。</p>
         </article>
       </div>
     </section>
 
-    <section class="cta-band lm-container lm-motion-enter lm-motion-enter--3">
+    <section class="cta-band lm-container" data-reveal="0">
       <div>
-        <h2>真正有用，才值得留在工具箱里。</h2>
-        <p>{site.name}会持续增加小而专注的工具，不用重新学习整套界面。</p>
+        <p class="eyebrow">继续逛逛</p>
+        <h2>先从认识小鱼开始。</h2>
+        <p>这里还会继续变化。关于我和现有的小工具，已经可以从下面开始。</p>
       </div>
-      <a class="lm-button lm-button--primary" href="/tools/">打开工具目录 <ArrowRight size={17} stroke-width={1.75} aria-hidden="true" /></a>
+      <div class="cta-band__actions">
+        <a class="lm-button lm-button--primary" href="/about/">关于小鱼 <span aria-hidden="true">→</span></a>
+        <a class="lm-button lm-button--secondary" href="/tools/">工具目录</a>
+      </div>
     </section>
   </div>
+  <script is:inline src="/scripts/home.js" defer></script>
 </BaseLayout>

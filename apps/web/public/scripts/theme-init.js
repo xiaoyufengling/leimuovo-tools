@@ -1,8 +1,14 @@
 (() => {
+  document.documentElement.classList.add("has-js");
   try {
     const saved = window.localStorage.getItem("leimuovo-theme");
-    if (saved === "light" || saved === "dark") document.documentElement.dataset.theme = saved;
+    document.documentElement.dataset.theme = saved === "light" || saved === "dark" ? saved : "dark";
   } catch {
-    // System theme remains available when storage is blocked.
+    document.documentElement.dataset.theme = "dark";
   }
+  const themeColor = document.querySelector("[data-theme-color]");
+  themeColor?.setAttribute(
+    "content",
+    document.documentElement.dataset.theme === "light" ? "#F7F7F8" : "#0B0B0D",
+  );
 })();

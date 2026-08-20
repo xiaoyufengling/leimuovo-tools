@@ -5,7 +5,7 @@ test("brand homepage remains focused and responsive", async ({ page }) => {
   await page.goto("/");
   await expect(page).toHaveTitle(/小鱼/);
   await expect(page.getByRole("heading", { level: 1, name: "小鱼" })).toBeVisible();
-  await expect(page.getByText("把麻烦的小事，留给工具。")).toBeVisible();
+  await expect(page.getByText("把想法留下，让时间慢慢整理。")).toBeVisible();
   await expect(page.locator(".hero__content")).toHaveCSS("animation-name", "lm-motion-enter");
   await expect(page.locator(".hero__brand")).toHaveCount(0);
   await expect(page.locator(".principle-card")).toHaveCount(3);

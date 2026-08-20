@@ -8,6 +8,10 @@
 
   function syncThemeButtons() {
     const theme = resolvedTheme();
+    document.querySelector("[data-theme-color]")?.setAttribute(
+      "content",
+      theme === "light" ? "#F7F7F8" : "#0B0B0D",
+    );
     for (const button of themeButtons) {
       const next = theme === "dark" ? "浅色" : "深色";
       button.setAttribute("aria-label", `切换为${next}外观`);
@@ -30,6 +34,19 @@
 
   systemDark.addEventListener?.("change", syncThemeButtons);
   syncThemeButtons();
+
+  const siteHeader = document.querySelector(".site-header");
+  let headerFrame;
+  const syncHeader = () => {
+    headerFrame = undefined;
+    siteHeader?.toggleAttribute("data-scrolled", window.scrollY > 18);
+  };
+  const requestHeaderSync = () => {
+    if (headerFrame) return;
+    headerFrame = window.requestAnimationFrame(syncHeader);
+  };
+  window.addEventListener("scroll", requestHeaderSync, { passive: true });
+  syncHeader();
 
   const hasControlHint = document.cookie
     .split(";")
