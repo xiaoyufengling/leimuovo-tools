@@ -6,7 +6,6 @@ import "../styles/site.css";
 import SiteFooter from "../components/SiteFooter.astro";
 import SiteHeader from "../components/SiteHeader.astro";
 import { site } from "../config/site";
-import { Download } from "@lucide/astro";
 
 interface Props {
   title?: string;
@@ -73,7 +72,6 @@ const analyticsToken = import.meta.env.PUBLIC_CF_WEB_ANALYTICS_TOKEN;
       <slot />
     </main>
     {!hideChrome && <SiteFooter />}
-    <button class="pwa-install lm-button lm-button--secondary" type="button" data-pwa-install hidden><Download aria-hidden="true" />安装 {site.name}</button>
     <script is:inline src="/scripts/site.js" defer></script>
   </body>
 </html>

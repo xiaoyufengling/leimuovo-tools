@@ -94,21 +94,4 @@
     });
   }
 
-  let installPrompt;
-  const installButton = document.querySelector("[data-pwa-install]");
-  window.addEventListener("beforeinstallprompt", (event) => {
-    event.preventDefault();
-    installPrompt = event;
-    if (installButton) installButton.hidden = false;
-  });
-  installButton?.addEventListener("click", async () => {
-    if (!installPrompt) return;
-    await installPrompt.prompt();
-    installPrompt = undefined;
-    installButton.hidden = true;
-  });
-  window.addEventListener("appinstalled", () => {
-    installPrompt = undefined;
-    if (installButton) installButton.hidden = true;
-  });
 })();

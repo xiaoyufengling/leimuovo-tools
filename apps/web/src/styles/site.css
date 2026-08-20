@@ -1022,13 +1022,6 @@ main {
   margin: 0;
 }
 
-.pwa-install {
-  position: fixed;
-  z-index: 45;
-  right: 1rem;
-  bottom: calc(1rem + env(safe-area-inset-bottom));
-}
-
 @media (hover: hover) {
   .site-nav > a:hover,
   .site-footer__links a:hover {
