@@ -351,7 +351,11 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     text-wrap: balance;
   }
 
-  .xyg-hero h1 { font-size: clamp(4.25rem, 11vw, 9.25rem); line-height: 0.82; }
+  .xyg-hero h1 {
+    font-size: clamp(4.25rem, 11vw, 9.25rem);
+    line-height: 0.94;
+    letter-spacing: -0.035em;
+  }
 
   .xyg-hero h1 span,
   .xyg-hero h1 strong { display: block; }
@@ -359,6 +363,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
   .xyg-hero h1 span { color: rgba(255, 255, 255, 0.46); font-weight: 520; }
 
   .xyg-hero h1 strong {
+    margin-top: 0.08em;
     padding-bottom: 0.08em;
     background: linear-gradient(112deg, #fff 18%, #bdcfff 47%, #886eff 68%, #fff 94%);
     background-clip: text;
