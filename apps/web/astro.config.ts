@@ -12,7 +12,7 @@ export default defineConfig({
   },
   integrations: [
     sitemap({
-      filter: (page) => !["/offline/", "/404/", "/403/", "/500/"].some((path) => page.includes(path)),
+      filter: (page) => !["/offline/", "/404/", "/403/", "/500/", "/xiaoyugan/"].some((path) => page.includes(path)),
     }),
     AstroPWA({
       registerType: "autoUpdate",

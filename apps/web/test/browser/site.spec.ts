@@ -18,6 +18,21 @@ test("brand homepage remains focused and responsive", async ({ page }) => {
   }
 });
 
+test("homepage opens the noindex Xiaoyugan visual laboratory", async ({ page }) => {
+  await page.goto("/");
+  const labEntry = page.getByRole("link", { name: "进入小鱼干视觉实验室" });
+  await expect(labEntry).toBeVisible();
+  await expect(labEntry).toHaveAttribute("href", "/xiaoyugan/");
+  await labEntry.click();
+
+  await expect(page).toHaveURL(/\/xiaoyugan\/$/);
+  await expect(page).toHaveTitle("小鱼干｜视觉实验室");
+  await expect(page.getByRole("heading", { level: 1, name: /让光穿过.*界面/ })).toBeVisible();
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex, nofollow");
+  expect(await page.locator(".xyg-glass").count()).toBeGreaterThanOrEqual(6);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth)).toBe(false);
+});
+
 test("tool catalog exposes the receipt checker only on the secondary page", async ({ page }) => {
   await page.goto("/tools/");
   await expect(page.getByRole("heading", { level: 1, name: "小而专注的工具。" })).toBeVisible();

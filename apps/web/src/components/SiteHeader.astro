@@ -1,5 +1,5 @@
 ---
-import { Moon, Sun } from "@lucide/astro";
+import { Moon, Sparkles, Sun } from "@lucide/astro";
 import BrandMark from "./BrandMark.astro";
 import { site } from "../config/site";
 
@@ -22,6 +22,10 @@ const isAbout = pathname.startsWith("/about");
         <Moon class="theme-icon theme-icon--moon" size={19} stroke-width={1.75} aria-hidden="true" />
         <Sun class="theme-icon theme-icon--sun" size={19} stroke-width={1.75} aria-hidden="true" />
       </button>
+      <a class="site-lab-link" href="/xiaoyugan/" aria-label="进入小鱼干视觉实验室">
+        <Sparkles size={15} stroke-width={1.8} aria-hidden="true" />
+        <span>实验室</span>
+      </a>
     </nav>
   </div>
 </header>
