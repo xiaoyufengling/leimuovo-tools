@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { site } from "../config/site";
+import "../styles/home.css";
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -12,219 +13,212 @@ const jsonLd = {
 };
 ---
 
-<BaseLayout jsonLd={jsonLd}>
+<BaseLayout
+  title="小鱼｜游戏 UI 与视觉设计"
+  description="小鱼的个人设计空间：游戏 UI、视觉设计、动态原型与持续生长的视觉实验室。"
+  jsonLd={jsonLd}
+>
   <div class="lm-page lm-page--home">
-    <section class="hero lm-container" data-home-hero aria-labelledby="home-title">
-      <div class="hero__ambient" aria-hidden="true"></div>
+    <div class="home-atmosphere" aria-hidden="true">
+      <span class="home-atmosphere__blue"></span>
+      <span class="home-atmosphere__pink"></span>
+      <span class="home-atmosphere__grain"></span>
+    </div>
 
-      <div class="hero__content lm-motion-enter">
-        <div class="hero__copy" data-hero-copy>
-          <p class="eyebrow">小鱼的个人网站</p>
-          <h1 id="home-title">{site.name}</h1>
-          <p class="hero__statement"><span>把想法留下，</span><span>让时间慢慢整理。</span></p>
-          <p class="hero__lede">这里记录我正在做的事、偶尔写下的想法，以及一些顺手做出来的小工具。</p>
-          <div class="hero__actions">
-            <a class="lm-button lm-button--primary" href="/about/">认识小鱼 <span aria-hidden="true">→</span></a>
-            <a class="lm-button lm-button--secondary" href="/tools/">看看工具</a>
-          </div>
-          <ul class="hero__facts" aria-label="网站内容">
-            <li><span>01</span> 记录</li>
-            <li><span>02</span> 创造</li>
-            <li><span>03</span> 分享</li>
-          </ul>
+    <section class="portfolio-hero lm-container" data-home-hero aria-labelledby="home-title">
+      <div class="portfolio-hero__copy" data-home-reveal="0">
+        <div class="portfolio-kicker">
+          <span>PORTFOLIO / 2026</span>
+          <i aria-hidden="true"></i>
+          <span>GAME UI & VISUAL DESIGN</span>
+        </div>
+
+        <h1 id="home-title">
+          <span>Designing</span>
+          <em>interfaces</em>
+          <strong>with feeling.</strong>
+        </h1>
+
+        <p class="portfolio-hero__lede">
+          你好，我是小鱼。正在把游戏界面、视觉设计与代码实验，整理成一个不断生长的个人作品空间。
+        </p>
+
+        <div class="portfolio-hero__actions">
+          <a class="portfolio-button portfolio-button--primary" href="#directions">
+            <span>探索设计方向</span><i aria-hidden="true">↘</i>
+          </a>
+          <a class="portfolio-button portfolio-button--quiet" href="/xiaoyugan/">
+            <span>进入视觉实验室</span><i aria-hidden="true">↗</i>
+          </a>
+        </div>
+
+        <div class="portfolio-hero__status" aria-label="当前状态">
+          <span><i aria-hidden="true"></i> OPEN TO NEW IDEAS</span>
+          <span>GAME UI · VISUAL DESIGN · CREATIVE CODING</span>
         </div>
       </div>
 
-      <div class="hero__visual lm-motion-enter lm-motion-enter--2" data-hero-visual aria-hidden="true">
-        <div class="hero-window">
-          <div class="hero-window__bar">
-            <span></span><span></span><span></span>
-            <p>leimuovo.com</p>
-            <span class="hero-window__status">个人空间</span>
-          </div>
-          <div class="hero-window__body">
-            <div class="personal-index__heading">
-              <div><span>PERSONAL INDEX</span><strong>慢慢建立自己的坐标。</strong></div>
-              <span>2026 —</span>
+      <div class="portfolio-hero__showcase" data-home-reveal="1" data-hero-shift aria-hidden="true">
+        <div class="interface-specimen">
+          <div class="interface-specimen__inner">
+            <header>
+              <div><span>INTERFACE SPECIMEN</span><strong>01</strong></div>
+              <span>REM / FROST BLUE</span>
+            </header>
+
+            <div class="interface-specimen__stage">
+              <span class="specimen-orbit specimen-orbit--one"></span>
+              <span class="specimen-orbit specimen-orbit--two"></span>
+              <div class="specimen-core">
+                <span>UI</span>
+                <strong>08</strong>
+                <small>VISUAL SYSTEM</small>
+              </div>
+
+              <div class="specimen-panel specimen-panel--signal">
+                <span>SIGNAL</span>
+                <div><i></i><i></i><i></i><i></i><i></i></div>
+                <strong>92.4</strong>
+              </div>
+
+              <div class="specimen-panel specimen-panel--mode">
+                <span>ACTIVE MODE</span>
+                <strong>FOCUS</strong>
+                <small>ICE / PINK / VOID</small>
+              </div>
+
+              <div class="specimen-crosshair"><i></i><i></i></div>
+              <span class="specimen-index">LEIMUOVO — 001</span>
             </div>
-            <div class="personal-index__grid">
-              <div class="personal-index__item">
-                <span>01 / ABOUT</span>
-                <strong>关于我</strong>
-                <small>经历、兴趣，以及此刻的自己</small>
-              </div>
-              <div class="personal-index__item">
-                <span>02 / MAKING</span>
-                <strong>正在创造</strong>
-                <small>做过与正在做的东西</small>
-              </div>
-              <div class="personal-index__item">
-                <span>03 / NOTES</span>
-                <strong>一些想法</strong>
-                <small>偶尔值得写下来的片段</small>
-              </div>
-              <div class="personal-index__item">
-                <span>04 / TOOLS</span>
-                <strong>小工具</strong>
-                <small>顺手解决一些具体问题</small>
-              </div>
-            </div>
-            <p class="personal-index__note">一页一页，慢慢补完。</p>
+
+            <footer>
+              <span>A QUIET SYSTEM CAN STILL FEEL POWERFUL.</span>
+              <i aria-hidden="true"></i>
+            </footer>
           </div>
         </div>
       </div>
 
-      <a class="hero__scroll-hint" href="#personal-story" data-scroll-hint>
-        <span>往下滑</span>
-        <i aria-hidden="true"></i>
+      <a class="portfolio-hero__scroll" href="#directions">
+        <span>SCROLL TO EXPLORE</span><i aria-hidden="true"></i>
       </a>
     </section>
 
-    <section class="home-metrics" aria-label="个人网站的组成" data-reveal="0">
-      <div class="lm-container home-metrics__inner">
-        <div><strong>记录</strong><span>把值得记住的留在这里</span></div>
-        <div><strong>创造</strong><span>让兴趣慢慢长成作品</span></div>
-        <div><strong>分享</strong><span>把有用的东西交给别人</span></div>
-        <div><strong>留白</strong><span>给以后发生的事留位置</span></div>
+    <section class="discipline-strip" aria-label="设计方向" data-home-reveal="0">
+      <div class="lm-container discipline-strip__inner">
+        <span>GAME INTERFACE</span><i aria-hidden="true"></i>
+        <span>VISUAL SYSTEM</span><i aria-hidden="true"></i>
+        <span>MOTION PROTOTYPE</span><i aria-hidden="true"></i>
+        <span>CODEX EXPERIMENT</span>
       </div>
     </section>
 
-    <section class="privacy-story" id="personal-story" data-scroll-story aria-labelledby="personal-story-title">
-      <div class="privacy-story__stage" data-story-stage>
-        <div class="privacy-story__grid lm-container">
-          <div class="privacy-story__copy">
-            <p class="eyebrow">关于这个空间</p>
-            <h2 id="personal-story-title">它不急着完整，<br /><span>只想慢慢成为我。</span></h2>
-            <p class="privacy-story__lede">个人网站不必像一份写完的简历。它可以跟着人一起变化，也允许有些地方暂时空着。</p>
+    <section class="direction-section lm-container" id="directions" aria-labelledby="directions-title">
+      <header class="direction-section__heading" data-home-reveal="0">
+        <div>
+          <p class="portfolio-eyebrow">SELECTED DIRECTIONS</p>
+          <h2 id="directions-title">先展示判断，<br /><span>再慢慢加入作品。</span></h2>
+        </div>
+        <p>这个空间会持续收录游戏 UI、视觉系统与海报实验。现在先建立一套足够清晰、也足够有辨识度的展示方式。</p>
+      </header>
 
-            <ol class="privacy-story__steps">
-              <li data-story-step>
-                <span>01</span>
-                <div><strong>记录当下</strong><p>留下经历、片段和当时真实的想法。</p></div>
-              </li>
-              <li data-story-step>
-                <span>02</span>
-                <div><strong>做点东西</strong><p>把兴趣变成项目、实验，或者一个小工具。</p></div>
-              </li>
-              <li data-story-step>
-                <span>03</span>
-                <div><strong>留下痕迹</strong><p>不追求填满，只保留真正值得留下的部分。</p></div>
-              </li>
-            </ol>
-          </div>
-
-          <div class="workflow-scene" data-story-scene aria-hidden="true">
-            <div class="workflow-scene__path"><i></i></div>
-
-            <article class="workflow-card workflow-card--source" data-story-card="source">
-              <span class="workflow-card__mark">NOW</span>
-              <div><span>此刻</span><strong>正在发生的事</strong><small>生活、变化和想记住的片段</small></div>
-            </article>
-
-            <article class="workflow-card workflow-card--process" data-story-card="process">
-              <span class="workflow-card__mark">MAKE</span>
-              <div><span>创造</span><strong>把兴趣做成东西</strong><small>项目、实验与偶尔出现的小工具</small></div>
-              <div class="workflow-card__scan"></div>
-            </article>
-
-            <article class="workflow-card workflow-card--result" data-story-card="result">
-              <span class="workflow-card__mark">KEEP</span>
-              <div><span>留下</span><strong>属于自己的痕迹</strong><small>想法、作品，以及一路上的变化</small></div>
-              <span class="workflow-card__done">03</span>
-            </article>
-
-            <div class="workflow-scene__caption">
-              <span>这个网站会和我一起，慢慢生长。</span>
+      <div class="direction-grid">
+        <article class="direction-card direction-card--game" data-home-reveal="0">
+          <div class="direction-card__inner">
+            <header><span>01 / PRIMARY FIELD</span><span>GAME UI</span></header>
+            <div class="game-canvas" aria-hidden="true">
+              <div class="game-canvas__reticle"><span></span><i></i></div>
+              <div class="game-canvas__status">
+                <span>PLAYER / 01</span>
+                <strong>READY</strong>
+                <div><i></i><i></i><i></i><i></i></div>
+              </div>
+              <div class="game-canvas__module">
+                <span>ABILITY</span>
+                <strong>Q</strong>
+                <small>AVAILABLE</small>
+              </div>
+              <span class="game-canvas__coord">X 084.12 / Y 231.08</span>
             </div>
+            <footer>
+              <div><p>界面不只是信息。</p><strong>它决定玩家如何感受世界。</strong></div>
+              <span>HUD · SYSTEM · MOTION</span>
+            </footer>
           </div>
+        </article>
+
+        <article class="direction-card direction-card--poster" data-home-reveal="1">
+          <div class="direction-card__inner">
+            <header><span>02 / NEXT STUDY</span><span>POSTER</span></header>
+            <div class="poster-canvas" aria-hidden="true">
+              <span class="poster-canvas__edition">EDITION<br />001</span>
+              <strong>FORM<br /><i>&</i> CODE</strong>
+              <div class="poster-canvas__disc"></div>
+              <span class="poster-canvas__note">A STUDY OF TYPE, IMAGE<br />AND GENERATED SYSTEMS.</span>
+              <span class="poster-canvas__year">2026</span>
+            </div>
+            <footer>
+              <div><p>下一种表达。</p><strong>海报与 Codex 视觉实验。</strong></div>
+              <span>TYPE · IMAGE · CODE</span>
+            </footer>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="lab-feature lm-container" aria-labelledby="lab-feature-title" data-home-reveal="0">
+      <a class="lab-feature__link" href="/xiaoyugan/" aria-label="进入小鱼干视觉实验室">
+        <div class="lab-feature__visual" aria-hidden="true">
+          <span class="lab-feature__halo lab-feature__halo--blue"></span>
+          <span class="lab-feature__halo lab-feature__halo--pink"></span>
+          <div class="lab-glass">
+            <span>EXPERIMENT / 001</span>
+            <strong>LIQUID<br />GLASS</strong>
+            <i></i>
+          </div>
+          <span class="lab-feature__caption">LIVE MATERIAL · SPATIAL DEPTH · FLUID MOTION</span>
         </div>
-      </div>
-    </section>
-
-    <section class="personal-shelf lm-container" aria-labelledby="shelf-title">
-      <div class="personal-shelf__copy" data-reveal="0">
-        <p class="eyebrow">内容会慢慢出现</p>
-        <h2 id="shelf-title">先留一点空白，<br />给以后发生的事。</h2>
-        <p>这里不会为了看起来丰富而填满内容。等一件事真的值得记录，它自然会拥有自己的位置。</p>
-        <a class="lm-button lm-button--primary" href="/about/">关于这个网站 <span aria-hidden="true">→</span></a>
-      </div>
-
-      <div class="personal-shelf__visual" data-reveal="1">
-        <div class="shelf-preview" data-parallax="16">
-          <div class="shelf-preview__top">
-            <div><span>PERSONAL ARCHIVE</span><strong>未完待续</strong></div>
-            <span>OPEN ENDED</span>
-          </div>
-          <div class="shelf-preview__grid">
-            <article class="shelf-preview__card">
-              <span>01 / NOW</span>
-              <strong>近况</strong>
-              <p>留给正在发生的事情。</p>
-              <small>待记录</small>
-            </article>
-            <article class="shelf-preview__card">
-              <span>02 / WORK</span>
-              <strong>项目</strong>
-              <p>留给做过和正在做的东西。</p>
-              <small>持续整理</small>
-            </article>
-            <article class="shelf-preview__card">
-              <span>03 / NOTES</span>
-              <strong>想法</strong>
-              <p>留给偶尔想认真写下的话。</p>
-              <small>慢慢写</small>
-            </article>
-            <article class="shelf-preview__card shelf-preview__card--quiet">
-              <span>04 / NEXT</span>
-              <strong>下一页</strong>
-              <p>暂时空着也没有关系。</p>
-              <small>—</small>
-            </article>
-          </div>
-          <p class="shelf-preview__footer">LEIMUOVO.COM · A PERSONAL SPACE</p>
+        <div class="lab-feature__copy">
+          <p class="portfolio-eyebrow">XIAOYUGAN VISUAL LAB</p>
+          <h2 id="lab-feature-title">想法先在这里<br /><span>变成可以感受的东西。</span></h2>
+          <p>视觉实验室会一直保留。新的材质、动效和交互先在这里发生，成熟以后再回到主界面。</p>
+          <div class="lab-feature__action"><span>OPEN LAB 001</span><i aria-hidden="true">↗</i></div>
         </div>
-      </div>
+      </a>
     </section>
 
-    <section class="principles lm-page-section lm-container" aria-labelledby="principles-title">
-      <div class="lm-section-heading" data-reveal="0">
-        <p class="eyebrow">我的网站</p>
-        <h2 id="principles-title">不用什么都说，也能留下些什么。</h2>
-        <p>内容会跟着我一起变化，这里只保留几条不会轻易改变的原则。</p>
-      </div>
-      <div class="principle-grid">
-        <article class="principle-card lm-card" data-reveal="0">
-          <span class="principle-card__number">01</span>
-          <p class="principle-card__label">HONEST</p>
-          <h3>真诚一点</h3>
-          <p>不把自己包装成一个完整答案，只记录当时真正相信和在意的东西。</p>
-        </article>
-        <article class="principle-card lm-card" data-reveal="1">
-          <span class="principle-card__number">02</span>
-          <p class="principle-card__label">SLOW</p>
-          <h3>慢一点</h3>
-          <p>宁可暂时留白，也不为了更新而填满页面，让内容自然长出来。</p>
-        </article>
-        <article class="principle-card lm-card" data-reveal="2">
-          <span class="principle-card__number">03</span>
-          <p class="principle-card__label">USEFUL</p>
-          <h3>有用一点</h3>
-          <p>做出来的东西如果刚好也能帮助别人，就把它留在这里分享出去。</p>
-        </article>
-      </div>
+    <section class="approach-section lm-container" aria-labelledby="approach-title">
+      <header data-home-reveal="0">
+        <p class="portfolio-eyebrow">HOW I WANT TO WORK</p>
+        <h2 id="approach-title">简洁不是减少表达，<br /><span>而是让重点更准确。</span></h2>
+      </header>
+
+      <ol class="approach-list">
+        <li data-home-reveal="0">
+          <span>01</span><div><strong>建立视觉方向</strong><p>先找到作品真正需要的情绪、节奏和识别点。</p></div><small>DIRECTION</small>
+        </li>
+        <li data-home-reveal="1">
+          <span>02</span><div><strong>组织界面系统</strong><p>让信息层级、组件和动效形成同一种语言。</p></div><small>SYSTEM</small>
+        </li>
+        <li data-home-reveal="2">
+          <span>03</span><div><strong>用原型验证感受</strong><p>把静态设计变成可操作、可判断的真实体验。</p></div><small>PROTOTYPE</small>
+        </li>
+      </ol>
     </section>
 
-    <section class="cta-band lm-container" data-reveal="0">
+    <section class="portfolio-ending lm-container" data-home-reveal="0">
       <div>
-        <p class="eyebrow">继续逛逛</p>
-        <h2>先从认识小鱼开始。</h2>
-        <p>这里还会继续变化。关于我和现有的小工具，已经可以从下面开始。</p>
+        <p class="portfolio-eyebrow">THE ARCHIVE IS OPEN</p>
+        <h2>这里会继续长出<br /><span>属于我的作品。</span></h2>
       </div>
-      <div class="cta-band__actions">
-        <a class="lm-button lm-button--primary" href="/about/">关于小鱼 <span aria-hidden="true">→</span></a>
-        <a class="lm-button lm-button--secondary" href="/tools/">工具目录</a>
+      <div class="portfolio-ending__aside">
+        <p>游戏 UI、海报、视觉实验和新的个人经历，都会在合适的时候进入这里。</p>
+        <a class="portfolio-button portfolio-button--primary" href="/about/">
+          <span>认识小鱼</span><i aria-hidden="true">↗</i>
+        </a>
       </div>
     </section>
   </div>
+
   <script is:inline src="/scripts/home.js" defer></script>
 </BaseLayout>

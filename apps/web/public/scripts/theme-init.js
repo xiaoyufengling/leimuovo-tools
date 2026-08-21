@@ -2,9 +2,9 @@
   document.documentElement.classList.add("has-js");
   try {
     const saved = window.localStorage.getItem("leimuovo-theme");
-    document.documentElement.dataset.theme = saved === "light" || saved === "dark" ? saved : "dark";
+    document.documentElement.dataset.theme = saved === "light" || saved === "dark" ? saved : "light";
   } catch {
-    document.documentElement.dataset.theme = "dark";
+    document.documentElement.dataset.theme = "light";
   }
   const themeColor = document.querySelector("[data-theme-color]");
   themeColor?.setAttribute(
