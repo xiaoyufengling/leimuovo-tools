@@ -26,8 +26,8 @@
     "verify": "pnpm check && pnpm test && pnpm build:web && pnpm verify:build && pnpm build:control && pnpm verify:control-deploy"
   },
   "devDependencies": {
-    "@types/node": "^26.1.2",
-    "typescript": "^6.0.3",
-    "vitest": "^4.1.10"
+    "@types/node": "^26.2.0",
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.11"
   }
 }
