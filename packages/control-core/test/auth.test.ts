@@ -32,8 +32,10 @@ describe("control authentication", () => {
     expect(JSON.stringify(parameters)).not.toContain(encoded.split("$").at(-1));
 
     const proof = await derivePasswordProof("a deliberately long private password", parameters!);
+    const tamperedProof = `${proof.startsWith("A") ? "B" : "A"}${proof.slice(1)}`;
+
     expect(verifyPasswordProof(proof, encoded)).toBe(true);
-    expect(verifyPasswordProof(`${proof.slice(0, -1)}A`, encoded)).toBe(false);
+    expect(verifyPasswordProof(tamperedProof, encoded)).toBe(false);
   });
 
   it("issues a session bound to the verified Access identity", async () => {
