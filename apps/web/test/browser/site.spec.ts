@@ -4,30 +4,40 @@ import { expect, test } from "@playwright/test";
 test("brand homepage remains focused and responsive", async ({ page }) => {
   await page.goto("/");
   await expect(page).toHaveTitle(/小鱼/);
-  await expect(page.getByRole("heading", { level: 1, name: "小鱼" })).toBeVisible();
-  await expect(page.getByText("把想法留下，让时间慢慢整理。")).toBeVisible();
-  await expect(page.locator(".hero__content")).toHaveCSS("animation-name", "lm-motion-enter");
-  await expect(page.locator(".hero__brand")).toHaveCount(0);
-  await expect(page.locator(".principle-card")).toHaveCount(3);
+  await expect(page.getByRole("heading", { level: 1, name: /Designing.*interfaces.*with feeling/ })).toBeVisible();
+  await expect(page.getByText(/正在把游戏界面、视觉设计与代码实验/)).toBeVisible();
+  await expect(page.locator(".signature-study")).toBeVisible();
+  await expect(page.locator(".direction-card")).toHaveCount(2);
   await expect(page.locator(".tool-card")).toHaveCount(0);
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
   expect(overflow).toBe(false);
-  for (const link of await page.locator(".hero__actions a").all()) {
+  for (const link of await page.locator(".portfolio-hero__actions a").all()) {
     const box = await link.boundingBox();
     expect(box?.height ?? 0).toBeGreaterThanOrEqual(44);
   }
 });
 
+test("homepage cat ears reveal the quiet easter egg", async ({ page }) => {
+  await page.goto("/");
+  const catEars = page.getByRole("button", { name: "摸摸小鱼名字上的猫耳" });
+  await expect(catEars).toBeVisible();
+  await expect(catEars).toHaveAttribute("aria-pressed", "false");
+  await catEars.click();
+  await expect(catEars).toHaveAttribute("aria-pressed", "true");
+  await expect(catEars).toHaveClass(/is-petted/);
+  await expect(catEars.locator(".cat-ear-easter-egg__message")).toHaveText("喵~");
+});
+
 test("homepage opens the noindex Xiaoyugan visual laboratory", async ({ page }) => {
   await page.goto("/");
-  const labEntry = page.getByRole("link", { name: "进入小鱼干视觉实验室" });
+  const labEntry = page.locator(".lab-feature__link");
   await expect(labEntry).toBeVisible();
   await expect(labEntry).toHaveAttribute("href", "/xiaoyugan/");
   await labEntry.click();
 
   await expect(page).toHaveURL(/\/xiaoyugan\/$/);
   await expect(page).toHaveTitle("小鱼干｜视觉实验室");
-  await expect(page.getByRole("heading", { level: 1, name: /让光穿过.*界面/ })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: /让界面.*拥有触感/ })).toBeVisible();
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex, nofollow");
   expect(await page.locator(".xyg-glass").count()).toBeGreaterThanOrEqual(6);
   expect(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth)).toBe(false);
@@ -49,7 +59,6 @@ test("public pages share one page rhythm and typography contract", async ({ page
     await expect(page.locator("main > .lm-page").first()).toBeVisible();
     const pageHeading = page.getByRole("heading", { level: 1 });
     await expect(pageHeading).toBeVisible();
-    await expect(pageHeading).toHaveCSS("letter-spacing", "normal");
     expect(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth)).toBe(false);
   }
 });

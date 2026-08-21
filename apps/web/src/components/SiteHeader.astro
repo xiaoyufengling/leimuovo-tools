@@ -11,10 +11,24 @@ const isAbout = pathname.startsWith("/about");
 <a class="skip-link" href="#main-content">跳到主要内容</a>
 <header class="site-header">
   <div class="lm-container site-header__inner">
-    <a class="brand-link" href="/" aria-label={`${site.name}首页`}>
-      <BrandMark size={30} />
-      <span>{site.name}</span>
-    </a>
+    <div class="brand-cluster">
+      <button
+        class="cat-ear-easter-egg"
+        type="button"
+        data-cat-ears
+        aria-label="摸摸小鱼名字上的猫耳"
+        aria-pressed="false"
+      >
+        <span class="cat-ear cat-ear--left" aria-hidden="true"><i></i></span>
+        <span class="cat-ear cat-ear--right" aria-hidden="true"><i></i></span>
+        <span class="cat-ear-easter-egg__bridge" aria-hidden="true"></span>
+        <span class="cat-ear-easter-egg__message" aria-hidden="true">喵~</span>
+      </button>
+      <a class="brand-link" href="/" aria-label={`${site.name}首页`}>
+        <BrandMark size={30} />
+        <span class="brand-name">{site.name}</span>
+      </a>
+    </div>
     <nav class="site-nav" aria-label="主导航">
       <a href="/about/" aria-current={isAbout ? "page" : undefined}>关于</a>
       <a href="/tools/" aria-current={isTools ? "page" : undefined}>工具</a>

@@ -20,8 +20,9 @@ const jsonLd = {
 >
   <div class="lm-page lm-page--home">
     <div class="home-atmosphere" aria-hidden="true">
-      <span class="home-atmosphere__blue"></span>
-      <span class="home-atmosphere__pink"></span>
+      <span class="home-atmosphere__wash home-atmosphere__wash--blue"></span>
+      <span class="home-atmosphere__wash home-atmosphere__wash--pearl"></span>
+      <span class="home-atmosphere__line"></span>
       <span class="home-atmosphere__grain"></span>
     </div>
 
@@ -59,42 +60,35 @@ const jsonLd = {
       </div>
 
       <div class="portfolio-hero__showcase" data-home-reveal="1" data-hero-shift aria-hidden="true">
-        <div class="interface-specimen">
-          <div class="interface-specimen__inner">
-            <header>
-              <div><span>INTERFACE SPECIMEN</span><strong>01</strong></div>
-              <span>REM / FROST BLUE</span>
-            </header>
-
-            <div class="interface-specimen__stage">
-              <span class="specimen-orbit specimen-orbit--one"></span>
-              <span class="specimen-orbit specimen-orbit--two"></span>
-              <div class="specimen-core">
-                <span>UI</span>
-                <strong>08</strong>
-                <small>VISUAL SYSTEM</small>
-              </div>
-
-              <div class="specimen-panel specimen-panel--signal">
-                <span>SIGNAL</span>
-                <div><i></i><i></i><i></i><i></i><i></i></div>
-                <strong>92.4</strong>
-              </div>
-
-              <div class="specimen-panel specimen-panel--mode">
-                <span>ACTIVE MODE</span>
-                <strong>FOCUS</strong>
-                <small>ICE / PINK / VOID</small>
-              </div>
-
-              <div class="specimen-crosshair"><i></i><i></i></div>
-              <span class="specimen-index">LEIMUOVO — 001</span>
+        <div class="signature-study">
+          <span class="signature-study__wash"></span>
+          <div class="signature-study__frame">
+            <div class="signature-study__chrome">
+              <span>PERSONAL ARCHIVE</span>
+              <i></i>
+              <span>001</span>
             </div>
 
-            <footer>
-              <span>A QUIET SYSTEM CAN STILL FEEL POWERFUL.</span>
-              <i aria-hidden="true"></i>
-            </footer>
+            <div class="signature-study__field">
+              <span class="signature-study__sheet signature-study__sheet--back"></span>
+              <span class="signature-study__sheet signature-study__sheet--middle"></span>
+              <span class="signature-study__sheet signature-study__sheet--front"></span>
+              <span class="signature-study__ribbon"></span>
+              <div class="signature-study__type">
+                <small>DESIGN / MOTION / CODE</small>
+                <strong>MAKE<br />IT FEEL<br /><em>CLEAR.</em></strong>
+              </div>
+            </div>
+
+            <div class="signature-study__note">
+              <span>SELECTED PRACTICE</span>
+              <strong>Ideas become<br />interfaces.</strong>
+            </div>
+
+            <div class="signature-study__footer">
+              <span>GAME UI · VISUAL · MOTION</span>
+              <span>LEIMUOVO / 2026</span>
+            </div>
           </div>
         </div>
       </div>
@@ -220,5 +214,5 @@ const jsonLd = {
     </section>
   </div>
 
-  <script is:inline src="/scripts/home.js" defer></script>
+  <script is:inline src="/scripts/home.js?v=20260822" defer></script>
 </BaseLayout>

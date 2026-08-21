@@ -1,28 +1,27 @@
 ---
-import { ArrowLeft, ArrowUpRight, Layers, MousePointer2, Orbit, Sparkles } from "@lucide/astro";
+import { ArrowLeft, ArrowUpRight, Layers, MousePointer2, PanelsTopLeft, Sparkles } from "@lucide/astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
+import "../styles/xiaoyugan.css";
 ---
 
 <BaseLayout
   title="小鱼干｜视觉实验室"
-  description="小鱼的视觉实验页：光、空间、动态与液态玻璃。"
+  description="小鱼的视觉实验室：界面材质、空间层级、滚动动态与持续生长的个人项目档案。"
   noindex
   hideChrome
 >
   <div class="xyg-page" data-xiaoyugan>
-    <div class="xyg-backdrop" aria-hidden="true">
-      <span class="xyg-orb xyg-orb--one"></span>
-      <span class="xyg-orb xyg-orb--two"></span>
-      <span class="xyg-orb xyg-orb--three"></span>
-      <span class="xyg-grid"></span>
-      <span class="xyg-grain"></span>
+    <div class="xyg-ambient" aria-hidden="true">
+      <span class="xyg-ambient__plane xyg-ambient__plane--blue"></span>
+      <span class="xyg-ambient__plane xyg-ambient__plane--white"></span>
+      <span class="xyg-ambient__line"></span>
     </div>
 
     <header class="xyg-nav xyg-glass">
       <a class="xyg-brand" href="/" aria-label="返回小鱼首页">
-        <span class="xyg-brand__dot" aria-hidden="true"></span>
+        <span class="xyg-brand__mark" aria-hidden="true"></span>
         <span>小鱼干</span>
-        <small>LAB 001</small>
+        <small>VISUAL LAB</small>
       </a>
       <a class="xyg-back" href="/">
         <ArrowLeft size={16} stroke-width={1.8} aria-hidden="true" />
@@ -31,609 +30,227 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     </header>
 
     <main>
-      <section class="xyg-hero" aria-labelledby="xyg-title" data-hero>
+      <section class="xyg-hero" aria-labelledby="xyg-title">
         <div class="xyg-hero__copy" data-reveal>
-          <p class="xyg-kicker"><Sparkles size={14} aria-hidden="true" /> XIAOYUGAN VISUAL LAB</p>
-          <h1 id="xyg-title"><span>让光穿过</span><strong>界面。</strong></h1>
-          <p class="xyg-hero__lede">这里不解释功能。只测试光、空间、动态，以及一块玻璃能有多真实。</p>
-          <div class="xyg-hero__meta" aria-label="实验关键词">
-            <span>LIQUID GLASS</span>
-            <span>SPATIAL DEPTH</span>
-            <span>FLUID MOTION</span>
+          <p class="xyg-kicker">VISUAL LAB / INTERFACE STUDIES</p>
+          <h1 id="xyg-title">让界面，<br /><span>拥有触感。</span></h1>
+          <p class="xyg-hero__lede">游戏 UI、视觉系统、动态原型，以及正在形成的个人作品档案。</p>
+          <div class="xyg-hero__meta" aria-label="实验方向">
+            <span>GAME UI</span><i></i><span>VISUAL SYSTEM</span><i></i><span>MOTION</span>
           </div>
         </div>
 
-        <div class="xyg-stage" data-stage data-reveal aria-hidden="true">
-          <div class="xyg-halo"></div>
-          <div class="xyg-window xyg-glass" data-tilt>
-            <div class="xyg-window__bar">
-              <span></span><span></span><span></span>
-              <p>leimuovo.com / xiaoyugan</p>
-              <small>LIVE MATERIAL</small>
-            </div>
-            <div class="xyg-window__body">
-              <p>EXPERIMENT / 001</p>
-              <strong>LIQUID<br />GLASS</strong>
-              <div class="xyg-spectrum"></div>
-              <div class="xyg-window__footer"><span>REFRACTION</span><span>DEPTH 24</span><span>60 FPS</span></div>
+        <div class="xyg-hero__visual" data-hero-visual data-reveal aria-hidden="true">
+          <div class="xyg-artboard">
+            <span class="xyg-artboard__field"></span>
+            <span class="xyg-artboard__slice"></span>
+            <span class="xyg-artboard__detail"></span>
+            <div class="xyg-artboard__type"><small>FORM / LIGHT</small><strong>Quiet<br />motion.</strong></div>
+          </div>
+
+          <div class="xyg-hero__glass-wrap">
+            <div class="xyg-hero__glass xyg-glass" data-pointer-glass>
+              <div class="xyg-glass-edge" aria-hidden="true"></div>
+              <header><span>OPTICAL SURFACE</span><strong>LIVE</strong></header>
+              <div class="xyg-hero__glass-body">
+                <small>INTERFACE MATERIAL</small>
+                <strong>GLASS<br />STUDY</strong>
+                <div class="xyg-meter"><span></span><i></i></div>
+                <footer><span>DEPTH</span><span>REFRACTION</span><span>RESPONSE</span></footer>
+              </div>
             </div>
           </div>
-          <div class="xyg-float xyg-float--top xyg-glass"><Orbit size={16} /><span>光线跟随</span><strong>ACTIVE</strong></div>
-          <div class="xyg-float xyg-float--bottom xyg-glass"><MousePointer2 size={16} /><span>移动指针</span></div>
+
+          <div class="xyg-hero__chip xyg-glass"><MousePointer2 size={15} aria-hidden="true" /><span>RESPONSIVE MATERIAL</span></div>
         </div>
 
-        <a class="xyg-scroll" href="#material"><span>向下进入</span><i aria-hidden="true"></i></a>
+        <a class="xyg-scroll" href="#material"><span>向下进入实验</span><i aria-hidden="true"></i></a>
       </section>
 
       <section class="xyg-material" id="material" aria-labelledby="material-title" data-material>
-        <div class="xyg-material__copy" data-reveal>
-          <p class="xyg-kicker">01 / MATERIAL</p>
-          <h2 id="material-title">不是透明。<br /><span>是一层有重量的光。</span></h2>
-          <p>真正高级的毛玻璃不靠模糊本身。亮边、折射、层级和背后的光一起工作，才让它像一块可以触碰的材料。</p>
-        </div>
+        <div class="xyg-material__sticky">
+          <div class="xyg-material__copy">
+            <p class="xyg-kicker">01 / MATERIAL IN MOTION</p>
+            <h2 id="material-title">玻璃浮在内容上，<br /><span>而不是盖住内容。</span></h2>
+            <div class="xyg-material__steps" aria-live="polite">
+              <article class="xyg-material-step is-first">
+                <small>LIGHT</small><strong>光线定义边缘</strong><p>亮边、阴影和背景共同说明材质的位置。</p>
+              </article>
+              <article class="xyg-material-step">
+                <small>DEPTH</small><strong>层级跟随滚动</strong><p>内容继续移动，控制层保持轻盈和清晰。</p>
+              </article>
+              <article class="xyg-material-step">
+                <small>RESPONSE</small><strong>动态来自操作</strong><p>材质只在交互发生时回应，不做无意义的循环表演。</p>
+              </article>
+            </div>
+          </div>
 
-        <div class="xyg-material__specimen" aria-hidden="true" data-reveal>
-          <div class="xyg-depth-rings"><span></span><span></span><span></span></div>
-          <div class="xyg-specimen xyg-glass" data-tilt>
-            <div class="xyg-specimen__top"><span>MATERIAL 01</span><strong>GLASS / HEAVY</strong></div>
-            <div class="xyg-specimen__center"><span></span><strong>24</strong><small>DEPTH</small></div>
-            <div class="xyg-specimen__line"></div>
-            <p>BLUR 36 · SATURATION 170 · REFRACTION 08</p>
+          <div class="xyg-material__visual" aria-hidden="true">
+            <div class="xyg-content-scene">
+              <div class="xyg-content-scene__panel xyg-content-scene__panel--primary"><span>GAME / INTERFACE</span><strong>CONTENT<br />FIRST</strong></div>
+              <div class="xyg-content-scene__panel xyg-content-scene__panel--secondary"><span>VISUAL / 001</span></div>
+              <div class="xyg-content-scene__panel xyg-content-scene__panel--detail"></div>
+            </div>
+            <div class="xyg-material-glass xyg-glass" data-material-glass>
+              <div class="xyg-glass-edge" aria-hidden="true"></div>
+              <header><span>FLOATING CONTROL</span><strong>ACTIVE</strong></header>
+              <div><Layers size={20} aria-hidden="true" /><strong>Spatial layer</strong><small>CONTENT REMAINS CLEAR</small></div>
+              <footer><span>01</span><i></i><span>03</span></footer>
+            </div>
           </div>
         </div>
       </section>
 
-      <section class="xyg-principles" aria-labelledby="principles-title">
-        <div class="xyg-section-title" data-reveal>
-          <p class="xyg-kicker">02 / SYSTEM</p>
-          <h2 id="principles-title">三层感觉，<br />组成一次呼吸。</h2>
+      <section class="xyg-archive" id="archive" aria-labelledby="archive-title">
+        <header class="xyg-section-heading" data-reveal>
+          <div>
+            <p class="xyg-kicker">02 / PROJECT ARCHIVE</p>
+            <h2 id="archive-title">把实验，<br /><span>慢慢变成作品。</span></h2>
+          </div>
+          <p>这里为游戏 UI、海报、视觉系统和以后真正完成的个人项目保留位置。</p>
+        </header>
+
+        <div class="xyg-project-grid">
+          <article class="xyg-project xyg-project--game" data-reveal>
+            <header><span>PRIMARY FIELD</span><strong>GAME UI</strong></header>
+            <div class="xyg-project__screen" aria-hidden="true">
+              <div class="xyg-project__nav"><span>OVERVIEW</span><span class="is-active">LOADOUT</span><span>ARCHIVE</span></div>
+              <div class="xyg-project__module"><small>INTERFACE SYSTEM</small><strong>READY</strong><span></span></div>
+              <p>PLAYER / 01<br />STATUS ONLINE</p>
+            </div>
+            <footer><div><small>CURRENT DIRECTION</small><strong>游戏界面与交互系统</strong></div><span>UI / MOTION / FEEDBACK</span></footer>
+          </article>
+
+          <article class="xyg-project xyg-project--next" data-reveal>
+            <header><span>NEXT FIELD</span><strong>POSTER / VISUAL</strong></header>
+            <div class="xyg-project__poster" aria-hidden="true">
+              <small>TYPE · IMAGE · CODE</small>
+              <strong>FORM<br />IN<br />MOTION</strong>
+              <span></span>
+            </div>
+            <footer><div><small>OPEN SLOT</small><strong>海报与个人视觉项目</strong></div><span>COMING NEXT</span></footer>
+          </article>
         </div>
-        <div class="xyg-card-grid">
-          <article class="xyg-card xyg-glass" data-reveal data-tilt>
-            <span class="xyg-card__icon"><Layers size={21} aria-hidden="true" /></span>
-            <small>01 / DEPTH</small>
-            <h3>空间不是阴影</h3>
-            <p>不同厚度的玻璃、亮边和移动速度，让前后关系自然出现。</p>
-            <i aria-hidden="true"></i>
-          </article>
-          <article class="xyg-card xyg-glass" data-reveal data-tilt>
-            <span class="xyg-card__icon"><Orbit size={21} aria-hidden="true" /></span>
-            <small>02 / MOTION</small>
-            <h3>动态来自当下</h3>
-            <p>光线和物体从屏幕上的当前位置继续运动，没有生硬的跳变。</p>
-            <i aria-hidden="true"></i>
-          </article>
-          <article class="xyg-card xyg-glass" data-reveal data-tilt>
-            <span class="xyg-card__icon"><Sparkles size={21} aria-hidden="true" /></span>
-            <small>03 / RESTRAINT</small>
-            <h3>炫酷也需要安静</h3>
-            <p>只保留一个真正值得注意的瞬间，其他效果退到感知边缘。</p>
-            <i aria-hidden="true"></i>
-          </article>
-        </div>
+
+        <article class="xyg-open-slot" data-reveal>
+          <div><PanelsTopLeft size={20} stroke-width={1.7} aria-hidden="true" /><span>THE ARCHIVE IS OPEN</span></div>
+          <h3>以后做过的项目，<br /><span>都可以继续放进来。</span></h3>
+          <p>实验室保留探索过程，成熟内容再进入主站的个人作品集。</p>
+        </article>
       </section>
 
       <section class="xyg-finale" aria-labelledby="finale-title" data-reveal>
-        <div class="xyg-finale__glow" aria-hidden="true"></div>
-        <div class="xyg-finale__content">
-          <p class="xyg-kicker">THE LAB STAYS OPEN</p>
-          <h2 id="finale-title">下一次实验，<br /><span>继续往这里加。</span></h2>
-          <p>小鱼干不是一个完成的页面。它是一块专门留给新想法的玻璃。</p>
-          <a href="/">回到小鱼的个人网站 <ArrowUpRight size={17} aria-hidden="true" /></a>
+        <div class="xyg-finale__surface" aria-hidden="true">
+          <span></span><span></span><span></span>
+          <div class="xyg-finale__glass xyg-glass"><Sparkles size={20} aria-hidden="true" /><strong>STAY CURIOUS</strong></div>
         </div>
-        <p class="xyg-finale__index">XG / 001</p>
+        <div class="xyg-finale__content">
+          <p class="xyg-kicker">XIAOYUGAN / CONTINUE</p>
+          <h2 id="finale-title">保持简单，<br /><span>继续实验。</span></h2>
+          <p>新的材质、动态和作品，会继续在这里出现。</p>
+          <a class="xyg-glass" href="/">回到小鱼的个人网站 <ArrowUpRight size={17} aria-hidden="true" /></a>
+        </div>
       </section>
     </main>
   </div>
-  <script is:inline src="/scripts/xiaoyugan.js" defer></script>
 </BaseLayout>
 
-<style>
-  :global(html) {
-    scroll-behavior: smooth;
-    background: #050507;
+<script>
+  import { gsap } from "gsap";
+  import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+  const page = document.querySelector<HTMLElement>("[data-xiaoyugan]");
+  if (page) {
+    gsap.registerPlugin(ScrollTrigger);
+
+    const revealItems = gsap.utils.toArray<HTMLElement>("[data-reveal]", page);
+    const heroRevealItems = gsap.utils.toArray<HTMLElement>(".xyg-hero [data-reveal]", page);
+    const sectionRevealItems = revealItems.filter((item) => !item.closest(".xyg-hero"));
+    const media = gsap.matchMedia();
+
+    media.add({
+      desktop: "(min-width: 992px)",
+      reduceMotion: "(prefers-reduced-motion: reduce)",
+    }, (context) => {
+      const { desktop, reduceMotion } = context.conditions as { desktop: boolean; reduceMotion: boolean };
+
+      if (reduceMotion) {
+        gsap.set(revealItems, { autoAlpha: 1, y: 0 });
+        return;
+      }
+
+      gsap.fromTo(heroRevealItems,
+        { autoAlpha: 0, y: 24 },
+        { autoAlpha: 1, y: 0, duration: 0.8, stagger: 0.1, ease: "power2.out" },
+      );
+
+      gsap.set(sectionRevealItems, { autoAlpha: 0, y: 28 });
+      ScrollTrigger.batch(sectionRevealItems, {
+        start: "top 88%",
+        once: true,
+        onEnter: (items) => gsap.to(items, { autoAlpha: 1, y: 0, duration: 0.75, stagger: 0.08, ease: "power2.out", overwrite: true }),
+      });
+
+      gsap.to(".xyg-hero__glass-wrap", {
+        y: -34,
+        rotation: 1.6,
+        ease: "none",
+        scrollTrigger: { trigger: ".xyg-hero", start: "top top", end: "bottom top", scrub: 0.8 },
+      });
+
+      if (desktop) {
+        const steps = gsap.utils.toArray<HTMLElement>(".xyg-material-step", page);
+        const [lightStep, depthStep, responseStep] = steps;
+        if (!lightStep || !depthStep || !responseStep) return;
+        gsap.set(steps, { autoAlpha: 0, y: 16 });
+        gsap.set(lightStep, { autoAlpha: 1, y: 0 });
+
+        const materialTimeline = gsap.timeline({
+          scrollTrigger: {
+            trigger: ".xyg-material",
+            start: "top top",
+            end: "bottom bottom",
+            scrub: 1,
+          },
+        });
+
+        materialTimeline
+          .to(".xyg-material-glass", { y: -34, rotation: -1.5, scale: 1.035, ease: "none" }, 0)
+          .to(".xyg-content-scene__panel--primary", { x: -26, y: 12, ease: "none" }, 0)
+          .to(lightStep, { autoAlpha: 0, y: -12, duration: 0.12 }, 0.24)
+          .to(depthStep, { autoAlpha: 1, y: 0, duration: 0.12 }, 0.3)
+          .to(".xyg-material-glass", { y: 28, rotation: 1.2, scale: 0.97, ease: "none" }, 0.45)
+          .to(".xyg-content-scene__panel--secondary", { x: 34, y: -18, ease: "none" }, 0.45)
+          .to(depthStep, { autoAlpha: 0, y: -12, duration: 0.12 }, 0.68)
+          .to(responseStep, { autoAlpha: 1, y: 0, duration: 0.12 }, 0.74);
+      }
+    });
+
+    if (window.matchMedia("(hover: hover) and (pointer: fine)").matches && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      const pointerGlass = page.querySelector<HTMLElement>("[data-pointer-glass]");
+      const visual = page.querySelector<HTMLElement>("[data-hero-visual]");
+      if (pointerGlass && visual) {
+        const xTo = gsap.quickTo(pointerGlass, "x", { duration: 0.4, ease: "power3.out" });
+        const yTo = gsap.quickTo(pointerGlass, "y", { duration: 0.4, ease: "power3.out" });
+        const rotateXTo = gsap.quickTo(pointerGlass, "rotationX", { duration: 0.4, ease: "power3.out" });
+        const rotateYTo = gsap.quickTo(pointerGlass, "rotationY", { duration: 0.4, ease: "power3.out" });
+
+        visual.addEventListener("pointermove", (event) => {
+          const rect = visual.getBoundingClientRect();
+          const x = (event.clientX - rect.left) / rect.width - 0.5;
+          const y = (event.clientY - rect.top) / rect.height - 0.5;
+          xTo(x * 10);
+          yTo(y * 8);
+          rotateXTo(y * -3);
+          rotateYTo(x * 4);
+        }, { passive: true });
+
+        visual.addEventListener("pointerleave", () => {
+          xTo(0); yTo(0); rotateXTo(0); rotateYTo(0);
+        });
+      }
+    }
+
+    window.addEventListener("load", () => ScrollTrigger.refresh(), { once: true });
   }
-
-  :global(body) {
-    overflow-x: hidden;
-    background: #050507;
-  }
-
-  .xyg-page {
-    --xyg-x: 50%;
-    --xyg-y: 26%;
-    --xyg-px: 0;
-    --xyg-py: 0;
-    position: relative;
-    min-height: 100vh;
-    overflow: clip;
-    background:
-      radial-gradient(circle at var(--xyg-x) var(--xyg-y), rgba(95, 143, 255, 0.1), transparent 24rem),
-      linear-gradient(180deg, #060608 0%, #0a0a0e 48%, #050507 100%);
-    color: #f5f5f7;
-    color-scheme: dark;
-    font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "SF Pro Display", "PingFang SC", sans-serif;
-    isolation: isolate;
-  }
-
-  .xyg-page::after {
-    position: fixed;
-    z-index: 20;
-    width: 22rem;
-    height: 22rem;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(190, 211, 255, 0.11), rgba(114, 83, 255, 0.04) 38%, transparent 70%);
-    content: "";
-    left: calc(var(--xyg-x) - 11rem);
-    top: calc(var(--xyg-y) - 11rem);
-    pointer-events: none;
-    transform: translate3d(0, 0, 0);
-    mix-blend-mode: screen;
-  }
-
-  .xyg-backdrop,
-  .xyg-grid,
-  .xyg-grain {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-  }
-
-  .xyg-backdrop {
-    z-index: -1;
-    overflow: hidden;
-  }
-
-  .xyg-grid {
-    opacity: 0.17;
-    background-image:
-      linear-gradient(rgba(255, 255, 255, 0.075) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255, 255, 255, 0.075) 1px, transparent 1px);
-    background-size: 5rem 5rem;
-    mask-image: linear-gradient(to bottom, black, transparent 42%);
-  }
-
-  .xyg-grain {
-    position: fixed;
-    opacity: 0.055;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.7'/%3E%3C/svg%3E");
-    mix-blend-mode: soft-light;
-  }
-
-  .xyg-orb {
-    position: absolute;
-    display: block;
-    border-radius: 50%;
-    filter: blur(4rem);
-    opacity: 0.72;
-    will-change: transform;
-  }
-
-  .xyg-orb--one {
-    width: 42rem;
-    height: 42rem;
-    top: -13rem;
-    right: -12rem;
-    background: #315eff;
-    transform: translate3d(calc(var(--xyg-px) * -1.8rem), calc(var(--xyg-py) * -1.2rem), 0);
-  }
-
-  .xyg-orb--two {
-    width: 34rem;
-    height: 34rem;
-    top: 30rem;
-    left: -16rem;
-    background: #7c3cff;
-    opacity: 0.4;
-    transform: translate3d(calc(var(--xyg-px) * 1.2rem), calc(var(--xyg-py) * 1.5rem), 0);
-  }
-
-  .xyg-orb--three {
-    width: 24rem;
-    height: 24rem;
-    top: 78rem;
-    right: 5%;
-    background: #16b8ff;
-    opacity: 0.28;
-  }
-
-  .xyg-glass {
-    border: 1px solid rgba(255, 255, 255, 0.16);
-    background:
-      linear-gradient(135deg, rgba(255, 255, 255, 0.115), rgba(255, 255, 255, 0.035) 48%, rgba(255, 255, 255, 0.07)),
-      rgba(12, 12, 17, 0.52);
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.2),
-      inset 0 -1px 0 rgba(255, 255, 255, 0.035),
-      0 2rem 5rem rgba(0, 0, 0, 0.34);
-    backdrop-filter: blur(2rem) saturate(165%);
-    -webkit-backdrop-filter: blur(2rem) saturate(165%);
-  }
-
-  .xyg-nav {
-    position: fixed;
-    z-index: 60;
-    top: max(1rem, env(safe-area-inset-top));
-    left: 50%;
-    display: flex;
-    width: min(calc(100% - 2rem), 72rem);
-    min-height: 3.5rem;
-    align-items: center;
-    justify-content: space-between;
-    border-radius: 1.15rem;
-    padding: 0.55rem 0.65rem 0.55rem 1rem;
-    transform: translateX(-50%);
-  }
-
-  .xyg-brand,
-  .xyg-back {
-    display: inline-flex;
-    min-height: 2.5rem;
-    align-items: center;
-    color: #f5f5f7;
-    text-decoration: none;
-  }
-
-  .xyg-brand {
-    gap: 0.55rem;
-    font-size: 0.84rem;
-    font-weight: 650;
-    letter-spacing: 0.01em;
-  }
-
-  .xyg-brand__dot {
-    width: 0.55rem;
-    height: 0.55rem;
-    border-radius: 50%;
-    background: #cfe0ff;
-    box-shadow: 0 0 1.25rem #7299ff;
-  }
-
-  .xyg-brand small {
-    border-left: 1px solid rgba(255, 255, 255, 0.18);
-    padding-left: 0.55rem;
-    color: rgba(255, 255, 255, 0.48);
-    font-size: 0.62rem;
-    font-weight: 550;
-    letter-spacing: 0.14em;
-  }
-
-  .xyg-back {
-    gap: 0.45rem;
-    border-radius: 0.8rem;
-    padding: 0 0.8rem;
-    background: rgba(255, 255, 255, 0.07);
-    color: rgba(255, 255, 255, 0.76);
-    font-size: 0.76rem;
-    transition: background 180ms ease, color 180ms ease, transform 100ms ease;
-  }
-
-  .xyg-back:hover {
-    background: rgba(255, 255, 255, 0.13);
-    color: white;
-  }
-
-  .xyg-back:active { transform: scale(0.97); }
-
-  main { position: relative; z-index: 1; }
-
-  .xyg-hero {
-    position: relative;
-    display: grid;
-    width: min(calc(100% - 2rem), 76rem);
-    min-height: 100svh;
-    margin: 0 auto;
-    align-items: center;
-    gap: 3rem;
-    padding: 8rem 0 6rem;
-  }
-
-  .xyg-hero__copy { position: relative; z-index: 4; max-width: 42rem; }
-
-  .xyg-kicker {
-    display: flex;
-    margin: 0 0 1.25rem;
-    align-items: center;
-    gap: 0.45rem;
-    color: rgba(220, 230, 255, 0.56);
-    font-size: 0.68rem;
-    font-weight: 650;
-    letter-spacing: 0.16em;
-  }
-
-  .xyg-hero h1,
-  .xyg-material h2,
-  .xyg-section-title h2,
-  .xyg-finale h2 {
-    margin: 0;
-    font-weight: 650;
-    letter-spacing: -0.055em;
-    text-wrap: balance;
-  }
-
-  .xyg-hero h1 {
-    font-size: clamp(4.25rem, 11vw, 9.25rem);
-    line-height: 0.94;
-    letter-spacing: -0.035em;
-  }
-
-  .xyg-hero h1 span,
-  .xyg-hero h1 strong { display: block; }
-
-  .xyg-hero h1 span { color: rgba(255, 255, 255, 0.46); font-weight: 520; }
-
-  .xyg-hero h1 strong {
-    margin-top: 0.08em;
-    padding-bottom: 0.08em;
-    background: linear-gradient(112deg, #fff 18%, #bdcfff 47%, #886eff 68%, #fff 94%);
-    background-clip: text;
-    -webkit-background-clip: text;
-    color: transparent;
-  }
-
-  .xyg-hero__lede {
-    max-width: 32rem;
-    margin: 2rem 0 0;
-    color: rgba(255, 255, 255, 0.54);
-    font-size: clamp(1rem, 1.6vw, 1.2rem);
-    line-height: 1.75;
-  }
-
-  .xyg-hero__meta { display: flex; flex-wrap: wrap; gap: 0.65rem 1.35rem; margin-top: 2rem; }
-
-  .xyg-hero__meta span {
-    color: rgba(255, 255, 255, 0.35);
-    font-size: 0.62rem;
-    font-weight: 620;
-    letter-spacing: 0.13em;
-  }
-
-  .xyg-stage {
-    position: relative;
-    z-index: 2;
-    display: grid;
-    min-height: 34rem;
-    place-items: center;
-    perspective: 75rem;
-  }
-
-  .xyg-halo {
-    position: absolute;
-    width: min(35rem, 86vw);
-    aspect-ratio: 1;
-    border-radius: 50%;
-    background:
-      radial-gradient(circle at 38% 30%, rgba(255,255,255,.8), transparent 7%),
-      conic-gradient(from 210deg, #16162b, #735cff, #7fd8ff, #20203d, #16162b);
-    filter: blur(0.3rem) saturate(125%);
-    opacity: 0.82;
-    box-shadow: 0 0 7rem rgba(80, 106, 255, 0.28);
-    transform: translate3d(calc(var(--xyg-px) * -1.3rem), calc(var(--xyg-py) * -0.9rem), -5rem) rotate(calc(var(--xyg-px) * 3deg));
-  }
-
-  .xyg-halo::after {
-    position: absolute;
-    inset: 9%;
-    border-radius: inherit;
-    background: #09090e;
-    box-shadow: inset 0 0 3rem rgba(120, 120, 255, 0.24);
-    content: "";
-  }
-
-  .xyg-window {
-    position: relative;
-    width: min(34rem, 88vw);
-    min-height: 23rem;
-    overflow: hidden;
-    border-radius: 1.65rem;
-    transform: rotateX(var(--tilt-y, -2deg)) rotateY(var(--tilt-x, -5deg)) translate3d(0, 0, 2rem);
-    transform-style: preserve-3d;
-    transition: transform 420ms cubic-bezier(.2,.8,.2,1);
-    will-change: transform;
-  }
-
-  [data-tilt].is-active { transition-duration: 90ms; }
-
-  .xyg-window__bar {
-    display: flex;
-    height: 3.25rem;
-    align-items: center;
-    gap: 0.42rem;
-    border-bottom: 1px solid rgba(255,255,255,.11);
-    padding: 0 1rem;
-  }
-
-  .xyg-window__bar > span { width: 0.48rem; height: 0.48rem; border-radius: 50%; background: rgba(255,255,255,.22); }
-  .xyg-window__bar p { flex: 1; margin: 0 0 0 0.35rem; color: rgba(255,255,255,.38); font-size: 0.66rem; }
-  .xyg-window__bar small { color: rgba(205,220,255,.55); font-size: .54rem; letter-spacing: .12em; }
-
-  .xyg-window__body { position: relative; padding: 2.2rem; }
-  .xyg-window__body > p { margin: 0; color: rgba(255,255,255,.42); font-size: .62rem; letter-spacing: .15em; }
-  .xyg-window__body > strong { display: block; margin-top: 1rem; font-size: clamp(3.2rem, 8vw, 5.5rem); line-height: .82; letter-spacing: -.075em; }
-
-  .xyg-spectrum {
-    height: .34rem;
-    margin-top: 2rem;
-    border-radius: 1rem;
-    background: linear-gradient(90deg, #5b38ff, #3b8cff, #9be9ff, #fff, #9d7dff);
-    box-shadow: 0 0 1.6rem rgba(120,145,255,.56);
-  }
-
-  .xyg-window__footer { display: flex; justify-content: space-between; margin-top: 1rem; color: rgba(255,255,255,.35); font-size: .54rem; letter-spacing: .11em; }
-
-  .xyg-float {
-    position: absolute;
-    z-index: 4;
-    display: flex;
-    align-items: center;
-    gap: .55rem;
-    border-radius: 1rem;
-    padding: .75rem .9rem;
-    color: rgba(255,255,255,.66);
-    font-size: .68rem;
-    box-shadow: 0 1rem 3rem rgba(0,0,0,.28);
-  }
-
-  .xyg-float svg { color: #c7d6ff; }
-  .xyg-float strong { color: #9dffce; font-size: .54rem; letter-spacing: .08em; }
-  .xyg-float--top { top: 12%; right: 0; transform: translate3d(calc(var(--xyg-px) * 1.4rem), calc(var(--xyg-py) * 1rem), 4rem); }
-  .xyg-float--bottom { bottom: 10%; left: 1%; transform: translate3d(calc(var(--xyg-px) * -1rem), calc(var(--xyg-py) * -1.3rem), 5rem); }
-
-  .xyg-scroll {
-    position: absolute;
-    bottom: max(1.2rem, env(safe-area-inset-bottom));
-    left: 0;
-    display: inline-flex;
-    align-items: center;
-    gap: .75rem;
-    color: rgba(255,255,255,.42);
-    font-size: .68rem;
-    text-decoration: none;
-  }
-
-  .xyg-scroll i { position: relative; width: 3rem; height: 1px; overflow: hidden; background: rgba(255,255,255,.18); }
-  .xyg-scroll i::after { position: absolute; inset: 0; background: #dbe5ff; content: ""; transform: translateX(-100%); animation: xyg-scan 2.2s ease-in-out infinite; }
-
-  .xyg-material,
-  .xyg-principles,
-  .xyg-finale {
-    width: min(calc(100% - 2rem), 72rem);
-    margin: 0 auto;
-  }
-
-  .xyg-material {
-    display: grid;
-    min-height: 100svh;
-    align-items: center;
-    gap: 4rem;
-    padding: 8rem 0;
-  }
-
-  .xyg-material__copy { max-width: 36rem; }
-  .xyg-material h2, .xyg-section-title h2, .xyg-finale h2 { font-size: clamp(3rem, 7vw, 6.6rem); line-height: .95; }
-  .xyg-material h2 span, .xyg-finale h2 span { color: rgba(255,255,255,.35); }
-  .xyg-material__copy > p:last-child, .xyg-finale__content > p { max-width: 31rem; margin: 2rem 0 0; color: rgba(255,255,255,.48); font-size: 1rem; line-height: 1.8; }
-
-  .xyg-material__specimen { position: relative; display: grid; min-height: 31rem; place-items: center; perspective: 60rem; }
-  .xyg-depth-rings { position: absolute; inset: 0; display: grid; place-items: center; }
-  .xyg-depth-rings span { position: absolute; width: 72%; aspect-ratio: 1; border: 1px solid rgba(136,162,255,.2); border-radius: 50%; }
-  .xyg-depth-rings span:nth-child(2) { width: 52%; border-color: rgba(255,255,255,.12); }
-  .xyg-depth-rings span:nth-child(3) { width: 32%; border-color: rgba(112,210,255,.28); box-shadow: 0 0 3rem rgba(70,140,255,.12); }
-
-  .xyg-specimen {
-    position: relative;
-    width: min(25rem, 80vw);
-    aspect-ratio: .82;
-    border-radius: 2.4rem;
-    padding: 1.8rem;
-    transform: rotateX(var(--tilt-y, 4deg)) rotateY(var(--tilt-x, 7deg));
-    transition: transform 420ms cubic-bezier(.2,.8,.2,1);
-    will-change: transform;
-  }
-
-  .xyg-specimen::before { position: absolute; inset: 8%; border: 1px solid rgba(255,255,255,.08); border-radius: 1.7rem; content: ""; }
-  .xyg-specimen__top { display: flex; justify-content: space-between; color: rgba(255,255,255,.34); font-size: .57rem; letter-spacing: .12em; }
-  .xyg-specimen__top strong { color: rgba(224,232,255,.68); font-weight: 620; }
-  .xyg-specimen__center { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; flex-direction: column; }
-  .xyg-specimen__center span { position: absolute; width: 9rem; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle at 35% 28%, white, #8eacff 16%, #6040ff 38%, #11111d 70%); box-shadow: 0 0 4rem rgba(92,93,255,.45); opacity: .85; }
-  .xyg-specimen__center strong { z-index: 1; font-size: 5rem; line-height: 1; letter-spacing: -.08em; }
-  .xyg-specimen__center small { z-index: 1; color: rgba(255,255,255,.55); font-size: .55rem; letter-spacing: .16em; }
-  .xyg-specimen__line { position: absolute; right: 1.8rem; bottom: 4.6rem; left: 1.8rem; height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,.2), transparent); }
-  .xyg-specimen > p { position: absolute; right: 0; bottom: 1.8rem; left: 0; margin: 0; text-align: center; color: rgba(255,255,255,.34); font-size: .52rem; letter-spacing: .1em; }
-
-  .xyg-principles { padding: 9rem 0 11rem; }
-  .xyg-section-title { max-width: 50rem; }
-  .xyg-card-grid { display: grid; gap: 1rem; margin-top: 4rem; }
-
-  .xyg-card {
-    position: relative;
-    min-height: 22rem;
-    overflow: hidden;
-    border-radius: 1.7rem;
-    padding: 1.7rem;
-    transform: perspective(55rem) rotateX(var(--tilt-y, 0deg)) rotateY(var(--tilt-x, 0deg));
-    transition: transform 380ms cubic-bezier(.2,.8,.2,1), border-color 240ms ease;
-    will-change: transform;
-  }
-
-  .xyg-card:hover { border-color: rgba(255,255,255,.28); }
-  .xyg-card__icon { display: grid; width: 2.8rem; height: 2.8rem; place-items: center; border: 1px solid rgba(255,255,255,.12); border-radius: .9rem; background: rgba(255,255,255,.06); color: #d7e2ff; }
-  .xyg-card small { display: block; margin-top: 3.5rem; color: rgba(255,255,255,.32); font-size: .58rem; letter-spacing: .15em; }
-  .xyg-card h3 { margin: .75rem 0 0; font-size: 1.45rem; letter-spacing: -.025em; }
-  .xyg-card p { max-width: 19rem; margin: .8rem 0 0; color: rgba(255,255,255,.46); font-size: .9rem; line-height: 1.7; }
-  .xyg-card > i { position: absolute; right: -3rem; bottom: -4rem; width: 12rem; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle, rgba(112,138,255,.28), transparent 67%); }
-
-  .xyg-finale {
-    position: relative;
-    display: grid;
-    min-height: 88svh;
-    place-items: center;
-    overflow: hidden;
-    border-top: 1px solid rgba(255,255,255,.09);
-    text-align: center;
-  }
-
-  .xyg-finale__glow { position: absolute; width: min(46rem, 90vw); aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle, rgba(103,111,255,.2), rgba(73,126,255,.08) 36%, transparent 70%); filter: blur(2rem); }
-  .xyg-finale__content { position: relative; z-index: 2; display: flex; align-items: center; flex-direction: column; }
-  .xyg-finale .xyg-kicker { justify-content: center; }
-  .xyg-finale__content > p { margin-right: auto; margin-left: auto; }
-  .xyg-finale a { display: inline-flex; min-height: 3rem; margin-top: 2rem; align-items: center; gap: .5rem; border: 1px solid rgba(255,255,255,.14); border-radius: 1rem; padding: 0 1.15rem; background: rgba(255,255,255,.08); color: white; font-size: .8rem; text-decoration: none; transition: background 180ms ease, transform 100ms ease; }
-  .xyg-finale a:hover { background: rgba(255,255,255,.14); }
-  .xyg-finale a:active { transform: scale(.97); }
-  .xyg-finale__index { position: absolute; right: 0; bottom: 1.5rem; margin: 0; color: rgba(255,255,255,.22); font-size: .6rem; letter-spacing: .15em; }
-
-  [data-reveal] { opacity: 0; transform: translate3d(0, 1.6rem, 0) scale(.985); filter: blur(.7rem); transition: opacity 800ms ease, transform 900ms cubic-bezier(.2,.8,.2,1), filter 850ms ease; }
-  [data-reveal].is-visible { opacity: 1; transform: translate3d(0, 0, 0) scale(1); filter: blur(0); }
-  .xyg-stage[data-reveal].is-visible { transition-delay: 120ms; }
-
-  @keyframes xyg-scan { 0%, 15% { transform: translateX(-100%); } 70%, 100% { transform: translateX(100%); } }
-
-  @media (min-width: 62rem) {
-    .xyg-hero { grid-template-columns: minmax(0, .95fr) minmax(28rem, 1.05fr); }
-    .xyg-material { grid-template-columns: .9fr 1.1fr; }
-    .xyg-card-grid { grid-template-columns: repeat(3, 1fr); }
-  }
-
-  @media (max-width: 61.99rem) {
-    .xyg-hero { align-content: center; padding-top: 7rem; }
-    .xyg-hero__copy { padding-top: 2rem; }
-    .xyg-stage { min-height: 29rem; }
-    .xyg-material { padding-top: 5rem; }
-    .xyg-card-grid { grid-template-columns: 1fr; }
-    .xyg-card { min-height: 18rem; }
-  }
-
-  @media (max-width: 40rem) {
-    .xyg-page::after { display: none; }
-    .xyg-nav { top: max(.65rem, env(safe-area-inset-top)); width: calc(100% - 1rem); }
-    .xyg-back span { display: none; }
-    .xyg-hero { width: min(calc(100% - 1.5rem), 76rem); padding-top: 6.5rem; }
-    .xyg-hero h1 { font-size: clamp(3.7rem, 19vw, 5.4rem); }
-    .xyg-hero__lede { max-width: 21rem; font-size: .95rem; }
-    .xyg-stage { min-height: 24rem; margin-top: -1rem; }
-    .xyg-window { min-height: 19rem; border-radius: 1.35rem; }
-    .xyg-window__body { padding: 1.5rem; }
-    .xyg-window__body > strong { font-size: 3.75rem; }
-    .xyg-window__bar { height: 2.8rem; padding: 0 .75rem; }
-    .xyg-window__bar p { max-width: 10rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .xyg-float--top { top: 7%; right: -.15rem; }
-    .xyg-float--bottom { bottom: 4%; left: -.15rem; }
-    .xyg-scroll { display: none; }
-    .xyg-material, .xyg-principles, .xyg-finale { width: min(calc(100% - 1.5rem), 72rem); }
-    .xyg-material h2, .xyg-section-title h2, .xyg-finale h2 { font-size: clamp(2.8rem, 13vw, 4.4rem); }
-    .xyg-material__specimen { min-height: 25rem; }
-    .xyg-principles { padding: 6rem 0 7rem; }
-    .xyg-card-grid { margin-top: 2.5rem; }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    :global(html) { scroll-behavior: auto; }
-    .xyg-page *, .xyg-page *::before, .xyg-page *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; }
-    [data-reveal] { opacity: 1; transform: none; filter: none; }
-    .xyg-window, .xyg-specimen, .xyg-card, .xyg-halo, .xyg-float { transform: none !important; }
-  }
-
-  @media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
-    .xyg-glass { border-color: rgba(255,255,255,.34); background: #15151c; backdrop-filter: none; -webkit-backdrop-filter: none; }
-  }
-</style>
+</script>

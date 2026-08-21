@@ -61,6 +61,22 @@ main {
   gap: var(--lm-space-4);
 }
 
+.cat-ear-easter-egg {
+  display: none;
+}
+
+.brand-cluster {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.brand-name {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
 .brand-link {
   display: inline-flex;
   min-height: var(--lm-control-height);

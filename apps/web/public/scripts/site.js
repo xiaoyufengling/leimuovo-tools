@@ -48,6 +48,34 @@
   window.addEventListener("scroll", requestHeaderSync, { passive: true });
   syncHeader();
 
+  const catEars = document.querySelector("[data-cat-ears]");
+  if (catEars instanceof HTMLButtonElement) {
+    let petTimer;
+    catEars.dataset.catReady = "";
+
+    catEars.addEventListener("pointermove", (event) => {
+      const rect = catEars.getBoundingClientRect();
+      const position = (event.clientX - rect.left) / rect.width;
+      catEars.style.setProperty("--cat-look", String(Math.min(1, Math.max(-1, position * 2 - 1))));
+    }, { passive: true });
+
+    catEars.addEventListener("pointerleave", () => {
+      catEars.style.setProperty("--cat-look", "0");
+    }, { passive: true });
+
+    catEars.addEventListener("click", () => {
+      window.clearTimeout(petTimer);
+      catEars.classList.remove("is-petted");
+      void catEars.offsetWidth;
+      catEars.classList.add("is-petted");
+      catEars.setAttribute("aria-pressed", "true");
+      petTimer = window.setTimeout(() => {
+        catEars.classList.remove("is-petted");
+        catEars.setAttribute("aria-pressed", "false");
+      }, 1_800);
+    });
+  }
+
   const hasControlHint = document.cookie
     .split(";")
     .some((cookie) => cookie.trim() === "control_hint=1");
