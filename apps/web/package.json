@@ -15,13 +15,15 @@
     "@astrojs/sitemap": "^3.7.3",
     "@leimuovo/design-system": "workspace:*",
     "@leimuovo/receipt-checker": "workspace:*",
+    "@lucide/astro": "^1.28.0",
     "@vite-pwa/astro": "^1.2.0",
     "astro": "^7.1.6",
-    "@lucide/astro": "^1.28.0"
+    "three": "^0.185.1"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
     "@playwright/test": "^1.62.1",
+    "@types/three": "^0.185.4",
     "typescript": "^6.0.3",
     "vitest": "^4.1.10"
   }
