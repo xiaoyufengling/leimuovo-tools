@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { ArrowDownRight, ArrowUpRight } from "@lucide/astro";
 import { site } from "../config/site";
 import "../styles/home.css";
 
@@ -46,10 +47,16 @@ const jsonLd = {
 
         <div class="portfolio-hero__actions">
           <a class="portfolio-button portfolio-button--primary" href="#directions">
-            <span>探索设计方向</span><i aria-hidden="true">↘</i>
+            <span>探索设计方向</span>
+            <i class="portfolio-button__icon" aria-hidden="true">
+              <ArrowDownRight size={18} stroke-width={2.4} />
+            </i>
           </a>
           <a class="portfolio-button portfolio-button--quiet" href="/xiaoyugan/">
-            <span>进入视觉实验室</span><i aria-hidden="true">↗</i>
+            <span>进入视觉实验室</span>
+            <i class="portfolio-button__icon" aria-hidden="true">
+              <ArrowUpRight size={18} stroke-width={2.4} />
+            </i>
           </a>
         </div>
 

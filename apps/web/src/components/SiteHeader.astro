@@ -1,6 +1,7 @@
 ---
 import { Moon, Sparkles, Sun } from "@lucide/astro";
 import BrandMark from "./BrandMark.astro";
+import RemCatEars from "./RemCatEars.astro";
 import { site } from "../config/site";
 
 const pathname = Astro.url.pathname;
@@ -12,18 +13,7 @@ const isAbout = pathname.startsWith("/about");
 <header class="site-header">
   <div class="lm-container site-header__inner">
     <div class="brand-cluster">
-      <button
-        class="cat-ear-easter-egg"
-        type="button"
-        data-cat-ears
-        aria-label="摸摸小鱼名字上的猫耳"
-        aria-pressed="false"
-      >
-        <span class="cat-ear cat-ear--left" aria-hidden="true"><i></i></span>
-        <span class="cat-ear cat-ear--right" aria-hidden="true"><i></i></span>
-        <span class="cat-ear-easter-egg__bridge" aria-hidden="true"></span>
-        <span class="cat-ear-easter-egg__message" aria-hidden="true">喵~</span>
-      </button>
+      <RemCatEars label="摸摸小鱼名字上的猫耳" />
       <a class="brand-link" href="/" aria-label={`${site.name}首页`}>
         <BrandMark size={30} />
         <span class="brand-name">{site.name}</span>

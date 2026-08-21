@@ -28,6 +28,55 @@ test("homepage cat ears reveal the quiet easter egg", async ({ page }) => {
   await expect(catEars.locator(".cat-ear-easter-egg__message")).toHaveText("喵~");
 });
 
+test("dark homepage keeps glass hierarchy and silhouette action icons", async ({ page }) => {
+  await page.addInitScript(() => window.localStorage.setItem("leimuovo-theme", "dark"));
+  await page.goto("/");
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+
+  const actionIcons = page.locator(".portfolio-hero__actions .portfolio-button__icon");
+  await expect(actionIcons).toHaveCount(2);
+  await expect(actionIcons.locator("svg")).toHaveCount(2);
+  expect(await actionIcons.allTextContents()).toEqual(["", ""]);
+
+  const darkArtifacts = await page.evaluate(() => ({
+    canvasBackground: getComputedStyle(document.documentElement).backgroundColor,
+    bodyBackground: getComputedStyle(document.body).backgroundColor,
+    topBackdrop: getComputedStyle(document.body).backgroundImage,
+    pearlWash: getComputedStyle(document.querySelector(".home-atmosphere__wash--pearl")!).backgroundImage,
+    headerShadow: getComputedStyle(document.querySelector(".site-header")!).boxShadow,
+    cardShadow: getComputedStyle(document.querySelector(".direction-card")!).boxShadow,
+    archiveShadow: getComputedStyle(document.querySelector(".signature-study__frame")!).boxShadow,
+  }));
+
+  expect(darkArtifacts.canvasBackground).toBe("rgb(23, 25, 28)");
+  expect(darkArtifacts.bodyBackground).toBe("rgb(23, 25, 28)");
+  expect(darkArtifacts.topBackdrop).toContain("linear-gradient");
+  expect(darkArtifacts.topBackdrop).not.toContain("0, 0, 0");
+  expect(darkArtifacts.pearlWash).not.toContain("255, 255, 255");
+  expect(darkArtifacts.headerShadow).not.toContain("0.96");
+  expect(darkArtifacts.cardShadow).not.toContain("0.72");
+  expect(darkArtifacts.archiveShadow).not.toContain("0.98");
+  expect(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth)).toBe(false);
+});
+
+test("light homepage uses a porcelain neutral material palette", async ({ page }) => {
+  await page.addInitScript(() => window.localStorage.setItem("leimuovo-theme", "light"));
+  await page.goto("/");
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+
+  const palette = await page.evaluate(() => ({
+    canvas: getComputedStyle(document.documentElement).backgroundColor,
+    body: getComputedStyle(document.body).backgroundColor,
+    ink: getComputedStyle(document.querySelector(".lm-page--home")!).color,
+    backdrop: getComputedStyle(document.body).backgroundImage,
+  }));
+
+  expect(palette.canvas).toBe("rgb(243, 242, 239)");
+  expect(palette.body).toBe("rgb(243, 242, 239)");
+  expect(palette.ink).toBe("rgb(25, 27, 31)");
+  expect(palette.backdrop).toContain("linear-gradient");
+});
+
 test("homepage opens the noindex Xiaoyugan visual laboratory", async ({ page }) => {
   await page.goto("/");
   const labEntry = page.locator(".lab-feature__link");

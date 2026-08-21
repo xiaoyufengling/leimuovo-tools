@@ -1,0 +1,25 @@
+---
+interface Props {
+  label?: string;
+  message?: string;
+}
+
+const {
+  label = "摸摸蕾姆猫耳",
+  message = "喵~",
+} = Astro.props;
+---
+
+<button
+  class="cat-ear-easter-egg"
+  type="button"
+  data-cat-ears
+  data-rem-cat-ears
+  aria-label={label}
+  aria-pressed="false"
+>
+  <span class="cat-ear cat-ear--left" aria-hidden="true"><i></i></span>
+  <span class="cat-ear cat-ear--right" aria-hidden="true"><i></i></span>
+  <span class="cat-ear-easter-egg__bridge" aria-hidden="true"></span>
+  <span class="cat-ear-easter-egg__message" aria-hidden="true">{message}</span>
+</button>
