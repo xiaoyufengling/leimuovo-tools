@@ -38,6 +38,11 @@ test("dark homepage keeps glass hierarchy and silhouette action icons", async ({
   await expect(actionIcons.locator("svg")).toHaveCount(2);
   expect(await actionIcons.allTextContents()).toEqual(["", ""]);
 
+  const aboutIcon = page.locator(".portfolio-ending .portfolio-button__icon");
+  await expect(aboutIcon).toHaveCount(1);
+  await expect(aboutIcon.locator("svg")).toHaveCount(1);
+  expect(await aboutIcon.textContent()).toBe("");
+
   const darkArtifacts = await page.evaluate(() => ({
     canvasBackground: getComputedStyle(document.documentElement).backgroundColor,
     bodyBackground: getComputedStyle(document.body).backgroundColor,
