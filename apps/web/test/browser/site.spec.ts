@@ -306,21 +306,23 @@ test("mobile artwork suppresses native image preview and save gestures", async (
   const nativeGestureState = await artwork.evaluate((element) => {
     const contextMenu = new MouseEvent("contextmenu", { bubbles: true, cancelable: true });
     const dragStart = new DragEvent("dragstart", { bubbles: true, cancelable: true });
+    const selectStart = new Event("selectstart", { bubbles: true, cancelable: true });
     element.dispatchEvent(contextMenu);
     element.dispatchEvent(dragStart);
+    element.dispatchEvent(selectStart);
     const styles = getComputedStyle(element);
     return {
       contextMenuPrevented: contextMenu.defaultPrevented,
       dragStartPrevented: dragStart.defaultPrevented,
+      selectStartPrevented: selectStart.defaultPrevented,
       pointerEvents: styles.pointerEvents,
-      userSelect: styles.getPropertyValue("-webkit-user-select") || styles.getPropertyValue("user-select"),
     };
   });
 
   expect(nativeGestureState.contextMenuPrevented).toBe(true);
   expect(nativeGestureState.dragStartPrevented).toBe(true);
+  expect(nativeGestureState.selectStartPrevented).toBe(true);
   expect(nativeGestureState.pointerEvents).toBe("none");
-  expect(nativeGestureState.userSelect).toBe("none");
   await expect(page.locator(".xyg-rem-face")).toHaveCount(1);
 });
 
