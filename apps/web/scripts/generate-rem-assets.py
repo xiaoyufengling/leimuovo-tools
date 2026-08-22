@@ -60,14 +60,10 @@ def fitted_icon(
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--character", type=Path, required=True)
-    parser.add_argument("--base", type=Path, required=True)
     parser.add_argument("--public", type=Path, required=True)
     args = parser.parse_args()
 
     character = require_rgba(args.character)
-    base = require_rgba(args.base)
-    if character.size != base.size:
-        raise SystemExit("character and no-ear base must use the same canvas size")
 
     images_dir = args.public / "images"
     icons_dir = args.public / "icons"
@@ -75,7 +71,6 @@ def main() -> None:
     icons_dir.mkdir(parents=True, exist_ok=True)
 
     character.save(images_dir / "xiaoyugan-rem-face.png", optimize=True)
-    base.save(images_dir / "xiaoyugan-rem-base.png", optimize=True)
 
     favicon = fitted_icon(character, 256, fill_ratio=0.94)
     favicon_32 = premultiplied_resize(favicon, (32, 32))
@@ -111,9 +106,7 @@ def main() -> None:
     ).save(icons_dir / "rem-icon-maskable-512.png", optimize=True)
 
     print(f"character={character.mode} {character.size} alpha={character.getchannel('A').getextrema()}")
-    print(f"base={base.mode} {base.size} alpha={base.getchannel('A').getextrema()}")
     print(f"wrote={images_dir / 'xiaoyugan-rem-face.png'}")
-    print(f"wrote={images_dir / 'xiaoyugan-rem-base.png'}")
     print("wrote=site favicon, Apple touch icon, and PWA icon set")
 
 

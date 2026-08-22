@@ -27,7 +27,6 @@ const requiredFiles = [
   "icons/rem-icon-512.png",
   "icons/rem-icon-maskable-512.png",
   "images/xiaoyugan-rem-face.png",
-  "images/xiaoyugan-rem-base.png",
   "sw.js",
   "_headers",
   "_redirects",
@@ -69,7 +68,7 @@ assert(home.includes('"name":"小鱼"'), "首页品牌名称不正确");
 assert(tools.includes('"@type":"CollectionPage"'), "工具目录 CollectionPage JSON-LD 缺失");
 assert(receipt.includes('"@type":"SoftwareApplication"'), "工具页 SoftwareApplication JSON-LD 缺失");
 assert(laboratory.includes('/images/xiaoyugan-rem-face.png'), "实验室未使用透明猫耳主图");
-assert(laboratory.includes('/images/xiaoyugan-rem-base.png'), "实验室缺少 Q 弹分层底图");
+assert(!laboratory.includes('data-rem-parts'), "实验室不应在互动时替换核准主图");
 
 assert(robots.includes("Disallow: /offline/"), "robots.txt 未排除离线页");
 assert(robots.includes("Disallow: /control/"), "robots.txt 未排除私人控制中心");

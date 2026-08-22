@@ -462,6 +462,7 @@ body:has(.xyg-page) {
   color: var(--xyg-ink);
   cursor: pointer;
   isolation: isolate;
+  touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -512,65 +513,18 @@ body:has(.xyg-page) {
   animation: xyg-float 4.2s ease-in-out infinite;
 }
 
-.xyg-rem-character__idle,
-.xyg-rem-character__parts {
-  position: absolute;
-  inset: 0;
-}
-
-.xyg-rem-character__idle {
-  z-index: 3;
-  opacity: 1;
-}
-
-.xyg-rem-character__parts {
-  z-index: 2;
-  opacity: 0;
-  pointer-events: none;
-}
-
-.xyg-rem-face,
-.xyg-rem-base,
-.xyg-rem-ear {
+.xyg-rem-face {
   display: block;
   width: 100%;
   height: auto;
   user-select: none;
   -webkit-user-drag: none;
-}
-
-.xyg-rem-face {
   position: relative;
   z-index: 2;
-}
-
-.xyg-rem-base,
-.xyg-rem-ear {
-  position: absolute;
-  inset: 0;
   will-change: transform;
   transform: translateZ(0);
+  transform-origin: 50% 68%;
 }
-
-.xyg-rem-base { z-index: 2; transform-origin: 50% 70%; }
-
-.xyg-rem-ear {
-  z-index: 1;
-  pointer-events: none;
-}
-
-.xyg-rem-ear--left {
-  clip-path: polygon(11% 0, 49% 0, 44% 38%, 31% 35%, 19% 33%, 11% 18%);
-  transform-origin: 39% 31%;
-}
-
-.xyg-rem-ear--right {
-  clip-path: polygon(51% 0, 89% 0, 89% 18%, 81% 33%, 69% 35%, 56% 38%);
-  transform-origin: 61% 31%;
-}
-
-.xyg-rem-touch.is-pet-active .xyg-rem-character__idle { opacity: 0; }
-.xyg-rem-touch.is-pet-active .xyg-rem-character__parts { opacity: 1; }
 
 @media (hover: hover) and (pointer: fine) {
   .xyg-rem-touch:hover .xyg-rem-face { filter: saturate(1.02) brightness(1.015); }

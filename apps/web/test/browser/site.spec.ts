@@ -175,8 +175,8 @@ test("homepage opens the noindex Xiaoyugan visual laboratory", async ({ page }) 
   await expect(page.locator("[data-pet-card]")).toBeVisible();
   await expect(page.locator(".xyg-rem-face")).toBeVisible();
   await expect(page.locator(".xyg-rem-face")).toHaveAttribute("src", "/images/xiaoyugan-rem-face.png");
-  await expect(page.locator("[data-rem-base]")).toHaveAttribute("src", "/images/xiaoyugan-rem-base.png");
-  await expect(page.locator("[data-rem-ear]")).toHaveCount(2);
+  await expect(page.locator("[data-rem-artwork]")).toHaveCount(1);
+  await expect(page.locator("[data-rem-parts], [data-rem-base], [data-rem-ear]")).toHaveCount(0);
   const petButton = page.getByRole("button", { name: "摸一下蕾姆猫耳" });
   await expect(petButton).toBeVisible();
   await expect(page.locator("[data-own-count]").first()).toHaveText("3");
@@ -210,6 +210,55 @@ test("mobile laboratory stays visible when animation frames are delayed", async 
   expect(visibleState.introOpacity).toBeGreaterThanOrEqual(0.95);
   expect(visibleState.cardOpacity).toBeGreaterThanOrEqual(0.95);
   expect(visibleState.cardVisibility).not.toBe("hidden");
+});
+
+test("mobile short tap bounces the exact approved artwork without swapping layers", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "mobile", "This regression exercises the touch interaction path");
+  let count = 2;
+  await page.route("**/api/lab/pets**", async (route) => {
+    if (route.request().method() === "POST") count += 1;
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        visitor: { label: "冰蓝小鱼 · TAP1", count },
+        totalPets: count + 6,
+        participantCount: 2,
+        leaders: [],
+      }),
+    });
+  });
+
+  await page.goto("/xiaoyugan/", { waitUntil: "domcontentloaded" });
+  const button = page.getByRole("button", { name: "摸一下蕾姆猫耳" });
+  const approvedArtwork = page.locator(".xyg-rem-face");
+  await button.scrollIntoViewIfNeeded();
+  const initialTransform = await approvedArtwork.evaluate((element) => getComputedStyle(element).transform);
+  const box = await button.boundingBox();
+  expect(box).not.toBeNull();
+  const clientX = (box?.x ?? 0) + (box?.width ?? 0) * 0.28;
+  const clientY = (box?.y ?? 0) + (box?.height ?? 0) * 0.32;
+
+  await button.dispatchEvent("pointerdown", { clientX, clientY, pointerId: 1, pointerType: "touch" });
+  await page.waitForTimeout(40);
+  await button.dispatchEvent("pointerup", { clientX, clientY, pointerId: 1, pointerType: "touch" });
+  await button.dispatchEvent("click", { clientX, clientY });
+  await page.waitForTimeout(70);
+
+  const shortTapFrame = await page.evaluate(() => ({
+    approvedOpacity: Number(getComputedStyle(document.querySelector<HTMLElement>(".xyg-rem-face")!).opacity),
+    replacementLayers: document.querySelectorAll("[data-rem-parts], [data-rem-base], [data-rem-ear]").length,
+    approvedTransform: getComputedStyle(document.querySelector<HTMLElement>(".xyg-rem-face")!).transform,
+    approvedSource: document.querySelector<HTMLImageElement>(".xyg-rem-face")?.getAttribute("src"),
+  }));
+  expect(shortTapFrame.approvedOpacity).toBeGreaterThanOrEqual(0.99);
+  expect(shortTapFrame.replacementLayers).toBe(0);
+  expect(shortTapFrame.approvedTransform).not.toBe(initialTransform);
+  expect(shortTapFrame.approvedSource).toBe("/images/xiaoyugan-rem-face.png");
+  await expect(page.locator("[data-own-count]").first()).toHaveText("3");
+
+  await expect.poll(() => approvedArtwork.evaluate((element) => getComputedStyle(element).transform)).toBe(initialTransform);
+  await expect(approvedArtwork).toHaveCSS("opacity", "1");
 });
 
 test("tool catalog exposes the receipt checker only on the secondary page", async ({ page }) => {

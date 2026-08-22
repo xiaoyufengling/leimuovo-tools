@@ -66,11 +66,8 @@ function mountPetCounter(page: HTMLElement): void {
   const announcement = page.querySelector<HTMLElement>("[data-pet-announcement]");
   if (!button || !card || ownCounts.length === 0 || !totalCount || !participantCount || !visitorLabel || !connection || !leaderboard || !recent) return;
 
-  const remBase = button.querySelector<HTMLElement>("[data-rem-base]");
-  const leftEar = button.querySelector<HTMLElement>('[data-rem-ear="left"]');
-  const rightEar = button.querySelector<HTMLElement>('[data-rem-ear="right"]');
+  const remArtwork = button.querySelector<HTMLElement>("[data-rem-artwork]");
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-  const petLayers = [remBase, leftEar, rightEar].filter((element): element is HTMLElement => element !== null);
 
   const visitor = readStoredVisitor();
   let localCount = readLocalCount();
@@ -87,6 +84,7 @@ function mountPetCounter(page: HTMLElement): void {
   let petSide = 0;
   let petTimeline: ReturnType<typeof gsap.timeline> | null = null;
   let petResetTimer = 0;
+  let lastPointerReleaseAt = Number.NEGATIVE_INFINITY;
   let pulseFrame = 0;
   let pulseTimer = 0;
 
@@ -170,54 +168,37 @@ function mountPetCounter(page: HTMLElement): void {
     window.clearTimeout(petResetTimer);
     petResetTimer = 0;
     button.classList.remove("is-pet-active");
-    if (petLayers.length > 0) gsap.set(petLayers, { clearProps: "transform" });
+    if (remArtwork) gsap.set(remArtwork, { clearProps: "transform,transformOrigin" });
   };
 
   const pressPet = (event: PointerEvent) => {
-    if (reducedMotion.matches || !remBase || !leftEar || !rightEar) return;
+    lastPointerReleaseAt = Number.NEGATIVE_INFINITY;
+    if (reducedMotion.matches || !remArtwork) return;
     petSide = readPetSide(event);
-    const leftStrength = petSide <= 0 ? 1 : 0.55;
-    const rightStrength = petSide >= 0 ? 1 : 0.55;
 
     petTimeline?.kill();
     window.clearTimeout(petResetTimer);
-    gsap.killTweensOf(petLayers);
+    gsap.killTweensOf(remArtwork);
     button.classList.add("is-pet-active");
-    gsap.to(remBase, {
+    gsap.to(remArtwork, {
       y: 4,
-      scaleX: 1.025,
-      scaleY: 0.94,
-      duration: 0.075,
-      ease: "power2.out",
-      overwrite: true,
-    });
-    gsap.to(leftEar, {
-      y: 2,
-      rotation: 2.4 * leftStrength,
-      scaleY: 0.96,
-      duration: 0.085,
-      ease: "power2.out",
-      overwrite: true,
-    });
-    gsap.to(rightEar, {
-      y: 2,
-      rotation: -2.4 * rightStrength,
-      scaleY: 0.96,
-      duration: 0.085,
+      rotation: petSide * 1.2,
+      scaleX: 1.035,
+      scaleY: 0.925,
+      transformOrigin: `${50 + petSide * 10}% 68%`,
+      duration: 0.06,
       ease: "power2.out",
       overwrite: true,
     });
   };
 
   const playPetBounce = (event: PointerEvent | MouseEvent) => {
-    if (reducedMotion.matches || !remBase || !leftEar || !rightEar) return;
+    if (reducedMotion.matches || !remArtwork) return;
     petSide = readPetSide(event);
-    const leftStrength = petSide <= 0 ? 1 : 0.55;
-    const rightStrength = petSide >= 0 ? 1 : 0.55;
 
     petTimeline?.kill();
     window.clearTimeout(petResetTimer);
-    gsap.killTweensOf(petLayers);
+    gsap.killTweensOf(remArtwork);
     button.classList.add("is-pet-active");
     petTimeline = gsap.timeline({
       defaults: { overwrite: "auto" },
@@ -225,76 +206,39 @@ function mountPetCounter(page: HTMLElement): void {
     });
     petTimeline
       .addLabel("release", 0)
-      .to(remBase, {
-        y: -4,
-        scaleX: 0.975,
-        scaleY: 1.055,
+      .to(remArtwork, {
+        y: -6,
+        rotation: petSide * -4.2,
+        scaleX: 0.965,
+        scaleY: 1.065,
+        transformOrigin: `${50 + petSide * 10}% 68%`,
         duration: 0.14,
         ease: "back.out(3.2)",
       }, "release")
-      .to(leftEar, {
-        y: -5 * leftStrength,
-        rotation: -8 * leftStrength,
-        scaleY: 1.04,
-        duration: 0.16,
-        ease: "back.out(2.7)",
-      }, "release+=0.01")
-      .to(rightEar, {
-        y: -5 * rightStrength,
-        rotation: 8 * rightStrength,
-        scaleY: 1.04,
-        duration: 0.16,
-        ease: "back.out(2.7)",
-      }, "release+=0.025")
-      .to(remBase, {
-        y: 1,
-        scaleX: 1.012,
-        scaleY: 0.985,
+      .to(remArtwork, {
+        y: 2,
+        rotation: petSide * 2.1,
+        scaleX: 1.025,
+        scaleY: 0.98,
         duration: 0.13,
         ease: "power2.inOut",
       }, "release+=0.14")
-      .to(leftEar, {
-        y: 1,
-        rotation: 3 * leftStrength,
-        scaleY: 0.99,
-        duration: 0.14,
-        ease: "power2.inOut",
-      }, "release+=0.17")
-      .to(rightEar, {
-        y: 1,
-        rotation: -3 * rightStrength,
-        scaleY: 0.99,
-        duration: 0.14,
-        ease: "power2.inOut",
-      }, "release+=0.185")
-      .to(remBase, {
-        y: 0,
-        scaleX: 1,
-        scaleY: 1,
-        duration: 0.19,
-        ease: "power2.out",
-      }, "release+=0.27")
-      .to(leftEar, {
-        y: 0,
-        rotation: -1 * leftStrength,
-        scaleY: 1,
+      .to(remArtwork, {
+        y: -1,
+        rotation: petSide * -0.7,
+        scaleX: 0.995,
+        scaleY: 1.01,
         duration: 0.12,
         ease: "sine.inOut",
-      }, "release+=0.31")
-      .to(rightEar, {
-        y: 0,
-        rotation: 1 * rightStrength,
-        scaleY: 1,
-        duration: 0.12,
-        ease: "sine.inOut",
-      }, "release+=0.325")
-      .to([leftEar, rightEar], {
+      }, "release+=0.28")
+      .to(remArtwork, {
         y: 0,
         rotation: 0,
+        scaleX: 1,
         scaleY: 1,
         duration: 0.15,
         ease: "sine.out",
-      }, "release+=0.43");
+      }, "release+=0.39");
 
     // Mobile browsers can pause a GSAP completion callback while a touch page
     // changes its rendering cadence. Keep a native-timer safety net so the
@@ -303,7 +247,7 @@ function mountPetCounter(page: HTMLElement): void {
       petTimeline?.kill();
       petTimeline = null;
       clearPetPose();
-    }, 760);
+    }, 680);
   };
 
   async function flushClicks(): Promise<void> {
@@ -339,11 +283,16 @@ function mountPetCounter(page: HTMLElement): void {
   }
 
   button.addEventListener("pointerdown", pressPet, { passive: true });
+  button.addEventListener("pointerup", (event) => {
+    lastPointerReleaseAt = performance.now();
+    playPetBounce(event);
+  }, { passive: true });
   button.addEventListener("pointercancel", () => {
+    lastPointerReleaseAt = Number.NEGATIVE_INFINITY;
     petTimeline?.kill();
     window.clearTimeout(petResetTimer);
-    if (petLayers.length === 0) return;
-    gsap.to(petLayers, {
+    if (!remArtwork) return;
+    gsap.to(remArtwork, {
       y: 0,
       rotation: 0,
       scaleX: 1,
@@ -374,7 +323,7 @@ function mountPetCounter(page: HTMLElement): void {
     };
     recentTimes = [new Date(), ...recentTimes].slice(0, 5);
     pendingClicks += 1;
-    playPetBounce(event);
+    if (performance.now() - lastPointerReleaseAt > 250) playPetBounce(event);
     card.classList.remove("is-petted");
     window.cancelAnimationFrame(pulseFrame);
     window.clearTimeout(pulseTimer);
