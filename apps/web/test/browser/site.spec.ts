@@ -144,19 +144,72 @@ test("light homepage keeps a cool porcelain liquid-glass hierarchy", async ({ pa
 });
 
 test("homepage opens the noindex Xiaoyugan visual laboratory", async ({ page }) => {
+  let count = 3;
+  await page.route("**/api/lab/pets**", async (route) => {
+    if (route.request().method() === "POST") count += 1;
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        visitor: { label: "冰蓝小鱼 · TEST", count },
+        totalPets: count + 12,
+        participantCount: 4,
+        leaders: [
+          { label: "月光小鱼 · 0001", count: 8 },
+          { label: "冰蓝小鱼 · TEST", count },
+        ],
+      }),
+    });
+  });
   await page.goto("/");
   const labEntry = page.locator(".lab-feature__link");
   await labEntry.scrollIntoViewIfNeeded();
   await expect(labEntry).toBeVisible();
   await expect(labEntry).toHaveAttribute("href", "/xiaoyugan/");
-  await labEntry.click();
+  await page.goto("/xiaoyugan/");
 
   await expect(page).toHaveURL(/\/xiaoyugan\/$/);
-  await expect(page).toHaveTitle("小鱼干｜视觉实验室");
-  await expect(page.getByRole("heading", { level: 1, name: /让界面.*拥有触感/ })).toBeVisible();
+  await expect(page).toHaveTitle("小鱼干｜蕾姆触摸实验室");
+  await expect(page.getByRole("heading", { level: 1, name: /先摸一下.*再认识这个界面/ })).toBeVisible();
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex, nofollow");
-  expect(await page.locator(".xyg-glass").count()).toBeGreaterThanOrEqual(6);
+  await expect(page.locator("[data-pet-card]")).toBeVisible();
+  await expect(page.locator(".xyg-rem-face")).toBeVisible();
+  await expect(page.locator(".xyg-rem-face")).toHaveAttribute("src", "/images/xiaoyugan-rem-face.png");
+  await expect(page.locator("[data-rem-base]")).toHaveAttribute("src", "/images/xiaoyugan-rem-base.png");
+  await expect(page.locator("[data-rem-ear]")).toHaveCount(2);
+  const petButton = page.getByRole("button", { name: "摸一下蕾姆猫耳" });
+  await expect(petButton).toBeVisible();
+  await expect(page.locator("[data-own-count]").first()).toHaveText("3");
+  await petButton.dispatchEvent("pointerdown", { clientX: 220, clientY: 180, pointerId: 1, pointerType: "mouse" });
+  await expect(petButton).toHaveClass(/is-pet-active/);
+  await petButton.click();
+  await expect(page.locator("[data-own-count]").first()).toHaveText("4");
+  await expect(page.locator("[data-recent-pets] li").first()).toContainText("蕾姆猫耳收到一次摸摸");
+  await expect.poll(() => petButton.evaluate((element) => element.classList.contains("is-pet-active"))).toBe(false);
+  expect(await page.locator(".xyg-glass").count()).toBeGreaterThanOrEqual(9);
   expect(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth)).toBe(false);
+});
+
+test("mobile laboratory stays visible when animation frames are delayed", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "mobile", "This protects the mobile first-paint path");
+  await page.addInitScript(() => {
+    window.requestAnimationFrame = () => 1;
+  });
+  await page.goto("/xiaoyugan/", { waitUntil: "domcontentloaded" });
+
+  const visibleState = await page.evaluate(() => {
+    const intro = document.querySelector<HTMLElement>(".xyg-intro");
+    const card = document.querySelector<HTMLElement>("[data-pet-card]");
+    return {
+      introOpacity: intro ? Number(getComputedStyle(intro).opacity) : 0,
+      cardOpacity: card ? Number(getComputedStyle(card).opacity) : 0,
+      cardVisibility: card ? getComputedStyle(card).visibility : "hidden",
+    };
+  });
+
+  expect(visibleState.introOpacity).toBeGreaterThanOrEqual(0.95);
+  expect(visibleState.cardOpacity).toBeGreaterThanOrEqual(0.95);
+  expect(visibleState.cardVisibility).not.toBe("hidden");
 });
 
 test("tool catalog exposes the receipt checker only on the secondary page", async ({ page }) => {
@@ -302,13 +355,23 @@ test("real receipt fixture stays local and completes OCR", async ({ page }, test
 test("SEO and PWA artifacts are discoverable", async ({ page, request }) => {
   await page.goto("/");
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "https://leimuovo.com/");
+  await expect(page.locator('link[rel="icon"][sizes="any"]')).toHaveAttribute("href", "/favicon-rem.ico");
+  await expect(page.locator('link[rel="apple-touch-icon"]')).toHaveAttribute("href", "/apple-touch-icon-rem.png");
   const structuredData = await page.locator('script[type="application/ld+json"]').textContent();
   expect(structuredData).toContain("WebSite");
   const manifestHref = await page.locator('link[rel="manifest"]').getAttribute("href");
   expect(manifestHref).toBeTruthy();
   const manifestResponse = await request.get(manifestHref!);
   expect(manifestResponse.ok()).toBe(true);
-  expect(await manifestResponse.json()).toMatchObject({ name: "小鱼", short_name: "小鱼" });
+  expect(await manifestResponse.json()).toMatchObject({
+    name: "小鱼",
+    short_name: "小鱼",
+    icons: expect.arrayContaining([
+      expect.objectContaining({ src: "/icons/rem-icon-192.png", sizes: "192x192" }),
+      expect.objectContaining({ src: "/icons/rem-icon-512.png", sizes: "512x512" }),
+      expect.objectContaining({ src: "/icons/rem-icon-maskable-512.png", purpose: "maskable" }),
+    ]),
+  });
   expect((await request.get("/robots.txt")).ok()).toBe(true);
   expect((await request.get("/sitemap-index.xml")).ok()).toBe(true);
 });

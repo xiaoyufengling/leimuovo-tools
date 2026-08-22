@@ -1,256 +1,133 @@
 ---
-import { ArrowLeft, ArrowUpRight, Layers, MousePointer2, PanelsTopLeft, Sparkles } from "@lucide/astro";
+import { Activity, ArrowLeft, ArrowUpRight, Moon, Radio, Sparkles, Sun } from "@lucide/astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import "../styles/xiaoyugan.css";
 ---
 
 <BaseLayout
-  title="小鱼干｜视觉实验室"
-  description="小鱼的视觉实验室：界面材质、空间层级、滚动动态与持续生长的个人项目档案。"
+  title="小鱼干｜蕾姆触摸实验室"
+  description="小鱼的高动态视觉实验室：点击蕾姆猫耳，留下匿名摸摸记录，体验蓝白清透的交互材质。"
   noindex
   hideChrome
 >
   <div class="xyg-page" data-xiaoyugan>
-    <div class="xyg-ambient" aria-hidden="true">
-      <span class="xyg-ambient__plane xyg-ambient__plane--blue"></span>
-      <span class="xyg-ambient__plane xyg-ambient__plane--white"></span>
-      <span class="xyg-ambient__line"></span>
+    <div class="xyg-atmosphere" aria-hidden="true">
+      <span class="xyg-orbit xyg-orbit--one"></span>
+      <span class="xyg-orbit xyg-orbit--two"></span>
+      <span class="xyg-atmosphere__glow"></span>
+      <span class="xyg-atmosphere__grain"></span>
     </div>
 
     <header class="xyg-nav xyg-glass">
       <a class="xyg-brand" href="/" aria-label="返回小鱼首页">
-        <span class="xyg-brand__mark" aria-hidden="true"></span>
-        <span>小鱼干</span>
-        <small>VISUAL LAB</small>
+        <span class="xyg-brand__mark" aria-hidden="true"><i></i><i></i></span>
+        <span><strong>小鱼干</strong><small>REMOVO LAB</small></span>
       </a>
-      <a class="xyg-back" href="/">
-        <ArrowLeft size={16} stroke-width={1.8} aria-hidden="true" />
-        <span>返回主站</span>
-      </a>
+      <nav aria-label="实验室导航">
+        <a class="xyg-back" href="/"><ArrowLeft size={16} stroke-width={1.8} aria-hidden="true" /><span>主站</span></a>
+        <button class="xyg-theme" type="button" data-theme-toggle aria-label="切换网站外观">
+          <Moon class="theme-icon--moon" size={18} stroke-width={1.8} aria-hidden="true" />
+          <Sun class="theme-icon--sun" size={18} stroke-width={1.8} aria-hidden="true" />
+        </button>
+      </nav>
     </header>
 
-    <main>
-      <section class="xyg-hero" aria-labelledby="xyg-title">
-        <div class="xyg-hero__copy" data-reveal>
-          <p class="xyg-kicker">VISUAL LAB / INTERFACE STUDIES</p>
-          <h1 id="xyg-title">让界面，<br /><span>拥有触感。</span></h1>
-          <p class="xyg-hero__lede">游戏 UI、视觉系统、动态原型，以及正在形成的个人作品档案。</p>
-          <div class="xyg-hero__meta" aria-label="实验方向">
-            <span>GAME UI</span><i></i><span>VISUAL SYSTEM</span><i></i><span>MOTION</span>
-          </div>
-        </div>
-
-        <div class="xyg-hero__visual" data-hero-visual data-reveal aria-hidden="true">
-          <div class="xyg-artboard">
-            <span class="xyg-artboard__field"></span>
-            <span class="xyg-artboard__slice"></span>
-            <span class="xyg-artboard__detail"></span>
-            <div class="xyg-artboard__type"><small>FORM / LIGHT</small><strong>Quiet<br />motion.</strong></div>
-          </div>
-
-          <div class="xyg-hero__glass-wrap">
-            <div class="xyg-hero__glass xyg-glass" data-pointer-glass>
-              <div class="xyg-glass-edge" aria-hidden="true"></div>
-              <header><span>OPTICAL SURFACE</span><strong>LIVE</strong></header>
-              <div class="xyg-hero__glass-body">
-                <small>INTERFACE MATERIAL</small>
-                <strong>GLASS<br />STUDY</strong>
-                <div class="xyg-meter"><span></span><i></i></div>
-                <footer><span>DEPTH</span><span>REFRACTION</span><span>RESPONSE</span></footer>
-              </div>
-            </div>
-          </div>
-
-          <div class="xyg-hero__chip xyg-glass"><MousePointer2 size={15} aria-hidden="true" /><span>RESPONSIVE MATERIAL</span></div>
-        </div>
-
-        <a class="xyg-scroll" href="#material"><span>向下进入实验</span><i aria-hidden="true"></i></a>
-      </section>
-
-      <section class="xyg-material" id="material" aria-labelledby="material-title" data-material>
-        <div class="xyg-material__sticky">
-          <div class="xyg-material__copy">
-            <p class="xyg-kicker">01 / MATERIAL IN MOTION</p>
-            <h2 id="material-title">玻璃浮在内容上，<br /><span>而不是盖住内容。</span></h2>
-            <div class="xyg-material__steps" aria-live="polite">
-              <article class="xyg-material-step is-first">
-                <small>LIGHT</small><strong>光线定义边缘</strong><p>亮边、阴影和背景共同说明材质的位置。</p>
-              </article>
-              <article class="xyg-material-step">
-                <small>DEPTH</small><strong>层级跟随滚动</strong><p>内容继续移动，控制层保持轻盈和清晰。</p>
-              </article>
-              <article class="xyg-material-step">
-                <small>RESPONSE</small><strong>动态来自操作</strong><p>材质只在交互发生时回应，不做无意义的循环表演。</p>
-              </article>
-            </div>
-          </div>
-
-          <div class="xyg-material__visual" aria-hidden="true">
-            <div class="xyg-content-scene">
-              <div class="xyg-content-scene__panel xyg-content-scene__panel--primary"><span>GAME / INTERFACE</span><strong>CONTENT<br />FIRST</strong></div>
-              <div class="xyg-content-scene__panel xyg-content-scene__panel--secondary"><span>VISUAL / 001</span></div>
-              <div class="xyg-content-scene__panel xyg-content-scene__panel--detail"></div>
-            </div>
-            <div class="xyg-material-glass xyg-glass" data-material-glass>
-              <div class="xyg-glass-edge" aria-hidden="true"></div>
-              <header><span>FLOATING CONTROL</span><strong>ACTIVE</strong></header>
-              <div><Layers size={20} aria-hidden="true" /><strong>Spatial layer</strong><small>CONTENT REMAINS CLEAR</small></div>
-              <footer><span>01</span><i></i><span>03</span></footer>
-            </div>
-          </div>
+    <main class="xyg-shell">
+      <section class="xyg-intro" aria-labelledby="xyg-title">
+        <p class="xyg-kicker"><span></span> XIAOYUGAN / INTERACTION LAB 01</p>
+        <h1 id="xyg-title">先摸一下，<br /><em>再认识这个界面。</em></h1>
+        <div class="xyg-intro__footer">
+          <p>这里用来测试更大胆的材质与动态。第一个实验，是会记住每一次触碰的蕾姆猫耳。</p>
+          <span><Radio size={14} aria-hidden="true" /> LIVE EXPERIMENT</span>
         </div>
       </section>
 
-      <section class="xyg-archive" id="archive" aria-labelledby="archive-title">
-        <header class="xyg-section-heading" data-reveal>
-          <div>
-            <p class="xyg-kicker">02 / PROJECT ARCHIVE</p>
-            <h2 id="archive-title">把实验，<br /><span>慢慢变成作品。</span></h2>
-          </div>
-          <p>这里为游戏 UI、海报、视觉系统和以后真正完成的个人项目保留位置。</p>
+      <article class="xyg-pet-card xyg-glass" data-pet-card data-tilt data-xyg-reveal aria-labelledby="pet-title">
+        <div class="xyg-card-shine" aria-hidden="true"></div>
+        <header class="xyg-card-header">
+          <div><span>EXPERIMENT 01</span><strong id="pet-title">蕾姆猫耳 · Touch Counter</strong></div>
+          <span class="xyg-live"><i></i> LIVE</span>
         </header>
 
-        <div class="xyg-project-grid">
-          <article class="xyg-project xyg-project--game" data-reveal>
-            <header><span>PRIMARY FIELD</span><strong>GAME UI</strong></header>
-            <div class="xyg-project__screen" aria-hidden="true">
-              <div class="xyg-project__nav"><span>OVERVIEW</span><span class="is-active">LOADOUT</span><span>ARCHIVE</span></div>
-              <div class="xyg-project__module"><small>INTERFACE SYSTEM</small><strong>READY</strong><span></span></div>
-              <p>PLAYER / 01<br />STATUS ONLINE</p>
+        <div class="xyg-pet-card__body">
+          <div class="xyg-pet-copy">
+            <p class="xyg-pet-copy__index">REM / CAT EAR / 001</p>
+            <h2>猫耳会回应，<br /><span>也会记住你。</span></h2>
+            <p>轻点猫耳，每一次摸摸都会获得即时反馈，并以匿名方式进入全站记录。</p>
+            <div class="xyg-own-record">
+              <div><span data-own-count>0</span><small>你的摸摸</small></div>
+              <p><span data-visitor-label>正在生成匿名身份</span><small>只保存在当前浏览器，不采集个人资料</small></p>
             </div>
-            <footer><div><small>CURRENT DIRECTION</small><strong>游戏界面与交互系统</strong></div><span>UI / MOTION / FEEDBACK</span></footer>
-          </article>
+          </div>
 
-          <article class="xyg-project xyg-project--next" data-reveal>
-            <header><span>NEXT FIELD</span><strong>POSTER / VISUAL</strong></header>
-            <div class="xyg-project__poster" aria-hidden="true">
-              <small>TYPE · IMAGE · CODE</small>
-              <strong>FORM<br />IN<br />MOTION</strong>
-              <span></span>
-            </div>
-            <footer><div><small>OPEN SLOT</small><strong>海报与个人视觉项目</strong></div><span>COMING NEXT</span></footer>
-          </article>
+          <button class="xyg-rem-touch" type="button" data-pet-button aria-label="摸一下蕾姆猫耳">
+            <span class="xyg-rem-touch__aura" aria-hidden="true"></span>
+            <span class="xyg-rem-touch__rings" aria-hidden="true"><i></i><i></i><i></i></span>
+            <span class="xyg-rem-character" aria-hidden="true">
+              <span class="xyg-rem-character__idle" data-rem-idle>
+                <img class="xyg-rem-face" src="/images/xiaoyugan-rem-face.png" width="1448" height="1086" alt="" draggable="false" />
+              </span>
+              <span class="xyg-rem-character__parts" data-rem-parts>
+                <img class="xyg-rem-ear xyg-rem-ear--left" data-rem-ear="left" src="/images/xiaoyugan-rem-face.png" width="1448" height="1086" alt="" draggable="false" />
+                <img class="xyg-rem-ear xyg-rem-ear--right" data-rem-ear="right" src="/images/xiaoyugan-rem-face.png" width="1448" height="1086" alt="" draggable="false" />
+                <img class="xyg-rem-base" data-rem-base src="/images/xiaoyugan-rem-base.png" width="1448" height="1086" alt="" draggable="false" />
+              </span>
+            </span>
+            <span class="xyg-rem-touch__label"><strong>点一下猫耳</strong><small>TAP TO PET</small></span>
+          </button>
         </div>
 
-        <article class="xyg-open-slot" data-reveal>
-          <div><PanelsTopLeft size={20} stroke-width={1.7} aria-hidden="true" /><span>THE ARCHIVE IS OPEN</span></div>
-          <h3>以后做过的项目，<br /><span>都可以继续放进来。</span></h3>
-          <p>实验室保留探索过程，成熟内容再进入主站的个人作品集。</p>
-        </article>
+        <footer class="xyg-pet-card__footer">
+          <span data-connection data-state="loading"><i></i>正在连接记录</span>
+          <p>点击反馈 · 匿名计数 · 本地兜底</p>
+        </footer>
+        <p class="xyg-sr-only" aria-live="polite" data-pet-announcement></p>
+      </article>
+
+      <section class="xyg-records" aria-labelledby="records-title">
+        <header class="xyg-section-heading" data-xyg-reveal>
+          <div><p class="xyg-kicker"><span></span> TOUCH RECORD</p><h2 id="records-title">每一次点击，<br /><em>都会留下轻轻的回声。</em></h2></div>
+          <p>这是匿名互动记录，计数数据不写入姓名、邮箱、IP 或设备指纹。换一个浏览器，会成为另一条匿名记录。</p>
+        </header>
+
+        <div class="xyg-metrics" data-xyg-reveal>
+          <article class="xyg-metric xyg-glass"><small>MY TOUCHES</small><strong data-own-count>0</strong><span>你的次数</span></article>
+          <article class="xyg-metric xyg-glass"><small>ALL TOUCHES</small><strong data-total-count>0</strong><span>全站摸摸</span></article>
+          <article class="xyg-metric xyg-glass"><small>VISITORS</small><strong data-participant-count>0</strong><span>匿名参与者</span></article>
+        </div>
+
+        <div class="xyg-ledger-grid">
+          <article class="xyg-ledger xyg-glass" data-xyg-reveal data-tilt>
+            <header><div><Sparkles size={17} aria-hidden="true" /><span>匿名摸摸榜</span></div><small>GLOBAL / TOP 06</small></header>
+            <ol data-leaderboard><li><span>01</span><strong>正在读取全站记录</strong><em>···</em></li></ol>
+          </article>
+          <article class="xyg-ledger xyg-ledger--recent xyg-glass" data-xyg-reveal data-tilt>
+            <header><div><Activity size={17} aria-hidden="true" /><span>这次的触碰</span></div><small>LOCAL / RECENT</small></header>
+            <ol data-recent-pets><li class="is-empty">点一下猫耳，这里会留下当前会话的时间记录。</li></ol>
+          </article>
+        </div>
       </section>
 
-      <section class="xyg-finale" aria-labelledby="finale-title" data-reveal>
-        <div class="xyg-finale__surface" aria-hidden="true">
-          <span></span><span></span><span></span>
-          <div class="xyg-finale__glass xyg-glass"><Sparkles size={20} aria-hidden="true" /><strong>STAY CURIOUS</strong></div>
-        </div>
-        <div class="xyg-finale__content">
-          <p class="xyg-kicker">XIAOYUGAN / CONTINUE</p>
-          <h2 id="finale-title">保持简单，<br /><span>继续实验。</span></h2>
-          <p>新的材质、动态和作品，会继续在这里出现。</p>
-          <a class="xyg-glass" href="/">回到小鱼的个人网站 <ArrowUpRight size={17} aria-hidden="true" /></a>
+      <section class="xyg-next" aria-labelledby="next-title">
+        <header class="xyg-section-heading" data-xyg-reveal>
+          <div><p class="xyg-kicker"><span></span> NEXT STUDIES</p><h2 id="next-title">更多东西，<br /><em>正在这里慢慢长出来。</em></h2></div>
+          <p>成熟的实验以后会回到主站；这里保留过程、触感和还没有被命名的想法。</p>
+        </header>
+        <div class="xyg-next-grid">
+          <article class="xyg-next-card xyg-glass" data-xyg-reveal data-tilt><small>02 / MATERIAL</small><div class="xyg-liquid-demo" aria-hidden="true"><span></span><i></i></div><h3>会追光的玻璃</h3><p>让边缘回应指针，不让内容被效果吞掉。</p><span>IN PROGRESS</span></article>
+          <article class="xyg-next-card xyg-glass" data-xyg-reveal data-tilt><small>03 / MOTION</small><div class="xyg-orbit-demo" aria-hidden="true"><span></span><i></i><b></b></div><h3>有重量的动效</h3><p>每个动作都有起因、惯性与安静停下的时刻。</p><span>OPEN STUDY</span></article>
+          <article class="xyg-next-card xyg-next-card--wide xyg-glass" data-xyg-reveal data-tilt><small>04 / REMOVO</small><div class="xyg-wave-demo" aria-hidden="true"><i></i><i></i><i></i><i></i></div><h3>把小鱼、蕾姆灵感与代码，做成同一种语言。</h3><p>不是模板站，是一个会持续生长的个人空间。</p><span>CONTINUE</span></article>
         </div>
       </section>
+
+      <footer class="xyg-footer" data-xyg-reveal>
+        <div><p class="xyg-kicker"><span></span> REMOVO / XIAOYUGAN</p><h2>实验先留在这里，<br /><em>好东西再带回主站。</em></h2></div>
+        <a class="xyg-glass" href="/">回到小鱼的个人网站 <ArrowUpRight size={17} aria-hidden="true" /></a>
+      </footer>
     </main>
   </div>
 </BaseLayout>
 
 <script>
-  import { gsap } from "gsap";
-  import { ScrollTrigger } from "gsap/ScrollTrigger";
-
-  const page = document.querySelector<HTMLElement>("[data-xiaoyugan]");
-  if (page) {
-    gsap.registerPlugin(ScrollTrigger);
-
-    const revealItems = gsap.utils.toArray<HTMLElement>("[data-reveal]", page);
-    const heroRevealItems = gsap.utils.toArray<HTMLElement>(".xyg-hero [data-reveal]", page);
-    const sectionRevealItems = revealItems.filter((item) => !item.closest(".xyg-hero"));
-    const media = gsap.matchMedia();
-
-    media.add({
-      desktop: "(min-width: 992px)",
-      reduceMotion: "(prefers-reduced-motion: reduce)",
-    }, (context) => {
-      const { desktop, reduceMotion } = context.conditions as { desktop: boolean; reduceMotion: boolean };
-
-      if (reduceMotion) {
-        gsap.set(revealItems, { autoAlpha: 1, y: 0 });
-        return;
-      }
-
-      gsap.fromTo(heroRevealItems,
-        { autoAlpha: 0, y: 24 },
-        { autoAlpha: 1, y: 0, duration: 0.8, stagger: 0.1, ease: "power2.out" },
-      );
-
-      gsap.set(sectionRevealItems, { autoAlpha: 0, y: 28 });
-      ScrollTrigger.batch(sectionRevealItems, {
-        start: "top 88%",
-        once: true,
-        onEnter: (items) => gsap.to(items, { autoAlpha: 1, y: 0, duration: 0.75, stagger: 0.08, ease: "power2.out", overwrite: true }),
-      });
-
-      gsap.to(".xyg-hero__glass-wrap", {
-        y: -34,
-        rotation: 1.6,
-        ease: "none",
-        scrollTrigger: { trigger: ".xyg-hero", start: "top top", end: "bottom top", scrub: 0.8 },
-      });
-
-      if (desktop) {
-        const steps = gsap.utils.toArray<HTMLElement>(".xyg-material-step", page);
-        const [lightStep, depthStep, responseStep] = steps;
-        if (!lightStep || !depthStep || !responseStep) return;
-        gsap.set(steps, { autoAlpha: 0, y: 16 });
-        gsap.set(lightStep, { autoAlpha: 1, y: 0 });
-
-        const materialTimeline = gsap.timeline({
-          scrollTrigger: {
-            trigger: ".xyg-material",
-            start: "top top",
-            end: "bottom bottom",
-            scrub: 1,
-          },
-        });
-
-        materialTimeline
-          .to(".xyg-material-glass", { y: -34, rotation: -1.5, scale: 1.035, ease: "none" }, 0)
-          .to(".xyg-content-scene__panel--primary", { x: -26, y: 12, ease: "none" }, 0)
-          .to(lightStep, { autoAlpha: 0, y: -12, duration: 0.12 }, 0.24)
-          .to(depthStep, { autoAlpha: 1, y: 0, duration: 0.12 }, 0.3)
-          .to(".xyg-material-glass", { y: 28, rotation: 1.2, scale: 0.97, ease: "none" }, 0.45)
-          .to(".xyg-content-scene__panel--secondary", { x: 34, y: -18, ease: "none" }, 0.45)
-          .to(depthStep, { autoAlpha: 0, y: -12, duration: 0.12 }, 0.68)
-          .to(responseStep, { autoAlpha: 1, y: 0, duration: 0.12 }, 0.74);
-      }
-    });
-
-    if (window.matchMedia("(hover: hover) and (pointer: fine)").matches && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      const pointerGlass = page.querySelector<HTMLElement>("[data-pointer-glass]");
-      const visual = page.querySelector<HTMLElement>("[data-hero-visual]");
-      if (pointerGlass && visual) {
-        const xTo = gsap.quickTo(pointerGlass, "x", { duration: 0.4, ease: "power3.out" });
-        const yTo = gsap.quickTo(pointerGlass, "y", { duration: 0.4, ease: "power3.out" });
-        const rotateXTo = gsap.quickTo(pointerGlass, "rotationX", { duration: 0.4, ease: "power3.out" });
-        const rotateYTo = gsap.quickTo(pointerGlass, "rotationY", { duration: 0.4, ease: "power3.out" });
-
-        visual.addEventListener("pointermove", (event) => {
-          const rect = visual.getBoundingClientRect();
-          const x = (event.clientX - rect.left) / rect.width - 0.5;
-          const y = (event.clientY - rect.top) / rect.height - 0.5;
-          xTo(x * 10);
-          yTo(y * 8);
-          rotateXTo(y * -3);
-          rotateYTo(x * 4);
-        }, { passive: true });
-
-        visual.addEventListener("pointerleave", () => {
-          xTo(0); yTo(0); rotateXTo(0); rotateYTo(0);
-        });
-      }
-    }
-
-    window.addEventListener("load", () => ScrollTrigger.refresh(), { once: true });
-  }
+  import "../scripts/xiaoyugan-lab";
 </script>

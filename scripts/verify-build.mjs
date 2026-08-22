@@ -14,17 +14,20 @@ const requiredFiles = [
   "offline/index.html",
   "tools/index.html",
   "tools/receipt-checker/index.html",
+  "xiaoyugan/index.html",
   "robots.txt",
   "sitemap-index.xml",
   "sitemap-0.xml",
   "manifest.webmanifest",
-  "favicon.ico",
-  "favicon-32.png",
-  "apple-touch-icon.png",
+  "favicon-rem.ico",
+  "favicon-rem-32.png",
+  "apple-touch-icon-rem.png",
   "icons/brand-avatar-64.png",
-  "icons/icon-192.png",
-  "icons/icon-512.png",
-  "icons/icon-maskable-512.png",
+  "icons/rem-icon-192.png",
+  "icons/rem-icon-512.png",
+  "icons/rem-icon-maskable-512.png",
+  "images/xiaoyugan-rem-face.png",
+  "images/xiaoyugan-rem-base.png",
   "sw.js",
   "_headers",
   "_redirects",
@@ -45,10 +48,11 @@ async function text(relativePath) {
 
 await Promise.all(requiredFiles.map((relativePath) => access(path.join(dist, relativePath))));
 
-const [home, tools, receipt, robots, sitemap, manifestSource, serviceWorker, headers, redirects] = await Promise.all([
+const [home, tools, receipt, laboratory, robots, sitemap, manifestSource, serviceWorker, headers, redirects] = await Promise.all([
   text("index.html"),
   text("tools/index.html"),
   text("tools/receipt-checker/index.html"),
+  text("xiaoyugan/index.html"),
   text("robots.txt"),
   text("sitemap-0.xml"),
   text("manifest.webmanifest"),
@@ -59,11 +63,13 @@ const [home, tools, receipt, robots, sitemap, manifestSource, serviceWorker, hea
 
 assert(home.includes('rel="canonical" href="https://leimuovo.com/"'), "首页 canonical 缺失或不正确");
 assert(home.includes('rel="manifest" href="/manifest.webmanifest"'), "页面未声明 PWA manifest");
-assert(home.includes('rel="icon" href="/favicon.ico"'), "页面未声明新版 favicon");
+assert(home.includes('rel="icon" href="/favicon-rem.ico"'), "页面未声明蕾姆猫耳 favicon");
 assert(home.includes('"@type":"WebSite"'), "首页 WebSite JSON-LD 缺失");
 assert(home.includes('"name":"小鱼"'), "首页品牌名称不正确");
 assert(tools.includes('"@type":"CollectionPage"'), "工具目录 CollectionPage JSON-LD 缺失");
 assert(receipt.includes('"@type":"SoftwareApplication"'), "工具页 SoftwareApplication JSON-LD 缺失");
+assert(laboratory.includes('/images/xiaoyugan-rem-face.png'), "实验室未使用透明猫耳主图");
+assert(laboratory.includes('/images/xiaoyugan-rem-base.png'), "实验室缺少 Q 弹分层底图");
 
 assert(robots.includes("Disallow: /offline/"), "robots.txt 未排除离线页");
 assert(robots.includes("Disallow: /control/"), "robots.txt 未排除私人控制中心");

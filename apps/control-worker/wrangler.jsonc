@@ -18,8 +18,20 @@
     {
       "pattern": "leimuovo.com/api/control/*",
       "zone_name": "leimuovo.com"
+    },
+    {
+      "pattern": "leimuovo.com/api/lab/*",
+      "zone_name": "leimuovo.com"
     }
   ],
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "LAB_PET_COUNTER",
+        "class_name": "LabPetCounter"
+      }
+    ]
+  },
   "vars": {
     "CONTROL_SITE_ORIGIN": "https://leimuovo.com",
     "CONTROL_AUTH_MODE": "password-only"
@@ -36,6 +48,10 @@
     {
       "tag": "v3",
       "deleted_classes": ["LoginThrottle", "LoginThrottleV2"]
+    },
+    {
+      "tag": "v4",
+      "new_sqlite_classes": ["LabPetCounter"]
     }
   ]
 }

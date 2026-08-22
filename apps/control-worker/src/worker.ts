@@ -3,6 +3,9 @@ import { createAuthenticationVerifier } from "./authentication";
 import { createControlApp, type LoginThrottle as LoginThrottlePort } from "./app";
 import { createLoginThrottle } from "./rate-limit";
 import { createWebsiteStatusProvider } from "./website";
+import { handleLabPetRequest } from "./lab-pets";
+
+export { LabPetCounter } from "./lab-pets";
 
 interface Env {
   ASSETS: Fetcher;
@@ -14,6 +17,7 @@ interface Env {
   CONTROL_ACCESS_AUD?: string;
   CONTROL_ALLOWED_EMAIL: string;
   CONTROL_SITE_ORIGIN: string;
+  LAB_PET_COUNTER: DurableObjectNamespace;
 }
 
 const ephemeralThrottleState = new Map<string, ThrottleRecord>();
@@ -86,6 +90,23 @@ function productionApp(env: Env) {
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
+    const url = new URL(request.url);
+    if (url.pathname.startsWith("/api/lab/")) {
+      try {
+        return await handleLabPetRequest(request, env);
+      } catch {
+        return new Response(JSON.stringify({ error: { code: "LAB_UNAVAILABLE", message: "实验记录暂时不可用" } }), {
+          status: 503,
+          headers: {
+            "Cache-Control": "no-store",
+            "Content-Type": "application/json; charset=utf-8",
+            "X-Content-Type-Options": "nosniff",
+            "X-Robots-Tag": "noindex, nofollow, noarchive",
+          },
+        });
+      }
+    }
+
     try {
       return await productionApp(env).fetch(request);
     } catch {
