@@ -19,23 +19,25 @@ if (page && page.dataset.motionReady !== "true") {
 
   try {
     page.dataset.motionReady = "true";
-    page.classList.add("is-motion-ready");
 
     const media = gsap.matchMedia();
 
     media.add(
       {
         reduceMotion: "(prefers-reduced-motion: reduce)",
+        mobile: "(max-width: 48rem)",
         finePointer: "(hover: hover) and (pointer: fine)",
         desktop: "(min-width: 48rem)",
       },
       (context) => {
       const { reduceMotion, finePointer, desktop } = context.conditions as {
         reduceMotion: boolean;
+        mobile: boolean;
         finePointer: boolean;
         desktop: boolean;
       };
       const cleanups: Array<() => void> = [];
+      page.classList.add("is-motion-ready");
 
       if (reduceMotion) {
         revealItems.forEach((item) => item.classList.add("is-visible"));
@@ -44,34 +46,48 @@ if (page && page.dataset.motionReady !== "true") {
       }
 
       revealItems.forEach((item) => item.classList.remove("is-visible"));
-      gsap.set(revealItems, {
-        autoAlpha: 0,
-        y: 28,
-        scale: 0.985,
-        filter: "blur(5px)",
-        transformOrigin: "50% 42%",
-      });
 
       const reveal = (item: HTMLElement) => {
         if (item.classList.contains("is-visible")) return;
         const order = Number.parseInt(item.dataset.homeReveal || "0", 10);
         item.classList.add("is-visible");
-        item.style.willChange = "transform, opacity, filter";
-        gsap.to(item, {
-          autoAlpha: 1,
-          y: 0,
-          scale: 1,
-          filter: "blur(0px)",
-          duration: 0.92,
-          delay: Math.max(0, order) * 0.075,
-          ease: "power3.out",
-          overwrite: "auto",
-          onComplete: () => {
-            item.style.willChange = "";
-            gsap.set(item, { clearProps: "transform,opacity,visibility,filter" });
+        item.style.willChange = desktop ? "transform, opacity, filter" : "transform";
+        gsap.fromTo(
+          item,
+          {
+            autoAlpha: desktop ? 0.48 : 1,
+            y: desktop ? 28 : 12,
+            scale: desktop ? 0.985 : 0.998,
+            filter: desktop ? "blur(5px)" : "blur(0px)",
+            transformOrigin: "50% 42%",
           },
-        });
+          {
+            autoAlpha: 1,
+            y: 0,
+            scale: 1,
+            filter: "blur(0px)",
+            duration: desktop ? 0.92 : 0.58,
+            delay: Math.max(0, order) * (desktop ? 0.075 : 0.045),
+            ease: "power3.out",
+            overwrite: "auto",
+            onComplete: () => {
+              item.style.willChange = "";
+              gsap.set(item, { clearProps: "transform,opacity,visibility,filter" });
+            },
+          },
+        );
       };
+
+      const initialViewportEdge = window.innerHeight * 1.06;
+      const belowFoldItems: HTMLElement[] = [];
+      revealItems.forEach((item) => {
+        const bounds = item.getBoundingClientRect();
+        if (bounds.bottom >= 0 && bounds.top <= initialViewportEdge) {
+          reveal(item);
+        } else {
+          belowFoldItems.push(item);
+        }
+      });
 
       if ("IntersectionObserver" in window) {
         const observer = new IntersectionObserver(
@@ -84,10 +100,10 @@ if (page && page.dataset.motionReady !== "true") {
           },
           { threshold: 0.12, rootMargin: "0px 0px -6% 0px" },
         );
-        revealItems.forEach((item) => observer.observe(item));
+        belowFoldItems.forEach((item) => observer.observe(item));
         cleanups.push(() => observer.disconnect());
       } else {
-        revealItems.forEach(reveal);
+        belowFoldItems.forEach(reveal);
       }
 
       if (finePointer && desktop) {

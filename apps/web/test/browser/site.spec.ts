@@ -19,6 +19,26 @@ test("brand homepage remains focused and responsive", async ({ page }) => {
   }
 });
 
+test("mobile homepage is readable on first paint without waiting for interaction or recovery", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "mobile", "This regression is specific to the touch/mobile media-query branch");
+
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+  const heroCopy = page.locator(".portfolio-hero__copy");
+  const firstPaint = await heroCopy.evaluate((element) => {
+    const style = getComputedStyle(element);
+    return {
+      opacity: Number(style.opacity),
+      visibility: style.visibility,
+      filter: style.filter,
+      motionReady: document.querySelector(".lm-page--home")?.classList.contains("is-motion-ready") ?? false,
+    };
+  });
+
+  expect(firstPaint.visibility).not.toBe("hidden");
+  expect(firstPaint.opacity).toBeGreaterThanOrEqual(0.95);
+  expect(["none", "blur(0px)"]).toContain(firstPaint.filter);
+});
+
 test("homepage remains readable when the motion bundle is unavailable", async ({ page }) => {
   await page.route("**/_astro/*.js", (route) => route.abort());
   await page.goto("/");
