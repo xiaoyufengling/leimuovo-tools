@@ -214,6 +214,7 @@ test("mobile laboratory stays visible when animation frames are delayed", async 
 
 test("mobile short tap bounces the exact approved artwork without swapping layers", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "mobile", "This regression exercises the touch interaction path");
+  await page.emulateMedia({ reducedMotion: "no-preference" });
   let count = 2;
   await page.route("**/api/lab/pets**", async (route) => {
     if (route.request().method() === "POST") count += 1;
@@ -240,22 +241,22 @@ test("mobile short tap bounces the exact approved artwork without swapping layer
   const clientX = (box?.x ?? 0) + (box?.width ?? 0) * 0.28;
   const clientY = (box?.y ?? 0) + (box?.height ?? 0) * 0.32;
 
-  await button.dispatchEvent("pointerdown", { clientX, clientY, pointerId: 1, pointerType: "touch" });
+  await page.mouse.move(clientX, clientY);
+  await page.mouse.down();
   await page.waitForTimeout(40);
-  await button.dispatchEvent("pointerup", { clientX, clientY, pointerId: 1, pointerType: "touch" });
-  await button.dispatchEvent("click", { clientX, clientY });
-  await page.waitForTimeout(70);
-
-  const shortTapFrame = await page.evaluate(() => ({
+  const pressedFrame = await page.evaluate(() => ({
     approvedOpacity: Number(getComputedStyle(document.querySelector<HTMLElement>(".xyg-rem-face")!).opacity),
     replacementLayers: document.querySelectorAll("[data-rem-parts], [data-rem-base], [data-rem-ear]").length,
     approvedTransform: getComputedStyle(document.querySelector<HTMLElement>(".xyg-rem-face")!).transform,
     approvedSource: document.querySelector<HTMLImageElement>(".xyg-rem-face")?.getAttribute("src"),
+    touchAction: getComputedStyle(document.querySelector<HTMLElement>("[data-pet-button]")!).touchAction,
   }));
-  expect(shortTapFrame.approvedOpacity).toBeGreaterThanOrEqual(0.99);
-  expect(shortTapFrame.replacementLayers).toBe(0);
-  expect(shortTapFrame.approvedTransform).not.toBe(initialTransform);
-  expect(shortTapFrame.approvedSource).toBe("/images/xiaoyugan-rem-face.png");
+  expect(pressedFrame.approvedOpacity).toBeGreaterThanOrEqual(0.99);
+  expect(pressedFrame.replacementLayers).toBe(0);
+  expect(pressedFrame.approvedTransform).not.toBe(initialTransform);
+  expect(pressedFrame.approvedSource).toBe("/images/xiaoyugan-rem-face.png");
+  expect(pressedFrame.touchAction).toBe("manipulation");
+  await page.mouse.up();
   await expect(page.locator("[data-own-count]").first()).toHaveText("3");
 
   await expect.poll(() => approvedArtwork.evaluate((element) => getComputedStyle(element).transform)).toBe(initialTransform);
