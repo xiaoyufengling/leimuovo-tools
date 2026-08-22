@@ -64,7 +64,7 @@ test("dark homepage keeps glass hierarchy and silhouette action icons", async ({
   expect(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth)).toBe(false);
 });
 
-test("light homepage uses a porcelain neutral material palette", async ({ page }) => {
+test("light homepage keeps a cool porcelain liquid-glass hierarchy", async ({ page }) => {
   await page.addInitScript(() => window.localStorage.setItem("leimuovo-theme", "light"));
   await page.goto("/");
   await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
@@ -74,12 +74,21 @@ test("light homepage uses a porcelain neutral material palette", async ({ page }
     body: getComputedStyle(document.body).backgroundColor,
     ink: getComputedStyle(document.querySelector(".lm-page--home")!).color,
     backdrop: getComputedStyle(document.body).backgroundImage,
+    headerFilter: getComputedStyle(document.querySelector(".site-header")!).backdropFilter,
+    headerShadow: getComputedStyle(document.querySelector(".site-header")!).boxShadow,
+    archiveFilter: getComputedStyle(document.querySelector(".signature-study__frame")!).backdropFilter,
+    directionFilter: getComputedStyle(document.querySelector(".direction-card")!).backdropFilter,
   }));
 
-  expect(palette.canvas).toBe("rgb(243, 242, 239)");
-  expect(palette.body).toBe("rgb(243, 242, 239)");
+  expect(palette.canvas).toBe("rgb(242, 245, 247)");
+  expect(palette.body).toBe("rgb(242, 245, 247)");
   expect(palette.ink).toBe("rgb(25, 27, 31)");
+  expect(palette.backdrop).toContain("radial-gradient");
   expect(palette.backdrop).toContain("linear-gradient");
+  expect(palette.headerFilter).toContain("blur");
+  expect(palette.archiveFilter).toContain("blur");
+  expect(palette.directionFilter).toContain("blur");
+  expect(palette.headerShadow).not.toBe("none");
 });
 
 test("homepage opens the noindex Xiaoyugan visual laboratory", async ({ page }) => {
