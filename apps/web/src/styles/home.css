@@ -1099,7 +1099,7 @@ body:has(.lm-page--home) .site-lab-link {
   line-height: 1.8;
 }
 
-.has-js .lm-page--home [data-home-reveal] {
+.has-js .lm-page--home.is-motion-ready [data-home-reveal] {
   opacity: 0;
   transform: translate3d(0, 2rem, 0);
   transition:
@@ -1107,7 +1107,7 @@ body:has(.lm-page--home) .site-lab-link {
     transform 900ms var(--home-ease) var(--home-reveal-delay, 0ms);
 }
 
-.has-js .lm-page--home [data-home-reveal].is-visible {
+.has-js .lm-page--home.is-motion-ready [data-home-reveal].is-visible {
   opacity: 1;
   transform: translate3d(0, 0, 0);
 }

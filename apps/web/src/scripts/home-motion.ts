@@ -3,19 +3,33 @@ import { gsap } from "gsap";
 const page = document.querySelector<HTMLElement>(".lm-page--home");
 
 if (page && page.dataset.motionReady !== "true") {
-  page.dataset.motionReady = "true";
-  page.classList.add("is-motion-ready");
-
   const revealItems = gsap.utils.toArray<HTMLElement>("[data-home-reveal]", page);
-  const media = gsap.matchMedia();
+  const revealWithoutMotion = () => {
+    page.classList.remove("is-motion-ready");
+    delete page.dataset.motionReady;
+    revealItems.forEach((item) => {
+      item.classList.add("is-visible");
+      item.style.removeProperty("opacity");
+      item.style.removeProperty("visibility");
+      item.style.removeProperty("transform");
+      item.style.removeProperty("filter");
+      item.style.removeProperty("will-change");
+    });
+  };
 
-  media.add(
-    {
-      reduceMotion: "(prefers-reduced-motion: reduce)",
-      finePointer: "(hover: hover) and (pointer: fine)",
-      desktop: "(min-width: 48rem)",
-    },
-    (context) => {
+  try {
+    page.dataset.motionReady = "true";
+    page.classList.add("is-motion-ready");
+
+    const media = gsap.matchMedia();
+
+    media.add(
+      {
+        reduceMotion: "(prefers-reduced-motion: reduce)",
+        finePointer: "(hover: hover) and (pointer: fine)",
+        desktop: "(min-width: 48rem)",
+      },
+      (context) => {
       const { reduceMotion, finePointer, desktop } = context.conditions as {
         reduceMotion: boolean;
         finePointer: boolean;
@@ -194,10 +208,14 @@ if (page && page.dataset.motionReady !== "true") {
         });
       }
 
-      return () => {
-        cleanups.forEach((cleanup) => cleanup());
-        gsap.killTweensOf(revealItems);
-      };
-    },
-  );
+        return () => {
+          cleanups.forEach((cleanup) => cleanup());
+          gsap.killTweensOf(revealItems);
+        };
+      },
+    );
+  } catch (error) {
+    revealWithoutMotion();
+    console.warn("[home-motion] Motion initialization failed; showing static content.", error);
+  }
 }

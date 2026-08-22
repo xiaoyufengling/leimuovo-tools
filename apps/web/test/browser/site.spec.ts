@@ -19,6 +19,16 @@ test("brand homepage remains focused and responsive", async ({ page }) => {
   }
 });
 
+test("homepage remains readable when the motion bundle is unavailable", async ({ page }) => {
+  await page.route("**/_astro/*.js", (route) => route.abort());
+  await page.goto("/");
+
+  const heroCopy = page.locator(".portfolio-hero__copy");
+  await expect(heroCopy).toBeVisible();
+  await expect(heroCopy).not.toHaveCSS("opacity", "0");
+  await expect(page.getByRole("heading", { level: 1, name: /把模糊的想法.*界面与视觉素材/ })).toBeVisible();
+});
+
 test("homepage cat ears reveal the quiet easter egg", async ({ page }) => {
   await page.goto("/");
   const catEars = page.getByRole("button", { name: "摸摸小鱼名字上的猫耳" });
