@@ -92,8 +92,10 @@ main {
 .brand-mark {
   display: block;
   flex: 0 0 auto;
-  border-radius: 50%;
-  object-fit: cover;
+  border-radius: 0.35rem;
+  object-fit: contain;
+  -webkit-user-drag: none;
+  user-select: none;
 }
 
 .site-nav {

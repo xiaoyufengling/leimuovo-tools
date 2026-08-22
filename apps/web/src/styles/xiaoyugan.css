@@ -219,26 +219,18 @@ body:has(.xyg-page) {
 .xyg-brand small { color: var(--xyg-subtle); font: 0.5rem/1 var(--lm-font-mono); letter-spacing: 0.06em; }
 
 .xyg-brand__mark {
-  position: relative;
   display: block;
   width: 2rem;
   height: 2rem;
+  object-fit: contain;
+  padding: 0.08rem;
   border: 1px solid var(--xyg-line-strong);
   border-radius: 0.7rem;
   background: color-mix(in srgb, var(--xyg-blue-soft) 74%, transparent);
+  filter: drop-shadow(0 0.18rem 0.4rem color-mix(in srgb, var(--xyg-blue) 16%, transparent));
+  -webkit-user-drag: none;
+  user-select: none;
 }
-
-.xyg-brand__mark i {
-  position: absolute;
-  top: 0.45rem;
-  width: 0.55rem;
-  height: 0.7rem;
-  background: var(--xyg-blue);
-  clip-path: polygon(0 100%, 28% 0, 100% 82%);
-}
-
-.xyg-brand__mark i:first-child { left: 0.39rem; transform: rotate(-8deg); }
-.xyg-brand__mark i:last-child { right: 0.39rem; transform: scaleX(-1) rotate(-8deg); }
 
 .xyg-nav nav { gap: 0.35rem; }
 .xyg-back,

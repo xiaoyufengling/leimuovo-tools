@@ -70,13 +70,15 @@ def main() -> None:
     images_dir.mkdir(parents=True, exist_ok=True)
     icons_dir.mkdir(parents=True, exist_ok=True)
 
-    character.save(images_dir / "xiaoyugan-rem-face.png", optimize=True)
+    character_target = images_dir / "xiaoyugan-rem-face.png"
+    if args.character.resolve() != character_target.resolve():
+        character.save(character_target, optimize=True)
 
     favicon = fitted_icon(character, 256, fill_ratio=0.94)
     favicon_32 = premultiplied_resize(favicon, (32, 32))
-    favicon_32.save(args.public / "favicon-rem-32.png", optimize=True)
+    favicon_32.save(args.public / "favicon-rem-cat-32.png", optimize=True)
     favicon.save(
-        args.public / "favicon-rem.ico",
+        args.public / "favicon-rem-cat.ico",
         format="ICO",
         sizes=[(16, 16), (24, 24), (32, 32), (48, 48), (64, 64), (128, 128), (256, 256)],
     )
@@ -88,14 +90,19 @@ def main() -> None:
         background=(13, 16, 22, 255),
         rounded=True,
     )
-    apple.save(args.public / "apple-touch-icon-rem.png", optimize=True)
+    apple.save(args.public / "apple-touch-icon-rem-cat.png", optimize=True)
+
+    fitted_icon(character, 96, fill_ratio=0.94).save(
+        icons_dir / "rem-cat-brand-96.png",
+        optimize=True,
+    )
 
     fitted_icon(character, 192, fill_ratio=0.92).save(
-        icons_dir / "rem-icon-192.png",
+        icons_dir / "rem-cat-icon-192.png",
         optimize=True,
     )
     fitted_icon(character, 512, fill_ratio=0.92).save(
-        icons_dir / "rem-icon-512.png",
+        icons_dir / "rem-cat-icon-512.png",
         optimize=True,
     )
     fitted_icon(
@@ -103,10 +110,10 @@ def main() -> None:
         512,
         fill_ratio=0.72,
         background=(13, 16, 22, 255),
-    ).save(icons_dir / "rem-icon-maskable-512.png", optimize=True)
+    ).save(icons_dir / "rem-cat-icon-maskable-512.png", optimize=True)
 
     print(f"character={character.mode} {character.size} alpha={character.getchannel('A').getextrema()}")
-    print(f"wrote={images_dir / 'xiaoyugan-rem-face.png'}")
+    print(f"source={args.character}")
     print("wrote=site favicon, Apple touch icon, and PWA icon set")
 
 

@@ -18,13 +18,13 @@ export default defineConfig({
       registerType: "autoUpdate",
       injectRegister: "script",
       includeAssets: [
-        "favicon-rem.ico",
-        "favicon-rem-32.png",
-        "apple-touch-icon-rem.png",
-        "icons/brand-avatar-64.png",
-        "icons/rem-icon-192.png",
-        "icons/rem-icon-512.png",
-        "icons/rem-icon-maskable-512.png",
+        "favicon-rem-cat.ico",
+        "favicon-rem-cat-32.png",
+        "apple-touch-icon-rem-cat.png",
+        "icons/rem-cat-brand-96.png",
+        "icons/rem-cat-icon-192.png",
+        "icons/rem-cat-icon-512.png",
+        "icons/rem-cat-icon-maskable-512.png",
       ],
       manifest: {
         id: "/",
@@ -40,19 +40,19 @@ export default defineConfig({
         categories: ["lifestyle", "productivity"],
         icons: [
           {
-            src: "/icons/rem-icon-192.png",
+            src: "/icons/rem-cat-icon-192.png",
             sizes: "192x192",
             type: "image/png",
             purpose: "any",
           },
           {
-            src: "/icons/rem-icon-512.png",
+            src: "/icons/rem-cat-icon-512.png",
             sizes: "512x512",
             type: "image/png",
             purpose: "any",
           },
           {
-            src: "/icons/rem-icon-maskable-512.png",
+            src: "/icons/rem-cat-icon-maskable-512.png",
             sizes: "512x512",
             type: "image/png",
             purpose: "maskable",

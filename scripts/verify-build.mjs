@@ -19,13 +19,13 @@ const requiredFiles = [
   "sitemap-index.xml",
   "sitemap-0.xml",
   "manifest.webmanifest",
-  "favicon-rem.ico",
-  "favicon-rem-32.png",
-  "apple-touch-icon-rem.png",
-  "icons/brand-avatar-64.png",
-  "icons/rem-icon-192.png",
-  "icons/rem-icon-512.png",
-  "icons/rem-icon-maskable-512.png",
+  "favicon-rem-cat.ico",
+  "favicon-rem-cat-32.png",
+  "apple-touch-icon-rem-cat.png",
+  "icons/rem-cat-brand-96.png",
+  "icons/rem-cat-icon-192.png",
+  "icons/rem-cat-icon-512.png",
+  "icons/rem-cat-icon-maskable-512.png",
   "images/xiaoyugan-rem-face.png",
   "sw.js",
   "_headers",
@@ -62,12 +62,14 @@ const [home, tools, receipt, laboratory, robots, sitemap, manifestSource, servic
 
 assert(home.includes('rel="canonical" href="https://leimuovo.com/"'), "首页 canonical 缺失或不正确");
 assert(home.includes('rel="manifest" href="/manifest.webmanifest"'), "页面未声明 PWA manifest");
-assert(home.includes('rel="icon" href="/favicon-rem.ico"'), "页面未声明蕾姆猫耳 favicon");
+assert(home.includes('rel="icon" href="/favicon-rem-cat.ico"'), "页面未声明蕾姆猫耳 favicon");
+assert(home.includes('/icons/rem-cat-brand-96.png'), "主站导航未使用蕾姆猫耳品牌图标");
 assert(home.includes('"@type":"WebSite"'), "首页 WebSite JSON-LD 缺失");
 assert(home.includes('"name":"小鱼"'), "首页品牌名称不正确");
 assert(tools.includes('"@type":"CollectionPage"'), "工具目录 CollectionPage JSON-LD 缺失");
 assert(receipt.includes('"@type":"SoftwareApplication"'), "工具页 SoftwareApplication JSON-LD 缺失");
 assert(laboratory.includes('/images/xiaoyugan-rem-face.png'), "实验室未使用透明猫耳主图");
+assert(laboratory.includes('/icons/rem-cat-brand-96.png'), "实验室导航未使用蕾姆猫耳品牌图标");
 assert(!laboratory.includes('data-rem-parts'), "实验室不应在互动时替换核准主图");
 const laboratoryCssHref = laboratory.match(/href="(\/_astro\/xiaoyugan\.[^"]+\.css)"/)?.[1];
 assert(laboratoryCssHref, "实验室构建产物缺少独立样式表");
