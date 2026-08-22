@@ -527,7 +527,6 @@ body:has(.xyg-page) {
   pointer-events: none;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
-  user-select: none;
   -webkit-user-drag: none;
   position: relative;
   z-index: 2;

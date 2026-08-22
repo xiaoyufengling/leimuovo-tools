@@ -69,6 +69,10 @@ assert(tools.includes('"@type":"CollectionPage"'), "工具目录 CollectionPage 
 assert(receipt.includes('"@type":"SoftwareApplication"'), "工具页 SoftwareApplication JSON-LD 缺失");
 assert(laboratory.includes('/images/xiaoyugan-rem-face.png'), "实验室未使用透明猫耳主图");
 assert(!laboratory.includes('data-rem-parts'), "实验室不应在互动时替换核准主图");
+const laboratoryCssHref = laboratory.match(/href="(\/_astro\/xiaoyugan\.[^"]+\.css)"/)?.[1];
+assert(laboratoryCssHref, "实验室构建产物缺少独立样式表");
+const laboratoryCss = await text(laboratoryCssHref.slice(1));
+assert(/\.xyg-rem-face\{[^}]*-webkit-touch-callout:none[^}]*-webkit-user-select:none/u.test(laboratoryCss), "实验室主图缺少生产环境 iOS 长按保护");
 
 assert(robots.includes("Disallow: /offline/"), "robots.txt 未排除离线页");
 assert(robots.includes("Disallow: /control/"), "robots.txt 未排除私人控制中心");
