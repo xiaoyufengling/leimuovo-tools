@@ -29,6 +29,22 @@ test("homepage remains readable when the motion bundle is unavailable", async ({
   await expect(page.getByRole("heading", { level: 1, name: /把模糊的想法.*界面与视觉素材/ })).toBeVisible();
 });
 
+test("homepage recovers from the legacy transparent cache state", async ({ page }) => {
+  await page.route("**/_astro/*.js", (route) => route.abort());
+  await page.goto("/");
+
+  const heroCopy = page.locator(".portfolio-hero__copy");
+  await heroCopy.evaluate((element) => {
+    element.classList.remove("is-visible");
+    element.style.opacity = "0";
+    element.style.visibility = "hidden";
+    element.style.transform = "translate3d(0, 2rem, 0)";
+  });
+
+  await expect(heroCopy).not.toHaveCSS("opacity", "0", { timeout: 4_000 });
+  await expect(heroCopy).toBeVisible();
+});
+
 test("homepage cat ears reveal the quiet easter egg", async ({ page }) => {
   await page.goto("/");
   const catEars = page.getByRole("button", { name: "摸摸小鱼名字上的猫耳" });

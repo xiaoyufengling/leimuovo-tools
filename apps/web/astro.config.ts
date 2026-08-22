@@ -76,8 +76,8 @@ export default defineConfig({
               && !url.pathname.startsWith("/api/control/"),
             handler: "NetworkFirst",
             options: {
-              cacheName: "leimuovo-pages",
-              networkTimeoutSeconds: 3,
+              cacheName: "leimuovo-pages-v2",
+              networkTimeoutSeconds: 8,
               precacheFallback: { fallbackURL: "/offline/" },
               cacheableResponse: { statuses: [0, 200] },
             },

@@ -35,6 +35,38 @@
   systemDark.addEventListener?.("change", syncThemeButtons);
   syncThemeButtons();
 
+  // A previous homepage release hid reveal content before its motion bundle
+  // was ready. Recover cached copies on slow/mobile connections so a failed
+  // animation can never leave the whole page transparent.
+  const recoverHiddenHomepage = () => {
+    const home = document.querySelector(".lm-page--home");
+    const hero = home?.querySelector(".portfolio-hero__copy");
+    if (!home || !hero) return;
+
+    const heroStyle = window.getComputedStyle(hero);
+    if (heroStyle.opacity !== "0" && heroStyle.visibility !== "hidden") return;
+
+    home.classList.remove("is-motion-ready");
+    delete home.dataset.motionReady;
+    for (const item of home.querySelectorAll("[data-home-reveal]")) {
+      item.classList.add("is-visible");
+      item.style.removeProperty("opacity");
+      item.style.removeProperty("visibility");
+      item.style.removeProperty("transform");
+      item.style.removeProperty("filter");
+      item.style.removeProperty("will-change");
+    }
+  };
+  window.setTimeout(recoverHiddenHomepage, 1_800);
+
+  // Retire the old navigation cache that can keep serving the transparent
+  // homepage when mobile data takes longer than the previous 3-second limit.
+  if ("caches" in window) {
+    window.caches.delete("leimuovo-pages").catch(() => {
+      // Cache cleanup is best-effort; the v2 service worker no longer reads it.
+    });
+  }
+
   const siteHeader = document.querySelector(".site-header");
   let headerFrame;
   const syncHeader = () => {
