@@ -19,5 +19,17 @@
 /manifest.webmanifest
   Cache-Control: public, max-age=3600
 
+/favicon.ico
+  Cache-Control: public, max-age=0, must-revalidate
+
+/favicon-32.png
+  Cache-Control: public, max-age=0, must-revalidate
+
+/apple-touch-icon.png
+  Cache-Control: public, max-age=0, must-revalidate
+
+/apple-touch-icon-precomposed.png
+  Cache-Control: public, max-age=0, must-revalidate
+
 /*.html
   Cache-Control: public, max-age=0, must-revalidate
