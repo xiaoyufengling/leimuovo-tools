@@ -282,6 +282,11 @@ function mountPetCounter(page: HTMLElement): void {
     sending = false;
   }
 
+  const preventNativeArtworkAction = (event: Event) => event.preventDefault();
+  button.addEventListener("contextmenu", preventNativeArtworkAction);
+  button.addEventListener("dragstart", preventNativeArtworkAction);
+  button.addEventListener("selectstart", preventNativeArtworkAction);
+
   button.addEventListener("pointerdown", pressPet, { passive: true });
   button.addEventListener("pointerup", (event) => {
     lastPointerReleaseAt = performance.now();

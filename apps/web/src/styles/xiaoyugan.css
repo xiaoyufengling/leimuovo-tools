@@ -463,7 +463,10 @@ body:has(.xyg-page) {
   cursor: pointer;
   isolation: isolate;
   touch-action: manipulation;
+  -webkit-touch-callout: none;
   -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .xyg-rem-touch::before {
@@ -511,12 +514,18 @@ body:has(.xyg-page) {
   transform: translateX(calc(-50% + var(--ear-look) * 0.3rem));
   transition: transform 340ms var(--xyg-ease);
   animation: xyg-float 4.2s ease-in-out infinite;
+  pointer-events: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .xyg-rem-face {
   display: block;
   width: 100%;
   height: auto;
+  pointer-events: none;
+  -webkit-touch-callout: none;
   user-select: none;
   -webkit-user-drag: none;
   position: relative;

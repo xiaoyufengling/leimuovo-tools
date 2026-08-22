@@ -282,6 +282,48 @@ test("mobile artwork responds to a press before the motion bundle is ready", asy
   await expect.poll(() => approvedArtwork.evaluate((element) => getComputedStyle(element).transform)).toBe(initialTransform);
 });
 
+test("mobile artwork suppresses native image preview and save gestures", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "mobile", "This regression exercises the mobile long-press path");
+  await page.route("**/api/lab/pets**", async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        visitor: { label: "冰蓝小鱼 · HOLD", count: 2 },
+        totalPets: 8,
+        participantCount: 2,
+        leaders: [],
+      }),
+    });
+  });
+
+  await page.goto("/xiaoyugan/", { waitUntil: "domcontentloaded" });
+  await expect(page.locator("[data-own-count]").first()).toHaveText("2");
+  const artwork = page.locator(".xyg-rem-face");
+  await expect(artwork).toHaveCount(1);
+  await expect(artwork).toHaveAttribute("draggable", "false");
+
+  const nativeGestureState = await artwork.evaluate((element) => {
+    const contextMenu = new MouseEvent("contextmenu", { bubbles: true, cancelable: true });
+    const dragStart = new DragEvent("dragstart", { bubbles: true, cancelable: true });
+    element.dispatchEvent(contextMenu);
+    element.dispatchEvent(dragStart);
+    const styles = getComputedStyle(element);
+    return {
+      contextMenuPrevented: contextMenu.defaultPrevented,
+      dragStartPrevented: dragStart.defaultPrevented,
+      pointerEvents: styles.pointerEvents,
+      userSelect: styles.getPropertyValue("-webkit-user-select") || styles.getPropertyValue("user-select"),
+    };
+  });
+
+  expect(nativeGestureState.contextMenuPrevented).toBe(true);
+  expect(nativeGestureState.dragStartPrevented).toBe(true);
+  expect(nativeGestureState.pointerEvents).toBe("none");
+  expect(nativeGestureState.userSelect).toBe("none");
+  await expect(page.locator(".xyg-rem-face")).toHaveCount(1);
+});
+
 test("tool catalog exposes the receipt checker only on the secondary page", async ({ page }) => {
   await page.goto("/tools/");
   await expect(page.getByRole("heading", { level: 1, name: "小而专注的工具。" })).toBeVisible();
