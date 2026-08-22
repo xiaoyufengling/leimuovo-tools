@@ -232,6 +232,7 @@ test("mobile short tap bounces the exact approved artwork without swapping layer
   await page.goto("/xiaoyugan/", { waitUntil: "domcontentloaded" });
   const button = page.getByRole("button", { name: "摸一下蕾姆猫耳" });
   const approvedArtwork = page.locator(".xyg-rem-face");
+  await expect(page.locator("[data-own-count]").first()).toHaveText("2");
   await button.scrollIntoViewIfNeeded();
   const initialTransform = await approvedArtwork.evaluate((element) => getComputedStyle(element).transform);
   const box = await button.boundingBox();
@@ -259,6 +260,25 @@ test("mobile short tap bounces the exact approved artwork without swapping layer
 
   await expect.poll(() => approvedArtwork.evaluate((element) => getComputedStyle(element).transform)).toBe(initialTransform);
   await expect(approvedArtwork).toHaveCSS("opacity", "1");
+});
+
+test("mobile artwork responds to a press before the motion bundle is ready", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "mobile", "This fallback is specific to early touch input");
+  await page.route("**/_astro/*.js", (route) => route.abort());
+  await page.goto("/xiaoyugan/", { waitUntil: "domcontentloaded" });
+  const button = page.getByRole("button", { name: "摸一下蕾姆猫耳" });
+  const approvedArtwork = page.locator(".xyg-rem-face");
+  await button.scrollIntoViewIfNeeded();
+  const initialTransform = await approvedArtwork.evaluate((element) => getComputedStyle(element).transform);
+  const box = await button.boundingBox();
+  expect(box).not.toBeNull();
+
+  await page.mouse.move((box?.x ?? 0) + (box?.width ?? 0) / 2, (box?.y ?? 0) + (box?.height ?? 0) / 2);
+  await page.mouse.down();
+  await page.waitForTimeout(20);
+  await expect.poll(() => approvedArtwork.evaluate((element) => getComputedStyle(element).transform)).not.toBe(initialTransform);
+  await page.mouse.up();
+  await expect.poll(() => approvedArtwork.evaluate((element) => getComputedStyle(element).transform)).toBe(initialTransform);
 });
 
 test("tool catalog exposes the receipt checker only on the secondary page", async ({ page }) => {

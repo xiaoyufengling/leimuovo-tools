@@ -526,6 +526,12 @@ body:has(.xyg-page) {
   transform-origin: 50% 68%;
 }
 
+/* Give the approved artwork an immediate press response even before the
+   deferred GSAP module finishes loading on a slower mobile connection. */
+.xyg-rem-touch:active .xyg-rem-face {
+  transform: translate3d(0, 0.22rem, 0) scaleX(1.035) scaleY(0.925);
+}
+
 @media (hover: hover) and (pointer: fine) {
   .xyg-rem-touch:hover .xyg-rem-face { filter: saturate(1.02) brightness(1.015); }
 }
@@ -819,6 +825,7 @@ body:has(.xyg-page) {
   .xyg-page *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
   .xyg-orbit { transform: none !important; }
   [data-tilt] { transform: none !important; }
+  .xyg-rem-touch:active .xyg-rem-face { transform: translateZ(0); }
 }
 
 @keyframes xyg-live {
