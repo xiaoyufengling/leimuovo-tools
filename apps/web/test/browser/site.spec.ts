@@ -4,10 +4,12 @@ import { expect, test } from "@playwright/test";
 test("brand homepage remains focused and responsive", async ({ page }) => {
   await page.goto("/");
   await expect(page).toHaveTitle(/小鱼/);
-  await expect(page.getByRole("heading", { level: 1, name: /Designing.*interfaces.*with feeling/ })).toBeVisible();
-  await expect(page.getByText(/正在把游戏界面、视觉设计与代码实验/)).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: /把模糊的想法.*界面与视觉素材/ })).toBeVisible();
+  await expect(page.getByText(/我为独立开发者、小团队和内容创作者/)).toBeVisible();
   await expect(page.locator(".signature-study")).toBeVisible();
-  await expect(page.locator(".direction-card")).toHaveCount(2);
+  await expect(page.locator(".advantage-card")).toHaveCount(3);
+  await expect(page.locator(".service-card")).toHaveCount(4);
+  await expect(page.locator(".price-card")).toHaveCount(4);
   await expect(page.locator(".tool-card")).toHaveCount(0);
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
   expect(overflow).toBe(false);
@@ -38,10 +40,10 @@ test("dark homepage keeps glass hierarchy and silhouette action icons", async ({
   await expect(actionIcons.locator("svg")).toHaveCount(2);
   expect(await actionIcons.allTextContents()).toEqual(["", ""]);
 
-  const aboutIcon = page.locator(".portfolio-ending .portfolio-button__icon");
-  await expect(aboutIcon).toHaveCount(1);
-  await expect(aboutIcon.locator("svg")).toHaveCount(1);
-  expect(await aboutIcon.textContent()).toBe("");
+  const contactIcons = page.locator(".studio-contact .portfolio-button__icon");
+  await expect(contactIcons).toHaveCount(2);
+  await expect(contactIcons.locator("svg")).toHaveCount(2);
+  expect(await contactIcons.allTextContents()).toEqual(["", ""]);
 
   const darkArtifacts = await page.evaluate(() => ({
     canvasBackground: getComputedStyle(document.documentElement).backgroundColor,
@@ -49,7 +51,7 @@ test("dark homepage keeps glass hierarchy and silhouette action icons", async ({
     topBackdrop: getComputedStyle(document.body).backgroundImage,
     pearlWash: getComputedStyle(document.querySelector(".home-atmosphere__wash--pearl")!).backgroundImage,
     headerShadow: getComputedStyle(document.querySelector(".site-header")!).boxShadow,
-    cardShadow: getComputedStyle(document.querySelector(".direction-card")!).boxShadow,
+    cardShadow: getComputedStyle(document.querySelector(".studio-card")!).boxShadow,
     archiveShadow: getComputedStyle(document.querySelector(".signature-study__frame")!).boxShadow,
   }));
 
@@ -77,7 +79,9 @@ test("light homepage keeps a cool porcelain liquid-glass hierarchy", async ({ pa
     headerFilter: getComputedStyle(document.querySelector(".site-header")!).backdropFilter,
     headerShadow: getComputedStyle(document.querySelector(".site-header")!).boxShadow,
     archiveFilter: getComputedStyle(document.querySelector(".signature-study__frame")!).backdropFilter,
-    directionFilter: getComputedStyle(document.querySelector(".direction-card")!).backdropFilter,
+    cardBackground: getComputedStyle(document.querySelector(".studio-card")!).backgroundColor,
+    cardBorder: getComputedStyle(document.querySelector(".studio-card")!).borderColor,
+    cardShadow: getComputedStyle(document.querySelector(".studio-card")!).boxShadow,
   }));
 
   expect(palette.canvas).toBe("rgb(242, 245, 247)");
@@ -87,13 +91,16 @@ test("light homepage keeps a cool porcelain liquid-glass hierarchy", async ({ pa
   expect(palette.backdrop).toContain("linear-gradient");
   expect(palette.headerFilter).toContain("blur");
   expect(palette.archiveFilter).toContain("blur");
-  expect(palette.directionFilter).toContain("blur");
+  expect(palette.cardBackground).not.toBe("rgba(0, 0, 0, 0)");
+  expect(palette.cardBorder).not.toBe("rgba(0, 0, 0, 0)");
+  expect(palette.cardShadow).not.toBe("none");
   expect(palette.headerShadow).not.toBe("none");
 });
 
 test("homepage opens the noindex Xiaoyugan visual laboratory", async ({ page }) => {
   await page.goto("/");
   const labEntry = page.locator(".lab-feature__link");
+  await labEntry.scrollIntoViewIfNeeded();
   await expect(labEntry).toBeVisible();
   await expect(labEntry).toHaveAttribute("href", "/xiaoyugan/");
   await labEntry.click();
