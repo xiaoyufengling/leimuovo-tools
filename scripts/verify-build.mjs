@@ -26,6 +26,8 @@ const requiredFiles = [
   "favicon-32.png",
   "apple-touch-icon.png",
   "apple-touch-icon-precomposed.png",
+  "safari-favorite-rem-cat-20260823.png",
+  "apple-touch-icon-rem-cat-20260823.png",
   "icons/rem-cat-brand-96.png",
   "icons/rem-cat-icon-192.png",
   "icons/rem-cat-icon-512.png",
@@ -67,7 +69,8 @@ const [home, tools, receipt, laboratory, robots, sitemap, manifestSource, servic
 assert(home.includes('rel="canonical" href="https://leimuovo.com/"'), "首页 canonical 缺失或不正确");
 assert(home.includes('rel="manifest" href="/manifest.webmanifest"'), "页面未声明 PWA manifest");
 assert(home.includes('rel="icon" href="/favicon.ico?v=rem-cat-20260823"'), "页面未声明蕾姆猫耳 favicon");
-assert(home.includes('rel="apple-touch-icon" href="/apple-touch-icon.png?v=rem-cat-20260823"'), "页面未声明 iOS 蕾姆猫耳图标");
+assert(home.includes('rel="icon" href="/safari-favorite-rem-cat-20260823.png"'), "页面未声明 Safari 专用蕾姆猫耳收藏图标");
+assert(home.includes('rel="apple-touch-icon" href="/apple-touch-icon-rem-cat-20260823.png"'), "页面未声明 iOS 蕾姆猫耳图标");
 assert(home.includes('/icons/rem-cat-brand-96.png'), "主站导航未使用蕾姆猫耳品牌图标");
 assert(home.includes('"@type":"WebSite"'), "首页 WebSite JSON-LD 缺失");
 assert(home.includes('"name":"小鱼"'), "首页品牌名称不正确");
