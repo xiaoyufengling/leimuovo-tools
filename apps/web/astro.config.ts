@@ -17,15 +17,6 @@ export default defineConfig({
     AstroPWA({
       registerType: "autoUpdate",
       injectRegister: "script",
-      includeAssets: [
-        "favicon-rem-cat.ico",
-        "favicon-rem-cat-32.png",
-        "apple-touch-icon-rem-cat.png",
-        "icons/rem-cat-brand-96.png",
-        "icons/rem-cat-icon-192.png",
-        "icons/rem-cat-icon-512.png",
-        "icons/rem-cat-icon-maskable-512.png",
-      ],
       manifest: {
         id: "/",
         name: "小鱼",
@@ -68,7 +59,7 @@ export default defineConfig({
         // instead of silently returning the home page.
         navigateFallback: null,
         globPatterns: ["**/*.{html,js,css,svg,png,ico,webmanifest}"],
-        globIgnores: ["**/vendor/tesseract/**", "**/_astro/receipt-checker*"],
+        globIgnores: ["**/vendor/tesseract/**", "**/_astro/receipt-checker*", "manifest.webmanifest"],
         runtimeCaching: [
           {
             urlPattern: ({ request, url }) => request.mode === "navigate"

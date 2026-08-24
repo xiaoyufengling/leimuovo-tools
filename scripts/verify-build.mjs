@@ -19,9 +19,6 @@ const requiredFiles = [
   "sitemap-index.xml",
   "sitemap-0.xml",
   "manifest.webmanifest",
-  "favicon-rem-cat.ico",
-  "favicon-rem-cat-32.png",
-  "apple-touch-icon-rem-cat.png",
   "favicon.ico",
   "favicon-32.png",
   "apple-touch-icon.png",
@@ -106,6 +103,12 @@ assert(serviceWorker.includes("PrecacheFallbackPlugin") && serviceWorker.include
 assert(serviceWorker.includes('/vendor/tesseract/'), "OCR 资源缺少按需运行时缓存");
 assert(!serviceWorker.includes('_astro/receipt-checker.'), "小票工具 JS/CSS 不应进入全站预缓存");
 assert(!serviceWorker.includes('url:"vendor/tesseract') && !serviceWorker.includes('url:"/vendor/tesseract'), "OCR 大文件不应进入全站预缓存");
+assert(!serviceWorker.includes('url:"scripts/home.js"'), "已退役首页脚本不应进入全站预缓存");
+for (const retiredAsset of ["favicon-rem", "apple-touch-icon-rem.png", "apple-touch-icon-rem-cat.png", "icons/rem-icon-", "icons/icon-"]) {
+  assert(!serviceWorker.includes(retiredAsset), `已退役品牌资源不应进入全站预缓存：${retiredAsset}`);
+}
+const precacheUrls = [...serviceWorker.matchAll(/\{url:"([^"]+)"/gu)].map((match) => match[1]);
+assert(new Set(precacheUrls).size === precacheUrls.length, "Service Worker 预缓存清单不应包含重复 URL");
 
 for (const directive of [
   "Content-Security-Policy:",
