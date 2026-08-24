@@ -78,6 +78,48 @@ import "../styles/xiaoyugan.css";
         <p class="xyg-sr-only" aria-live="polite" data-pet-announcement></p>
       </article>
 
+      <section class="xyg-bloom" aria-labelledby="bloom-title">
+        <header class="xyg-section-heading" data-xyg-reveal>
+          <div><p class="xyg-kicker"><span></span> PARTICLE BLOOM</p><h2 id="bloom-title">让一束光，<br /><em>长成会呼吸的花。</em></h2></div>
+          <p>第二个实验把蓝白粒子聚成一朵花。移动指针改变观看角度，轻点让它散开，再看它带着一点弹性回到原位。</p>
+        </header>
+
+        <article class="xyg-bloom-card xyg-glass" data-particle-bloom data-xyg-reveal aria-labelledby="bloom-card-title">
+          <header class="xyg-card-header">
+            <div><span>EXPERIMENT 02</span><strong id="bloom-card-title">粒子花园 · REMOVO Particle Bloom</strong></div>
+            <div class="xyg-bloom-card__tools">
+              <span class="xyg-live"><i></i><span data-bloom-status>GPU READY</span></span>
+              <button type="button" data-bloom-immersive aria-pressed="false" aria-label="进入粒子花园沉浸模式">沉浸模式</button>
+            </div>
+          </header>
+
+          <div class="xyg-bloom-card__body">
+            <div class="xyg-bloom-copy">
+              <p class="xyg-pet-copy__index">BLOOM / PARTICLE / 002</p>
+              <h3>不是播放视频，<br /><span>每一粒都在实时生长。</span></h3>
+              <p>粒子由浏览器即时计算，没有预渲染素材。它会根据设备能力自动调整密度，离开画面后也会安静停下。</p>
+              <ul aria-label="粒子实验特性">
+                <li>指针视差</li><li>点击散开</li><li>自适应性能</li>
+              </ul>
+            </div>
+
+            <button class="xyg-bloom-stage" type="button" data-bloom-trigger aria-label="让粒子花散开并重新聚合">
+              <canvas data-bloom-canvas aria-hidden="true"></canvas>
+              <span class="xyg-bloom-fallback" data-bloom-fallback aria-hidden="true"><i></i><i></i><i></i><b></b></span>
+              <span class="xyg-bloom-orbit" aria-hidden="true"><i></i><i></i></span>
+              <span class="xyg-bloom-stage__label"><strong>轻点散开</strong><small>TAP TO SCATTER</small></span>
+            </button>
+          </div>
+
+          <footer class="xyg-bloom-card__footer">
+            <span>REAL-TIME WEBGL / BLUE-WHITE STUDY</span>
+            <p>桌面端高密度 · 手机端自动减量 · 支持减少动态</p>
+          </footer>
+          <button class="xyg-bloom-close" type="button" data-bloom-close aria-label="退出粒子花园沉浸模式">退出沉浸</button>
+          <p class="xyg-sr-only" aria-live="polite" data-bloom-announcement></p>
+        </article>
+      </section>
+
       <section class="xyg-records" aria-labelledby="records-title">
         <header class="xyg-section-heading" data-xyg-reveal>
           <div><p class="xyg-kicker"><span></span> TOUCH RECORD</p><h2 id="records-title">每一次点击，<br /><em>都会留下轻轻的回声。</em></h2></div>
@@ -108,9 +150,9 @@ import "../styles/xiaoyugan.css";
           <p>成熟的实验以后会回到主站；这里保留过程、触感和还没有被命名的想法。</p>
         </header>
         <div class="xyg-next-grid">
-          <article class="xyg-next-card xyg-glass" data-xyg-reveal data-tilt><small>02 / MATERIAL</small><div class="xyg-liquid-demo" aria-hidden="true"><span></span><i></i></div><h3>会追光的玻璃</h3><p>让边缘回应指针，不让内容被效果吞掉。</p><span>IN PROGRESS</span></article>
-          <article class="xyg-next-card xyg-glass" data-xyg-reveal data-tilt><small>03 / MOTION</small><div class="xyg-orbit-demo" aria-hidden="true"><span></span><i></i><b></b></div><h3>有重量的动效</h3><p>每个动作都有起因、惯性与安静停下的时刻。</p><span>OPEN STUDY</span></article>
-          <article class="xyg-next-card xyg-next-card--wide xyg-glass" data-xyg-reveal data-tilt><small>04 / REMOVO</small><div class="xyg-wave-demo" aria-hidden="true"><i></i><i></i><i></i><i></i></div><h3>把小鱼、蕾姆灵感与代码，做成同一种语言。</h3><p>不是模板站，是一个会持续生长的个人空间。</p><span>CONTINUE</span></article>
+          <article class="xyg-next-card xyg-glass" data-xyg-reveal data-tilt><small>03 / MATERIAL</small><div class="xyg-liquid-demo" aria-hidden="true"><span></span><i></i></div><h3>会追光的玻璃</h3><p>让边缘回应指针，不让内容被效果吞掉。</p><span>IN PROGRESS</span></article>
+          <article class="xyg-next-card xyg-glass" data-xyg-reveal data-tilt><small>04 / MOTION</small><div class="xyg-orbit-demo" aria-hidden="true"><span></span><i></i><b></b></div><h3>有重量的动效</h3><p>每个动作都有起因、惯性与安静停下的时刻。</p><span>OPEN STUDY</span></article>
+          <article class="xyg-next-card xyg-next-card--wide xyg-glass" data-xyg-reveal data-tilt><small>05 / REMOVO</small><div class="xyg-wave-demo" aria-hidden="true"><i></i><i></i><i></i><i></i></div><h3>把小鱼、蕾姆灵感与代码，做成同一种语言。</h3><p>不是模板站，是一个会持续生长的个人空间。</p><span>CONTINUE</span></article>
         </div>
       </section>
 
@@ -124,4 +166,5 @@ import "../styles/xiaoyugan.css";
 
 <script>
   import "../scripts/xiaoyugan-lab";
+  import "../scripts/particle-bloom";
 </script>
