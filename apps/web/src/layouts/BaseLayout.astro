@@ -12,6 +12,7 @@ interface Props {
   description?: string;
   image?: string;
   noindex?: boolean;
+  canonicalPath?: string;
   jsonLd?: Record<string, unknown> | readonly Record<string, unknown>[] | undefined;
   hideChrome?: boolean;
 }
@@ -21,10 +22,11 @@ const {
   description = site.description,
   image = "/og-default.png",
   noindex = false,
+  canonicalPath = Astro.url.pathname,
   jsonLd,
   hideChrome = false,
 } = Astro.props;
-const canonical = new URL(Astro.url.pathname, site.url);
+const canonical = new URL(canonicalPath, site.url);
 const socialImage = new URL(image, site.url);
 const analyticsToken = import.meta.env.PUBLIC_CF_WEB_ANALYTICS_TOKEN;
 ---

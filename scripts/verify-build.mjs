@@ -8,6 +8,7 @@ const dist = path.join(repositoryRoot, "apps", "web", "dist");
 
 const requiredFiles = [
   "index.html",
+  "home/index.html",
   "404.html",
   "about/index.html",
   "privacy/index.html",
@@ -50,8 +51,9 @@ async function text(relativePath) {
 
 await Promise.all(requiredFiles.map((relativePath) => access(path.join(dist, relativePath))));
 
-const [home, tools, receipt, laboratory, robots, sitemap, manifestSource, serviceWorker, headers, redirects] = await Promise.all([
+const [home, favoriteHome, tools, receipt, laboratory, robots, sitemap, manifestSource, serviceWorker, headers, redirects] = await Promise.all([
   text("index.html"),
+  text("home/index.html"),
   text("tools/index.html"),
   text("tools/receipt-checker/index.html"),
   text("xiaoyugan/index.html"),
@@ -73,6 +75,9 @@ assert(!home.includes('rel="apple-touch-icon-precomposed"'), "页面不应声明
 assert(home.includes('/icons/rem-cat-brand-96.png'), "主站导航未使用蕾姆猫耳品牌图标");
 assert(home.includes('"@type":"WebSite"'), "首页 WebSite JSON-LD 缺失");
 assert(home.includes('"name":"小鱼"'), "首页品牌名称不正确");
+assert(favoriteHome.includes('<meta name="robots" content="noindex, nofollow">'), "Safari 收藏专用首页必须禁止收录");
+assert(favoriteHome.includes('rel="canonical" href="https://leimuovo.com/"'), "Safari 收藏专用首页必须 canonical 回主首页");
+assert(favoriteHome.includes('rel="icon" href="/icons/rem-cat-icon-512.png?v=safari-favorite-20260824"'), "Safari 收藏专用首页缺少高分辨率猫耳图标");
 assert(tools.includes('"@type":"CollectionPage"'), "工具目录 CollectionPage JSON-LD 缺失");
 assert(receipt.includes('"@type":"SoftwareApplication"'), "工具页 SoftwareApplication JSON-LD 缺失");
 assert(laboratory.includes('/images/xiaoyugan-rem-face.png'), "实验室未使用透明猫耳主图");
@@ -90,6 +95,7 @@ assert(robots.includes("Sitemap: https://leimuovo.com/sitemap-index.xml"), "robo
 assert(!sitemap.includes("/offline/"), "sitemap 不应包含离线页");
 assert(!sitemap.includes("/404/"), "sitemap 不应包含 404");
 assert(!sitemap.includes("/en/"), "首发 sitemap 不应包含未发布英文路由");
+assert(!sitemap.includes("/home/"), "sitemap 不应包含 Safari 收藏专用首页");
 
 const manifest = JSON.parse(manifestSource);
 assert(manifest.lang === "zh-CN", "PWA 默认语言必须是 zh-CN");
@@ -122,7 +128,6 @@ for (const directive of [
 ]) {
 assert(headers.includes(directive), `Cloudflare _headers 缺少 ${directive}`);
 }
-assert(redirects.includes("/home/ /index.html 200"), "Safari 收藏专用首页内部重写缺失");
 assert(redirects.includes("https://www.leimuovo.com/* https://leimuovo.com/:splat 301"), "www 301 跳转缺失");
 
 console.log(`Verified ${requiredFiles.length} Cloudflare build artifacts and deployment invariants.`);

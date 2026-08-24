@@ -506,3 +506,12 @@ test("SEO and PWA artifacts are discoverable", async ({ page, request }) => {
   expect((await request.get("/robots.txt")).ok()).toBe(true);
   expect((await request.get("/sitemap-index.xml")).ok()).toBe(true);
 });
+
+test("Safari favorite alias keeps a distinct URL while rendering the real homepage", async ({ page }) => {
+  await page.goto("/home/");
+  await expect(page).toHaveURL(/\/home\/$/);
+  await expect(page.locator(".portfolio-hero__copy")).toBeVisible();
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex, nofollow");
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "https://leimuovo.com/");
+  await expect(page.locator('link[rel="icon"][sizes="512x512"]')).toHaveAttribute("href", "/icons/rem-cat-icon-512.png?v=safari-favorite-20260824");
+});

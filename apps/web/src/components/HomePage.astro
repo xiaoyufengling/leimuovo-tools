@@ -1,0 +1,313 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { ArrowDownRight, ArrowUpRight } from "@lucide/astro";
+import { site } from "../config/site";
+import "../styles/home.css";
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: site.name,
+  url: site.url,
+  inLanguage: site.locale,
+  description: site.description,
+};
+const isFavoriteAlias = Astro.url.pathname === "/home/";
+---
+
+<BaseLayout
+  title="小鱼｜AI 视觉、游戏 UI 与前端创作"
+  description="带有 REMOVO 风格的 AI 视觉与前端创作者，为游戏 UI、视觉素材、网页原型和轻量工具提供定制设计与落地。"
+  jsonLd={jsonLd}
+  canonicalPath="/"
+  noindex={isFavoriteAlias}
+>
+  <div class="lm-page lm-page--home">
+    <div class="home-atmosphere" aria-hidden="true">
+      <span class="home-atmosphere__wash home-atmosphere__wash--blue"></span>
+      <span class="home-atmosphere__wash home-atmosphere__wash--pearl"></span>
+      <span class="home-atmosphere__drift"></span>
+      <span class="home-atmosphere__line"></span>
+      <span class="home-atmosphere__grain"></span>
+    </div>
+
+    <section class="portfolio-hero lm-container" data-home-hero aria-labelledby="home-title">
+      <div class="portfolio-hero__copy" data-home-reveal="0">
+        <div class="portfolio-kicker">
+          <span>REMOVO / 2026</span>
+          <i aria-hidden="true"></i>
+          <span>AI VISUAL & FRONT-END CREATION</span>
+        </div>
+
+        <h1 id="home-title" class="portfolio-hero__title-cn">
+          <span>把模糊的想法</span>
+          <em>做成能交付的</em>
+          <strong>界面与视觉素材。</strong>
+        </h1>
+
+        <p class="portfolio-hero__english">Design that ships.</p>
+
+        <p class="portfolio-hero__lede">
+          我为独立开发者、小团队和内容创作者，提供游戏 UI、视觉素材、网页原型和轻量工具制作。你只要带着一个模糊感觉来，我会帮你拆成清晰方向和可交付成果。
+        </p>
+
+        <div class="portfolio-hero__actions">
+          <a class="portfolio-button portfolio-button--primary" href="#services">
+            <span>看看我能做什么</span>
+            <i class="portfolio-button__icon" aria-hidden="true">
+              <ArrowDownRight size={18} stroke-width={2.4} />
+            </i>
+          </a>
+          <a class="portfolio-button portfolio-button--quiet" href="#contact">
+            <span>聊聊你的想法</span>
+            <i class="portfolio-button__icon" aria-hidden="true">
+              <ArrowUpRight size={18} stroke-width={2.4} />
+            </i>
+          </a>
+        </div>
+
+        <div class="portfolio-hero__status" aria-label="当前状态">
+          <span><i aria-hidden="true"></i> AVAILABLE FOR SELECTED WORK</span>
+          <span>GAME UI · VISUAL ASSET · WEB PROTOTYPE · LIGHT TOOL</span>
+        </div>
+      </div>
+
+      <div class="portfolio-hero__showcase" data-home-reveal="1" data-hero-shift aria-hidden="true">
+        <div class="signature-study">
+          <span class="signature-study__wash"></span>
+          <div class="signature-study__frame">
+            <div class="signature-study__chrome">
+              <span>PERSONAL ARCHIVE</span>
+              <i></i>
+              <span>001</span>
+            </div>
+
+            <div class="signature-study__field">
+              <span class="signature-study__sheet signature-study__sheet--back"></span>
+              <span class="signature-study__sheet signature-study__sheet--middle"></span>
+              <span class="signature-study__sheet signature-study__sheet--front"></span>
+              <span class="signature-study__ribbon"></span>
+              <div class="signature-study__type">
+                <small>DESIGN / MOTION / CODE</small>
+                <strong>MAKE<br />IT FEEL<br /><em>CLEAR.</em></strong>
+              </div>
+            </div>
+
+            <div class="signature-study__note">
+              <span>SELECTED PRACTICE</span>
+              <strong>Ideas become<br />interfaces.</strong>
+            </div>
+
+            <div class="signature-study__footer">
+              <span>GAME UI · VISUAL · MOTION</span>
+              <span>LEIMUOVO / 2026</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <a class="portfolio-hero__scroll" href="#advantages">
+        <span>SCROLL TO EXPLORE</span><i aria-hidden="true"></i>
+      </a>
+    </section>
+
+    <section class="discipline-strip" aria-label="服务方向" data-home-reveal="0">
+      <div class="lm-container discipline-strip__inner">
+        <span>GAME UI</span><i aria-hidden="true"></i>
+        <span>VISUAL ASSET</span><i aria-hidden="true"></i>
+        <span>WEB PROTOTYPE</span><i aria-hidden="true"></i>
+        <span>LIGHT TOOL</span>
+      </div>
+    </section>
+
+    <section class="studio-section lm-container" id="advantages" aria-labelledby="advantages-title">
+      <header class="studio-section__heading" data-home-reveal="0">
+        <div>
+          <p class="portfolio-eyebrow">FROM IDEA TO DELIVERY</p>
+          <h2 id="advantages-title">从模糊的感觉开始，<br /><span>一步步变成清楚的结果。</span></h2>
+        </div>
+        <p>不需要先写好完整需求。我们会一起把感觉拆开、把风格对齐，再整理成可以直接继续推进的交付成果。</p>
+      </header>
+
+      <div class="studio-card-grid studio-card-grid--advantages">
+        <article class="studio-card advantage-card" data-home-reveal="0">
+          <header><span>01</span><small>From vague idea</small></header>
+          <div class="advantage-card__copy">
+            <h3>需求说不清，也可以开始</h3>
+            <p>很多客户一开始只有一种感觉。我会从参考、场景和目标里，帮你拆成清楚的结构和制作清单。</p>
+          </div>
+          <ul class="studio-card__tags" aria-label="需求拆解关键词">
+            <li>参考归纳</li><li>方向拆解</li><li>制作清单</li>
+          </ul>
+        </article>
+        <article class="studio-card advantage-card" data-home-reveal="1">
+          <header><span>02</span><small>To clear visual</small></header>
+          <div class="advantage-card__copy">
+            <h3>风格统一，质感更稳</h3>
+            <p>不是零散做几张图，而是统一颜色、材质、层级和细节，形成一套彼此协调的视觉语言。</p>
+          </div>
+          <ul class="studio-card__tags" aria-label="视觉统一关键词">
+            <li>色彩系统</li><li>材质统一</li><li>层级规范</li>
+          </ul>
+        </article>
+        <article class="studio-card advantage-card" data-home-reveal="2">
+          <header><span>03</span><small>Ready to hand off</small></header>
+          <div class="advantage-card__copy">
+            <h3>交付清楚，方便继续</h3>
+            <p>每个阶段先确认再往下走，最后交付可直接使用、方便开发衔接的方案、素材或页面。</p>
+          </div>
+          <ul class="studio-card__tags" aria-label="交付关键词">
+            <li>阶段确认</li><li>可用文件</li><li>开发衔接</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="studio-section studio-section--services lm-container" id="services" aria-labelledby="services-title">
+      <header class="studio-section__heading" data-home-reveal="0">
+        <div>
+          <p class="portfolio-eyebrow">SERVICES</p>
+          <h2 id="services-title">你可以从一项需求开始，<br /><span>也可以一起做完整体验。</span></h2>
+        </div>
+        <p>适合需要清晰视觉方向、快速原型或小体量定制的个人项目与独立团队。</p>
+      </header>
+
+      <div class="studio-card-grid studio-card-grid--services">
+        <article class="studio-card service-card service-card--primary" data-home-reveal="0">
+          <header><span>01 / CORE</span><small>Game UI</small></header>
+          <div class="service-card__body"><h3>游戏界面</h3><p>从 HUD、菜单、状态面板到弹窗和图鉴，建立清楚、统一、符合世界观的界面体验。</p></div>
+          <footer class="studio-card__tags" aria-label="游戏界面服务内容"><span>界面系统</span><span>组件状态</span><span>动效建议</span></footer>
+        </article>
+        <article class="studio-card service-card" data-home-reveal="1">
+          <header><span>02</span><small>Visual Assets</small></header>
+          <div class="service-card__body"><h3>视觉素材</h3><p>制作图标、按钮、卡面、装饰元素和活动视觉，让一组素材拥有稳定一致的风格。</p></div>
+          <footer class="studio-card__tags" aria-label="视觉素材服务内容"><span>图标组</span><span>卡面与按钮</span><span>装饰素材</span></footer>
+        </article>
+        <article class="studio-card service-card" data-home-reveal="2">
+          <header><span>03</span><small>Web Prototype</small></header>
+          <div class="service-card__body"><h3>网站原型</h3><p>制作个人站、产品概念页和交互展示，交付桌面与手机都能演示的响应式页面。</p></div>
+          <footer class="studio-card__tags" aria-label="网站原型服务内容"><span>响应式</span><span>交互原型</span><span>前端实现</span></footer>
+        </article>
+        <article class="studio-card service-card" data-home-reveal="3">
+          <header><span>04</span><small>Mini Tools</small></header>
+          <div class="service-card__body"><h3>轻量工具</h3><p>把重复的小流程做成清楚、好用、无需复杂部署的网页工具。</p></div>
+          <footer class="studio-card__tags" aria-label="轻量工具服务内容"><span>流程梳理</span><span>自动处理</span><span>本地运行</span></footer>
+        </article>
+      </div>
+    </section>
+
+    <section class="lab-feature lm-container" aria-labelledby="lab-feature-title" data-home-reveal="0">
+      <a class="lab-feature__link" href="/xiaoyugan/" aria-label="进入小鱼干视觉实验室">
+        <div class="lab-feature__visual" aria-hidden="true">
+          <span class="lab-feature__halo lab-feature__halo--blue"></span>
+          <span class="lab-feature__halo lab-feature__halo--pink"></span>
+          <div class="lab-glass">
+            <span>EXPERIMENT / 001</span>
+            <strong>LIQUID<br />GLASS</strong>
+            <i></i>
+          </div>
+          <span class="lab-feature__caption">LIVE MATERIAL · SPATIAL DEPTH · FLUID MOTION</span>
+        </div>
+        <div class="lab-feature__copy">
+          <p class="portfolio-eyebrow">XIAOYUGAN VISUAL LAB</p>
+          <h2 id="lab-feature-title">想法先在这里<br /><span>变成可以感受的东西。</span></h2>
+          <p>视觉实验室会一直保留。新的材质、动效和交互先在这里发生，成熟以后再回到主界面。</p>
+          <div class="lab-feature__action"><span>OPEN LAB 001</span><i aria-hidden="true">↗</i></div>
+        </div>
+      </a>
+    </section>
+
+    <section class="studio-section studio-section--case lm-container" id="cases" aria-labelledby="cases-title">
+      <header class="studio-section__heading" data-home-reveal="0">
+        <div>
+          <p class="portfolio-eyebrow">CASE STUDIES</p>
+          <h2 id="cases-title">不是只看作品，<br /><span>而是看我是如何把需求落地的。</span></h2>
+        </div>
+        <p>真实案例会记录最初的模糊感觉、我如何拆解、经历几轮方向，以及最终交付了什么。</p>
+      </header>
+
+      <article class="rem-case-slot" data-home-reveal="0" aria-label="等待放入真实合作内容的蕾姆风格案例卡片">
+        <header><span>CASE FILE / 001</span><i aria-hidden="true"></i><span>REM STUDY</span></header>
+        <div class="rem-case-slot__canvas" aria-hidden="true">
+          <span class="rem-case-slot__ear rem-case-slot__ear--left"></span>
+          <span class="rem-case-slot__ear rem-case-slot__ear--right"></span>
+          <span class="rem-case-slot__ribbon"></span>
+          <span class="rem-case-slot__panel"></span>
+        </div>
+        <footer><span>CLIENT FEELING</span><span>PROCESS</span><span>DELIVERY</span></footer>
+      </article>
+    </section>
+
+    <section class="studio-section studio-section--pricing lm-container" id="pricing" aria-labelledby="pricing-title">
+      <header class="studio-section__heading" data-home-reveal="0">
+        <div>
+          <p class="portfolio-eyebrow">PRICING GUIDE</p>
+          <h2 id="pricing-title">参考区间，<br /><span>具体项目可以轻松聊。</span></h2>
+        </div>
+        <p>这里是常见需求的大概范围，不是硬性价目表。最后会根据工作量、修改范围和交付方式确认。</p>
+      </header>
+
+      <div class="studio-card-grid studio-card-grid--pricing">
+        <article class="studio-card price-card" data-home-reveal="0">
+          <header><span>轻量试单</span><small>TRY FIRST</small></header>
+          <div class="price-card__body"><strong><i>¥</i>199<small> 起</small></strong><p>适合单个图标、按钮、小组件或一个明确的小需求。</p></div>
+          <ul class="studio-card__tags" aria-label="轻量试单特点"><li>范围明确</li><li>快速确认</li></ul>
+        </article>
+        <article class="studio-card price-card" data-home-reveal="1">
+          <header><span>小型素材包</span><small>ASSET PACK</small></header>
+          <div class="price-card__body"><strong class="price-card__range"><i>¥</i>399–599<small> 起</small></strong><p>适合同一风格下的一组图标、卡片、按钮或页面装饰素材。</p></div>
+          <ul class="studio-card__tags" aria-label="小型素材包特点"><li>统一风格</li><li>成组交付</li></ul>
+        </article>
+        <article class="studio-card price-card price-card--featured" data-home-reveal="2">
+          <header><span>完整界面方案</span><small>FULL INTERFACE</small></header>
+          <div class="price-card__body"><strong class="price-card__range"><i>¥</i>1200–1500<small> 起</small></strong><p>适合一套核心游戏界面、完整产品页面或可演示的视觉原型。</p></div>
+          <ul class="studio-card__tags" aria-label="完整界面方案特点"><li>核心页面</li><li>交互状态</li></ul>
+        </article>
+        <article class="studio-card price-card" data-home-reveal="3">
+          <header><span>定制网站</span><small>CUSTOM WEB</small></header>
+          <div class="price-card__body"><strong class="price-card__custom">按需求报价</strong><p>根据页面数量、交互复杂度、素材准备和是否需要前端落地评估。</p></div>
+          <ul class="studio-card__tags" aria-label="定制网站特点"><li>响应式</li><li>前端落地</li></ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="studio-section studio-section--process lm-container" aria-labelledby="process-title">
+      <header class="studio-section__heading" data-home-reveal="0">
+        <div>
+          <p class="portfolio-eyebrow">WORKFLOW</p>
+          <h2 id="process-title">从说出想法，<br /><span>到修改与交付。</span></h2>
+        </div>
+      </header>
+
+      <ol class="collaboration-flow">
+        <li data-home-reveal="0"><span>01</span><div><strong>说出想法</strong><p>带着目标、使用场景、参考图或一个模糊感觉来就可以。</p></div></li>
+        <li data-home-reveal="1"><span>02</span><div><strong>拆解范围</strong><p>一起明确要做什么、交付什么，以及时间和大致预算。</p></div></li>
+        <li data-home-reveal="2"><span>03</span><div><strong>初版方向</strong><p>先看风格和核心画面，确认感觉准确后再继续细化。</p></div></li>
+        <li data-home-reveal="3"><span>04</span><div><strong>修改交付</strong><p>按阶段集中修改，最后整理成可以直接使用的成果。</p></div></li>
+      </ol>
+    </section>
+
+    <section class="studio-contact lm-container" id="contact" data-home-reveal="0" aria-labelledby="contact-title">
+      <div>
+        <p class="portfolio-eyebrow">START A SMALL IDEA</p>
+        <h2 id="contact-title">如果你只有一个模糊的感觉，<br /><span>也可以先发给我看看。</span></h2>
+      </div>
+      <div class="studio-contact__aside">
+        <p>游戏 UI、视觉素材、网页原型或轻量工具，都可以从一段描述、一张参考图或一个具体问题开始。</p>
+        <div class="studio-contact__actions">
+          <a class="portfolio-button portfolio-button--primary" href={`mailto:${site.email}?subject=${encodeURIComponent("想和小鱼聊一个定制需求")}`}>
+            <span>发送邮件</span><i class="portfolio-button__icon" aria-hidden="true"><ArrowUpRight size={18} stroke-width={2.4} /></i>
+          </a>
+          <a class="portfolio-button portfolio-button--quiet" href={site.issues} rel="external">
+            <span>GitHub 留言</span><i class="portfolio-button__icon" aria-hidden="true"><ArrowUpRight size={18} stroke-width={2.4} /></i>
+          </a>
+        </div>
+        <small>{site.email}</small>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    import "../scripts/home-motion";
+  </script>
+</BaseLayout>
