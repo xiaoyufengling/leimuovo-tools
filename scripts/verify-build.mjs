@@ -120,8 +120,9 @@ for (const directive of [
   "Referrer-Policy: strict-origin-when-cross-origin",
   "Permissions-Policy:",
 ]) {
-  assert(headers.includes(directive), `Cloudflare _headers 缺少 ${directive}`);
+assert(headers.includes(directive), `Cloudflare _headers 缺少 ${directive}`);
 }
+assert(redirects.includes("/home/ /index.html 200"), "Safari 收藏专用首页内部重写缺失");
 assert(redirects.includes("https://www.leimuovo.com/* https://leimuovo.com/:splat 301"), "www 301 跳转缺失");
 
 console.log(`Verified ${requiredFiles.length} Cloudflare build artifacts and deployment invariants.`);
