@@ -1,9 +1,9 @@
 ---
 import { ArrowUpRight, FileSpreadsheet, LockKeyhole } from "@lucide/astro";
-import type { ReturnTypeOfListTools } from "../types";
+import type { listTools } from "../modules/tool-catalog";
 
 interface Props {
-  tool: ReturnTypeOfListTools[number];
+  tool: ReturnType<typeof listTools>[number];
 }
 
 const { tool } = Astro.props;

@@ -8,5 +8,3 @@ export const site = {
   github: "https://github.com/xiaoyufengling/leimuovo-tools",
   issues: "https://github.com/xiaoyufengling/leimuovo-tools/issues",
 } as const;
-
-export type SiteConfig = typeof site;

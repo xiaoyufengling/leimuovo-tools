@@ -212,14 +212,7 @@ main {
   isolation: isolate;
 }
 
-.lm-page--home .hero__content.lm-motion-enter,
-.lm-page--home .hero__visual.lm-motion-enter {
-  animation-duration: 0.9s;
-  animation-timing-function: var(--home-ease);
-}
-
-.hero__copy,
-.hero__visual {
+.hero__copy {
   will-change: transform, opacity;
 }
 
@@ -246,17 +239,6 @@ main {
   margin-top: var(--lm-space-8);
 }
 
-.personal-shelf__copy > p:not(.eyebrow) {
-  max-width: 34rem;
-  margin: var(--lm-space-6) 0 0;
-  color: var(--lm-color-text-muted);
-  font-size: var(--lm-text-lg);
-}
-
-.personal-shelf__copy .lm-button {
-  margin-top: var(--lm-space-8);
-}
-
 .tool-card__icon {
   display: grid;
   width: var(--lm-control-height);
@@ -265,28 +247,6 @@ main {
   border-radius: 0.875rem;
   background: var(--lm-color-surface-muted);
   color: var(--lm-color-text);
-}
-
-.cta-band .eyebrow {
-  margin-bottom: var(--lm-space-4);
-}
-
-.has-js [data-reveal] {
-  opacity: 0;
-  transform: translate3d(0, 1.625rem, 0);
-  transition:
-    opacity 0.9s var(--home-ease) var(--reveal-delay, 0ms),
-    transform 0.9s var(--home-ease) var(--reveal-delay, 0ms);
-}
-
-.has-js [data-reveal].is-visible {
-  opacity: 1;
-  transform: translate3d(0, 0, 0);
-}
-
-@keyframes home-scroll-hint {
-  0% { transform: translateY(-100%); }
-  55%, 100% { transform: translateY(100%); }
 }
 
 .page-hero,
@@ -475,7 +435,6 @@ main {
 
 @media (min-width: 48rem) {
 
-  .principle-grid,
   .tool-info {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
@@ -484,7 +443,6 @@ main {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .cta-band,
   .tool-hero__heading {
     flex-direction: row;
     align-items: center;
@@ -503,82 +461,6 @@ main {
 @media (min-width: 64rem) {
   .hero {
     grid-template-columns: minmax(0, 1.03fr) minmax(24rem, 0.97fr);
-  }
-
-  .has-js .privacy-story__steps {
-    position: relative;
-    height: 8.75rem;
-  }
-
-  .has-js .privacy-story__steps li {
-    position: absolute;
-    inset: 0;
-    align-content: start;
-    opacity: var(--step-opacity, 0);
-    transform: translate3d(0, var(--step-y, 1.5rem), 0);
-    will-change: transform, opacity;
-  }
-
-  .has-js .privacy-story__steps li:first-child {
-    --step-opacity: 1;
-    --step-y: 0rem;
-  }
-
-  .has-js .workflow-scene {
-    display: block;
-    min-height: clamp(31rem, 62svh, 38rem);
-  }
-
-  .has-js .workflow-scene__path {
-    position: absolute;
-    top: 16%;
-    bottom: 17%;
-    left: 50%;
-    display: block;
-    width: 1px;
-    background: var(--lm-color-border);
-  }
-
-  .has-js .workflow-scene__path i {
-    position: absolute;
-    inset: 0;
-    background: var(--lm-color-text-muted);
-    transform: scaleY(var(--story-progress, 0));
-    transform-origin: top;
-    will-change: transform;
-  }
-
-  .has-js .workflow-card {
-    position: absolute;
-    width: min(78%, 24rem);
-    opacity: var(--card-opacity, 0.25);
-    transform: translate3d(0, var(--card-y, 0), 0) scale(var(--card-scale, 0.94));
-    will-change: transform, opacity;
-  }
-
-  .has-js .workflow-card--source {
-    --card-opacity: 1;
-    --card-scale: 1;
-    top: 6%;
-    left: 6%;
-  }
-
-  .has-js .workflow-card--process {
-    top: 38%;
-    left: 50%;
-    transform: translate3d(-50%, var(--card-y, 0), 0) scale(var(--card-scale, 0.94));
-  }
-
-  .has-js .workflow-card--result {
-    right: 6%;
-    bottom: 13%;
-  }
-
-  .has-js .workflow-scene__caption {
-    position: absolute;
-    right: var(--lm-space-6);
-    bottom: var(--lm-space-3);
-    left: var(--lm-space-6);
   }
 
   .tool-list {
@@ -606,54 +488,19 @@ main {
   }
 
   .hero__actions,
-  .cta-band__actions,
   .lm-state__actions {
     width: 100%;
   }
 
   .hero__actions .lm-button,
-  .cta-band__actions .lm-button,
   .lm-state__actions .lm-button {
     width: 100%;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero__copy,
-  .hero__visual,
-  [data-parallax] {
+  .hero__copy {
     opacity: 1 !important;
     transform: none !important;
-  }
-
-  .has-js [data-reveal] {
-    opacity: 1;
-    transform: none;
-  }
-
-  .has-js .privacy-story__steps {
-    height: auto;
-  }
-
-  .has-js .privacy-story__steps li,
-  .has-js .workflow-card {
-    position: relative;
-    inset: auto;
-    width: auto;
-    opacity: 1;
-    transform: none;
-  }
-
-  .has-js .workflow-scene {
-    display: grid;
-    min-height: auto;
-  }
-
-  .has-js .workflow-scene__path {
-    display: none;
-  }
-
-  .has-js .workflow-scene__caption {
-    position: static;
   }
 }

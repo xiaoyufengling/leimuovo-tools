@@ -25,14 +25,12 @@ if (page && page.dataset.motionReady !== "true") {
     media.add(
       {
         reduceMotion: "(prefers-reduced-motion: reduce)",
-        mobile: "(max-width: 48rem)",
         finePointer: "(hover: hover) and (pointer: fine)",
         desktop: "(min-width: 48rem)",
       },
       (context) => {
       const { reduceMotion, finePointer, desktop } = context.conditions as {
         reduceMotion: boolean;
-        mobile: boolean;
         finePointer: boolean;
         desktop: boolean;
       };

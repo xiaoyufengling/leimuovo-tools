@@ -1,6 +1,5 @@
 .lm-page--home {
   --rem-hair-400: #8fc9f4;
-  --rem-hair-600: #5e9fd3;
   --rem-eye-700: #2e76b4;
   --rem-apron-50: #f7fafd;
   --rem-apron-200: #dce7f2;
@@ -135,11 +134,7 @@ body:has(.lm-page--home) .site-lab-link {
 .portfolio-hero__status,
 .discipline-strip__inner,
 .portfolio-eyebrow,
-.direction-card header,
-.direction-card footer > span,
-.interface-specimen,
-.lab-feature__caption,
-.approach-list small {
+.lab-feature__caption {
   font-family: "SFMono-Regular", Consolas, monospace;
   letter-spacing: 0.08em;
 }
@@ -363,10 +358,7 @@ body:has(.lm-page--home) .site-lab-link {
   font-weight: 700;
 }
 
-.direction-section h2,
-.lab-feature h2,
-.approach-section h2,
-.portfolio-ending h2 {
+.lab-feature h2 {
   margin: 0;
   font-size: clamp(2.6rem, 6.4vw, 5.6rem);
   font-weight: 650;
@@ -374,10 +366,7 @@ body:has(.lm-page--home) .site-lab-link {
   line-height: 0.98;
 }
 
-.direction-section h2 span,
-.lab-feature h2 span,
-.approach-section h2 span,
-.portfolio-ending h2 span {
+.lab-feature h2 span {
   color: var(--home-muted);
   font-family: Georgia, "Times New Roman", serif;
   font-weight: 400;
@@ -647,9 +636,7 @@ body:has(.lm-page--home) .site-lab-link {
 }
 
 @media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
-  body:has(.lm-page--home) .site-header,
-  .direction-card,
-  .direction-card__inner {
+  body:has(.lm-page--home) .site-header {
     background: var(--home-paper);
   }
 }
@@ -948,9 +935,7 @@ body:has(.lm-page--home) .cat-ear-easter-egg.is-petted .cat-ear-easter-egg__mess
   perspective: 90rem;
 }
 
-.direction-card,
-.lab-feature__link,
-.approach-list li {
+.lab-feature__link {
   border-radius: 1.75rem;
 }
 
@@ -1014,9 +999,7 @@ body:has(.lm-page--home) .cat-ear-easter-egg.is-petted .cat-ear-easter-egg__mess
 
 @media (prefers-reduced-motion: reduce) {
   body:has(.lm-page--home) .cat-ear,
-  body:has(.lm-page--home) .cat-ear-easter-egg,
-  .memory-portrait__art,
-  .memory-portrait__lens {
+body:has(.lm-page--home) .cat-ear-easter-egg {
     animation: none !important;
     transition: opacity 180ms ease !important;
   }
@@ -1027,10 +1010,7 @@ body:has(.lm-page--home) .cat-ear-easter-egg.is-petted .cat-ear-easter-egg__mess
 }
 
 @media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
-  body:has(.lm-page--home) .site-header,
-  .memory-portrait__frame,
-  .memory-portrait__note,
-  .memory-portrait__lens {
+  body:has(.lm-page--home) .site-header {
     background: var(--home-paper);
     backdrop-filter: none;
   }
@@ -2578,7 +2558,6 @@ body:has(.lm-page--home) .site-header[data-scrolled] .brand-cluster .cat-ear-eas
 .lm-page--home {
   --home-motion-fast: 180ms;
   --home-motion-medium: 420ms;
-  --home-motion-slow: 920ms;
 }
 
 .home-atmosphere__drift {
