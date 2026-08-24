@@ -65,6 +65,7 @@ const [home, tools, receipt, laboratory, robots, sitemap, manifestSource, servic
 
 assert(home.includes('rel="canonical" href="https://leimuovo.com/"'), "首页 canonical 缺失或不正确");
 assert(home.includes('rel="manifest" href="/manifest.webmanifest"'), "页面未声明 PWA manifest");
+assert(home.includes('rel="icon" href="/icons/rem-cat-icon-512.png?v=safari-favorite-20260824"'), "页面未声明 Safari 26 高分辨率收藏图标");
 assert(home.includes('rel="icon" href="/favicon.ico?v=rem-cat-20260824"'), "页面未声明蕾姆猫耳 favicon");
 assert(home.includes('rel="icon" href="/safari-favorite-rem-cat-20260824.png"'), "页面未声明 Safari 专用蕾姆猫耳收藏图标");
 assert(home.includes('rel="apple-touch-icon" href="/apple-touch-icon-rem-cat-20260824.png"'), "页面未声明 iOS 蕾姆猫耳图标");

@@ -483,6 +483,7 @@ test("real receipt fixture stays local and completes OCR", async ({ page }, test
 test("SEO and PWA artifacts are discoverable", async ({ page, request }) => {
   await page.goto("/");
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "https://leimuovo.com/");
+  await expect(page.locator('link[rel="icon"][sizes="512x512"]')).toHaveAttribute("href", "/icons/rem-cat-icon-512.png?v=safari-favorite-20260824");
   await expect(page.locator('link[rel="icon"][sizes="any"]')).toHaveAttribute("href", "/favicon.ico?v=rem-cat-20260824");
   await expect(page.locator('link[rel="icon"][sizes="180x180"]')).toHaveAttribute("href", "/safari-favorite-rem-cat-20260824.png");
   await expect(page.locator('link[rel="apple-touch-icon"]')).toHaveAttribute("href", "/apple-touch-icon-rem-cat-20260824.png");
