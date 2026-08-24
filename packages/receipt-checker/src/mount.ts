@@ -1,8 +1,6 @@
 import { CircleCheck, FileDown, ImageUp, Plus, RotateCcw, Trash2, createIcons } from "lucide";
-import { configureOcrAssets, recognizeSheet, terminateOcr } from "./ocr";
 import { calculatedAmount, createRow, parseNumeric, renumberRows, rowStatus, summarizeRows } from "./table";
 import type { ReceiptRow, WorkbookExportAdapter } from "./types";
-import { createBrowserWorkbookExportAdapter, exportWorkbook } from "./workbook";
 import "./styles.css";
 
 export interface MountReceiptCheckerOptions {
@@ -199,11 +197,11 @@ export function mountReceiptChecker(root: HTMLElement, options: MountReceiptChec
   if (root.dataset.mounted === "true") throw new Error("Receipt checker is already mounted");
   root.dataset.mounted = "true";
   root.innerHTML = markup();
-  configureOcrAssets(options.assetBaseUrl ?? "/vendor/tesseract/");
   const elements = collectElements(root);
   const controller = new AbortController();
   const { signal } = controller;
-  const adapter = options.exportAdapter ?? createBrowserWorkbookExportAdapter(root.ownerDocument);
+  const assetBaseUrl = options.assetBaseUrl ?? "/vendor/tesseract/";
+  let ocrModule: Promise<typeof import("./ocr")> | undefined;
   let rows: ReceiptRow[] = [];
   let sourceUrl: string | undefined;
   let confirmed = false;
@@ -312,7 +310,11 @@ export function mountReceiptChecker(root: HTMLElement, options: MountReceiptChec
     elements.progressSection.hidden = false;
     setProgress(0.02, "正在读取截图", "识别在当前设备内完成，图片不会上传。");
     try {
-      rows = await recognizeSheet(file, (progress) => {
+      const ocr = await (ocrModule ??= import("./ocr").then((module) => {
+        module.configureOcrAssets(assetBaseUrl);
+        return module;
+      }));
+      rows = await ocr.recognizeSheet(file, (progress) => {
         if (progress.stage === "model") setProgress(progress.progress * 0.25, "正在加载中文模型", "首次使用耗时较长，之后会使用本机缓存。");
         else setProgress(0.25 + progress.progress * 0.75, "正在识别表格", progress.detail ?? "正在提取商品数据");
       });
@@ -375,7 +377,9 @@ export function mountReceiptChecker(root: HTMLElement, options: MountReceiptChec
     const summary = summarizeRows(rows);
     if (!summary.canExport || !confirmed) return;
     try {
-      const result = await exportWorkbook(rows, adapter);
+      const workbook = await import("./workbook");
+      const adapter = options.exportAdapter ?? workbook.createBrowserWorkbookExportAdapter(root.ownerDocument);
+      const result = await workbook.exportWorkbook(rows, adapter);
       showToast(result.status === "cancelled" ? "已取消保存" : "Excel 已保存，可以导入番茄标签");
     } catch (error) {
       console.error("Workbook save failed", error);
@@ -391,7 +395,7 @@ export function mountReceiptChecker(root: HTMLElement, options: MountReceiptChec
       controller.abort();
       if (toastTimer !== undefined) window.clearTimeout(toastTimer);
       if (sourceUrl) URL.revokeObjectURL(sourceUrl);
-      await terminateOcr();
+      if (ocrModule) await (await ocrModule).terminateOcr();
       root.replaceChildren();
       delete root.dataset.mounted;
     },
