@@ -23,8 +23,8 @@ const requiredFiles = [
   "favicon-32.png",
   "apple-touch-icon.png",
   "apple-touch-icon-precomposed.png",
-  "safari-favorite-rem-cat-20260823.png",
-  "apple-touch-icon-rem-cat-20260823.png",
+  "safari-favorite-rem-cat-20260824.png",
+  "apple-touch-icon-rem-cat-20260824.png",
   "icons/rem-cat-brand-96.png",
   "icons/rem-cat-icon-192.png",
   "icons/rem-cat-icon-512.png",
@@ -65,9 +65,9 @@ const [home, tools, receipt, laboratory, robots, sitemap, manifestSource, servic
 
 assert(home.includes('rel="canonical" href="https://leimuovo.com/"'), "首页 canonical 缺失或不正确");
 assert(home.includes('rel="manifest" href="/manifest.webmanifest"'), "页面未声明 PWA manifest");
-assert(home.includes('rel="icon" href="/favicon.ico?v=rem-cat-20260823"'), "页面未声明蕾姆猫耳 favicon");
-assert(home.includes('rel="icon" href="/safari-favorite-rem-cat-20260823.png"'), "页面未声明 Safari 专用蕾姆猫耳收藏图标");
-assert(home.includes('rel="apple-touch-icon" href="/apple-touch-icon-rem-cat-20260823.png"'), "页面未声明 iOS 蕾姆猫耳图标");
+assert(home.includes('rel="icon" href="/favicon.ico?v=rem-cat-20260824"'), "页面未声明蕾姆猫耳 favicon");
+assert(home.includes('rel="icon" href="/safari-favorite-rem-cat-20260824.png"'), "页面未声明 Safari 专用蕾姆猫耳收藏图标");
+assert(home.includes('rel="apple-touch-icon" href="/apple-touch-icon-rem-cat-20260824.png"'), "页面未声明 iOS 蕾姆猫耳图标");
 assert(home.includes('/icons/rem-cat-brand-96.png'), "主站导航未使用蕾姆猫耳品牌图标");
 assert(home.includes('"@type":"WebSite"'), "首页 WebSite JSON-LD 缺失");
 assert(home.includes('"name":"小鱼"'), "首页品牌名称不正确");
@@ -96,7 +96,8 @@ assert(manifest.start_url === "/" && manifest.scope === "/", "PWA scope/start_ur
 assert(manifest.icons?.some((icon) => icon.purpose === "maskable"), "PWA 缺少 maskable 图标");
 
 assert(!serviceWorker.includes("NavigationRoute"), "Service Worker 不应启用 SPA 首页导航回退");
-assert(serviceWorker.includes("NetworkFirst"), "Service Worker 缺少 Network First 页面策略");
+assert(serviceWorker.includes("StaleWhileRevalidate"), "Service Worker 缺少即时缓存页面策略");
+assert(serviceWorker.includes("leimuovo-pages-v3"), "Service Worker 页面缓存版本未更新");
 assert(serviceWorker.includes('/control/'), "Service Worker 未显式排除私人控制中心路由");
 assert(serviceWorker.includes('/api/control/'), "Service Worker 未显式排除控制中心 API 路由");
 assert(serviceWorker.includes("PrecacheFallbackPlugin") && serviceWorker.includes("/offline/"), "离线回退未配置");

@@ -39,6 +39,18 @@ test("mobile homepage is readable on first paint without waiting for interaction
   expect(["none", "blur(0px)"]).toContain(firstPaint.filter);
 });
 
+test("returning from the laboratory does not replay the homepage entrance", async ({ page }) => {
+  await page.goto("/");
+  await page.goto("/xiaoyugan/");
+  await page.locator(".xyg-back").click();
+  await expect(page).toHaveURL(/\/$/);
+
+  const heroCopy = page.locator(".portfolio-hero__copy");
+  await expect(heroCopy).toBeVisible();
+  await expect(heroCopy).toHaveCSS("opacity", "1");
+  await expect(heroCopy).toHaveCSS("transform", "none");
+});
+
 test("homepage remains readable when the motion bundle is unavailable", async ({ page }) => {
   await page.route("**/_astro/*.js", (route) => route.abort());
   await page.goto("/");
@@ -471,9 +483,9 @@ test("real receipt fixture stays local and completes OCR", async ({ page }, test
 test("SEO and PWA artifacts are discoverable", async ({ page, request }) => {
   await page.goto("/");
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "https://leimuovo.com/");
-  await expect(page.locator('link[rel="icon"][sizes="any"]')).toHaveAttribute("href", "/favicon.ico?v=rem-cat-20260823");
-  await expect(page.locator('link[rel="icon"][sizes="180x180"]')).toHaveAttribute("href", "/safari-favorite-rem-cat-20260823.png");
-  await expect(page.locator('link[rel="apple-touch-icon"]')).toHaveAttribute("href", "/apple-touch-icon-rem-cat-20260823.png");
+  await expect(page.locator('link[rel="icon"][sizes="any"]')).toHaveAttribute("href", "/favicon.ico?v=rem-cat-20260824");
+  await expect(page.locator('link[rel="icon"][sizes="180x180"]')).toHaveAttribute("href", "/safari-favorite-rem-cat-20260824.png");
+  await expect(page.locator('link[rel="apple-touch-icon"]')).toHaveAttribute("href", "/apple-touch-icon-rem-cat-20260824.png");
   const structuredData = await page.locator('script[type="application/ld+json"]').textContent();
   expect(structuredData).toContain("WebSite");
   const manifestHref = await page.locator('link[rel="manifest"]').getAttribute("href");

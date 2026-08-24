@@ -62,8 +62,8 @@
   // Retire the old navigation cache that can keep serving the transparent
   // homepage when mobile data takes longer than the previous 3-second limit.
   if ("caches" in window) {
-    window.caches.delete("leimuovo-pages").catch(() => {
-      // Cache cleanup is best-effort; the v2 service worker no longer reads it.
+    Promise.all(["leimuovo-pages", "leimuovo-pages-v2"].map((cacheName) => window.caches.delete(cacheName))).catch(() => {
+      // Cache cleanup is best-effort; the current service worker no longer reads these versions.
     });
   }
 

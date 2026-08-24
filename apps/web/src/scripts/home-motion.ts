@@ -4,6 +4,13 @@ const page = document.querySelector<HTMLElement>(".lm-page--home");
 
 if (page && page.dataset.motionReady !== "true") {
   const revealItems = gsap.utils.toArray<HTMLElement>("[data-home-reveal]", page);
+  let shouldAnimateEntrance = true;
+  try {
+    shouldAnimateEntrance = window.sessionStorage.getItem("leimuovo-home-entrance-seen") !== "1";
+    window.sessionStorage.setItem("leimuovo-home-entrance-seen", "1");
+  } catch {
+    // The first-visit animation is still safe when session storage is unavailable.
+  }
   const revealWithoutMotion = () => {
     page.classList.remove("is-motion-ready");
     delete page.dataset.motionReady;
@@ -43,7 +50,12 @@ if (page && page.dataset.motionReady !== "true") {
         return;
       }
 
-      revealItems.forEach((item) => item.classList.remove("is-visible"));
+      const entranceItems = shouldAnimateEntrance ? revealItems : [];
+      if (!shouldAnimateEntrance) {
+        revealItems.forEach((item) => item.classList.add("is-visible"));
+        gsap.set(revealItems, { autoAlpha: 1, clearProps: "transform,filter" });
+      }
+      entranceItems.forEach((item) => item.classList.remove("is-visible"));
 
       const reveal = (item: HTMLElement) => {
         if (item.classList.contains("is-visible")) return;
@@ -78,7 +90,7 @@ if (page && page.dataset.motionReady !== "true") {
 
       const initialViewportEdge = window.innerHeight * 1.06;
       const belowFoldItems: HTMLElement[] = [];
-      revealItems.forEach((item) => {
+      entranceItems.forEach((item) => {
         const bounds = item.getBoundingClientRect();
         if (bounds.bottom >= 0 && bounds.top <= initialViewportEdge) {
           reveal(item);

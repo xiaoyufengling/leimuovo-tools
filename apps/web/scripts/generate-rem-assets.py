@@ -77,7 +77,7 @@ def main() -> None:
     favicon = fitted_icon(character, 256, fill_ratio=0.94)
     favicon_32 = premultiplied_resize(favicon, (32, 32))
     safari_favorite = premultiplied_resize(favicon, (180, 180))
-    safari_favorite.save(args.public / "safari-favorite-rem-cat-20260823.png", optimize=True)
+    safari_favorite.save(args.public / "safari-favorite-rem-cat-20260824.png", optimize=True)
     favicon_32.save(args.public / "favicon-32.png", optimize=True)
     favicon.save(
         args.public / "favicon.ico",
@@ -93,7 +93,7 @@ def main() -> None:
         rounded=True,
     )
     for apple_name in (
-        "apple-touch-icon-rem-cat-20260823.png",
+        "apple-touch-icon-rem-cat-20260824.png",
         "apple-touch-icon.png",
         "apple-touch-icon-precomposed.png",
     ):

@@ -55,7 +55,7 @@ export default defineConfig({
         clientsClaim: true,
         skipWaiting: true,
         // Astro already emits real HTML for every route. Disable Workbox's SPA
-        // fallback so failed navigations reach the NetworkFirst offline fallback
+        // fallback so failed navigations reach the public-page offline fallback
         // instead of silently returning the home page.
         navigateFallback: null,
         globPatterns: ["**/*.{html,js,css,svg,png,ico,webmanifest}"],
@@ -65,10 +65,9 @@ export default defineConfig({
             urlPattern: ({ request, url }) => request.mode === "navigate"
               && !url.pathname.startsWith("/control/")
               && !url.pathname.startsWith("/api/control/"),
-            handler: "NetworkFirst",
+            handler: "StaleWhileRevalidate",
             options: {
-              cacheName: "leimuovo-pages-v2",
-              networkTimeoutSeconds: 8,
+              cacheName: "leimuovo-pages-v3",
               precacheFallback: { fallbackURL: "/offline/" },
               cacheableResponse: { statuses: [0, 200] },
             },
