@@ -1,6 +1,7 @@
 ---
 import { Activity, ArrowLeft, ArrowUpRight, Moon, Radio, Sparkles, Sun } from "@lucide/astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { brandAssets } from "../config/brand-assets";
 import "../styles/xiaoyugan.css";
 ---
 
@@ -20,7 +21,7 @@ import "../styles/xiaoyugan.css";
 
     <header class="xyg-nav xyg-glass">
       <a class="xyg-brand" href="/" aria-label="返回小鱼首页">
-        <img class="xyg-brand__mark" src="/icons/rem-cat-brand-96.png" width="32" height="32" alt="" aria-hidden="true" decoding="async" draggable="false" />
+        <img class="xyg-brand__mark" src={brandAssets.navigation} width="32" height="32" alt="" aria-hidden="true" decoding="async" draggable="false" />
         <span><strong>小鱼干</strong><small>REMOVO LAB</small></span>
       </a>
       <nav aria-label="实验室导航">
@@ -64,7 +65,7 @@ import "../styles/xiaoyugan.css";
             <span class="xyg-rem-touch__aura" aria-hidden="true"></span>
             <span class="xyg-rem-touch__rings" aria-hidden="true"><i></i><i></i><i></i></span>
             <span class="xyg-rem-character" aria-hidden="true">
-              <img class="xyg-rem-face" data-rem-artwork src="/images/xiaoyugan-rem-face.png" width="1448" height="1086" alt="" draggable="false" />
+              <img class="xyg-rem-face" data-rem-artwork src={brandAssets.pwa512} width="512" height="512" alt="" draggable="false" />
             </span>
             <span class="xyg-rem-touch__label"><strong>点一下猫耳</strong><small>TAP TO PET</small></span>
           </button>

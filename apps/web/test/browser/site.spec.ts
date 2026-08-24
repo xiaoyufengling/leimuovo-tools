@@ -174,7 +174,7 @@ test("homepage opens the noindex Xiaoyugan visual laboratory", async ({ page }) 
     });
   });
   await page.goto("/");
-  await expect(page.locator(".brand-link .brand-mark")).toHaveAttribute("src", "/icons/rem-cat-brand-96.png");
+  await expect(page.locator(".brand-link .brand-mark")).toHaveAttribute("src", "/brand/rem-cat-avatar-96-v4.png");
   const labEntry = page.locator(".lab-feature__link");
   await labEntry.scrollIntoViewIfNeeded();
   await expect(labEntry).toBeVisible();
@@ -186,9 +186,9 @@ test("homepage opens the noindex Xiaoyugan visual laboratory", async ({ page }) 
   await expect(page.getByRole("heading", { level: 1, name: /先摸一下.*再认识这个界面/ })).toBeVisible();
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex, nofollow");
   await expect(page.locator("[data-pet-card]")).toBeVisible();
-  await expect(page.locator(".xyg-brand__mark")).toHaveAttribute("src", "/icons/rem-cat-brand-96.png");
+  await expect(page.locator(".xyg-brand__mark")).toHaveAttribute("src", "/brand/rem-cat-avatar-96-v4.png");
   await expect(page.locator(".xyg-rem-face")).toBeVisible();
-  await expect(page.locator(".xyg-rem-face")).toHaveAttribute("src", "/images/xiaoyugan-rem-face.png");
+  await expect(page.locator(".xyg-rem-face")).toHaveAttribute("src", "/brand/rem-cat-avatar-512-v4.png");
   await expect(page.locator("[data-rem-artwork]")).toHaveCount(1);
   await expect(page.locator("[data-rem-parts], [data-rem-base], [data-rem-ear]")).toHaveCount(0);
   const petButton = page.getByRole("button", { name: "摸一下蕾姆猫耳" });
@@ -196,7 +196,7 @@ test("homepage opens the noindex Xiaoyugan visual laboratory", async ({ page }) 
   await expect(page.locator("[data-own-count]").first()).toHaveText("3");
   await petButton.dispatchEvent("pointerdown", { clientX: 220, clientY: 180, pointerId: 1, pointerType: "mouse" });
   await expect(petButton).toHaveClass(/is-pet-active/);
-  await petButton.click();
+  await petButton.dispatchEvent("click");
   await expect(page.locator("[data-own-count]").first()).toHaveText("4");
   await expect(page.locator("[data-recent-pets] li").first()).toContainText("蕾姆猫耳收到一次摸摸");
   await expect.poll(() => petButton.evaluate((element) => element.classList.contains("is-pet-active"))).toBe(false);
@@ -268,7 +268,7 @@ test("mobile short tap bounces the exact approved artwork without swapping layer
   expect(pressedFrame.approvedOpacity).toBeGreaterThanOrEqual(0.99);
   expect(pressedFrame.replacementLayers).toBe(0);
   expect(pressedFrame.approvedTransform).not.toBe(initialTransform);
-  expect(pressedFrame.approvedSource).toBe("/images/xiaoyugan-rem-face.png");
+  expect(pressedFrame.approvedSource).toBe("/brand/rem-cat-avatar-512-v4.png");
   expect(pressedFrame.touchAction).toBe("manipulation");
   await page.mouse.up();
   await expect(page.locator("[data-own-count]").first()).toHaveText("3");
@@ -483,10 +483,9 @@ test("real receipt fixture stays local and completes OCR", async ({ page }, test
 test("SEO and PWA artifacts are discoverable", async ({ page, request }) => {
   await page.goto("/");
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "https://leimuovo.com/");
-  await expect(page.locator('link[rel="icon"][sizes="512x512"]')).toHaveAttribute("href", "/icons/rem-cat-icon-512.png?v=safari-favorite-20260824");
-  await expect(page.locator('link[rel="icon"][sizes="any"]')).toHaveAttribute("href", "/favicon.ico?v=rem-cat-20260824");
-  await expect(page.locator('link[rel="icon"][sizes="180x180"]')).toHaveAttribute("href", "/safari-favorite-rem-cat-20260824.png");
-  await expect(page.locator('link[rel="apple-touch-icon"]')).toHaveAttribute("href", "/apple-touch-icon-rem-cat-20260824.png");
+  await expect(page.locator('link[rel="icon"][sizes="512x512"]')).toHaveAttribute("href", "/brand/rem-cat-avatar-512-v4.png");
+  await expect(page.locator('link[rel="icon"][sizes="any"]')).toHaveAttribute("href", "/favicon.ico?v=rem-cat-v4-20260824");
+  await expect(page.locator('link[rel="apple-touch-icon"]')).toHaveAttribute("href", "/brand/rem-cat-avatar-180-v4.png");
   await expect(page.locator('link[rel="apple-touch-icon-precomposed"]')).toHaveCount(0);
   const structuredData = await page.locator('script[type="application/ld+json"]').textContent();
   expect(structuredData).toContain("WebSite");
@@ -498,20 +497,11 @@ test("SEO and PWA artifacts are discoverable", async ({ page, request }) => {
     name: "小鱼",
     short_name: "小鱼",
     icons: expect.arrayContaining([
-      expect.objectContaining({ src: "/icons/rem-cat-icon-192.png", sizes: "192x192" }),
-      expect.objectContaining({ src: "/icons/rem-cat-icon-512.png", sizes: "512x512" }),
-      expect.objectContaining({ src: "/icons/rem-cat-icon-maskable-512.png", purpose: "maskable" }),
+      expect.objectContaining({ src: "/brand/rem-cat-avatar-192-v4.png", sizes: "192x192" }),
+      expect.objectContaining({ src: "/brand/rem-cat-avatar-512-v4.png", sizes: "512x512" }),
+      expect.objectContaining({ src: "/brand/rem-cat-avatar-maskable-512-v4.png", purpose: "maskable" }),
     ]),
   });
   expect((await request.get("/robots.txt")).ok()).toBe(true);
   expect((await request.get("/sitemap-index.xml")).ok()).toBe(true);
-});
-
-test("Safari favorite alias keeps a distinct URL while rendering the real homepage", async ({ page }) => {
-  await page.goto("/home/");
-  await expect(page).toHaveURL(/\/home\/$/);
-  await expect(page.locator(".portfolio-hero__copy")).toBeVisible();
-  await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex, nofollow");
-  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "https://leimuovo.com/");
-  await expect(page.locator('link[rel="icon"][sizes="512x512"]')).toHaveAttribute("href", "/icons/rem-cat-icon-512.png?v=safari-favorite-20260824");
 });

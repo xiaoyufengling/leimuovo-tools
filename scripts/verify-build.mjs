@@ -8,7 +8,6 @@ const dist = path.join(repositoryRoot, "apps", "web", "dist");
 
 const requiredFiles = [
   "index.html",
-  "home/index.html",
   "404.html",
   "about/index.html",
   "privacy/index.html",
@@ -24,13 +23,12 @@ const requiredFiles = [
   "favicon-32.png",
   "apple-touch-icon.png",
   "apple-touch-icon-precomposed.png",
-  "safari-favorite-rem-cat-20260824.png",
-  "apple-touch-icon-rem-cat-20260824.png",
-  "icons/rem-cat-brand-96.png",
-  "icons/rem-cat-icon-192.png",
-  "icons/rem-cat-icon-512.png",
-  "icons/rem-cat-icon-maskable-512.png",
-  "images/xiaoyugan-rem-face.png",
+  "brand/rem-cat-avatar-master-v4.jpg",
+  "brand/rem-cat-avatar-96-v4.png",
+  "brand/rem-cat-avatar-180-v4.png",
+  "brand/rem-cat-avatar-192-v4.png",
+  "brand/rem-cat-avatar-512-v4.png",
+  "brand/rem-cat-avatar-maskable-512-v4.png",
   "sw.js",
   "_headers",
   "_redirects",
@@ -51,9 +49,8 @@ async function text(relativePath) {
 
 await Promise.all(requiredFiles.map((relativePath) => access(path.join(dist, relativePath))));
 
-const [home, favoriteHome, tools, receipt, laboratory, robots, sitemap, manifestSource, serviceWorker, headers, redirects] = await Promise.all([
+const [home, tools, receipt, laboratory, robots, sitemap, manifestSource, serviceWorker, headers, redirects] = await Promise.all([
   text("index.html"),
-  text("home/index.html"),
   text("tools/index.html"),
   text("tools/receipt-checker/index.html"),
   text("xiaoyugan/index.html"),
@@ -67,21 +64,17 @@ const [home, favoriteHome, tools, receipt, laboratory, robots, sitemap, manifest
 
 assert(home.includes('rel="canonical" href="https://leimuovo.com/"'), "首页 canonical 缺失或不正确");
 assert(home.includes('rel="manifest" href="/manifest.webmanifest"'), "页面未声明 PWA manifest");
-assert(home.includes('rel="icon" href="/icons/rem-cat-icon-512.png?v=safari-favorite-20260824"'), "页面未声明 Safari 26 高分辨率收藏图标");
-assert(home.includes('rel="icon" href="/favicon.ico?v=rem-cat-20260824"'), "页面未声明蕾姆猫耳 favicon");
-assert(home.includes('rel="icon" href="/safari-favorite-rem-cat-20260824.png"'), "页面未声明 Safari 专用蕾姆猫耳收藏图标");
-assert(home.includes('rel="apple-touch-icon" href="/apple-touch-icon-rem-cat-20260824.png"'), "页面未声明 iOS 蕾姆猫耳图标");
+assert(home.includes('rel="icon" href="/brand/rem-cat-avatar-512-v4.png"'), "页面未声明统一的高分辨率品牌图标");
+assert(home.includes('rel="icon" href="/favicon.ico?v=rem-cat-v4-20260824"'), "页面未声明新蕾姆猫耳 favicon");
+assert(home.includes('rel="apple-touch-icon" href="/brand/rem-cat-avatar-180-v4.png"'), "页面未声明统一的 iOS 品牌图标");
 assert(!home.includes('rel="apple-touch-icon-precomposed"'), "页面不应声明会与主 Apple 图标竞争的旧式 precomposed 图标");
-assert(home.includes('/icons/rem-cat-brand-96.png'), "主站导航未使用蕾姆猫耳品牌图标");
+assert(home.includes('/brand/rem-cat-avatar-96-v4.png'), "主站导航未使用统一的蕾姆猫耳品牌图标");
 assert(home.includes('"@type":"WebSite"'), "首页 WebSite JSON-LD 缺失");
 assert(home.includes('"name":"小鱼"'), "首页品牌名称不正确");
-assert(favoriteHome.includes('<meta name="robots" content="noindex, nofollow">'), "Safari 收藏专用首页必须禁止收录");
-assert(favoriteHome.includes('rel="canonical" href="https://leimuovo.com/"'), "Safari 收藏专用首页必须 canonical 回主首页");
-assert(favoriteHome.includes('rel="icon" href="/icons/rem-cat-icon-512.png?v=safari-favorite-20260824"'), "Safari 收藏专用首页缺少高分辨率猫耳图标");
 assert(tools.includes('"@type":"CollectionPage"'), "工具目录 CollectionPage JSON-LD 缺失");
 assert(receipt.includes('"@type":"SoftwareApplication"'), "工具页 SoftwareApplication JSON-LD 缺失");
-assert(laboratory.includes('/images/xiaoyugan-rem-face.png'), "实验室未使用透明猫耳主图");
-assert(laboratory.includes('/icons/rem-cat-brand-96.png'), "实验室导航未使用蕾姆猫耳品牌图标");
+assert(laboratory.includes('/brand/rem-cat-avatar-512-v4.png'), "实验室未使用核准的统一头像");
+assert(laboratory.includes('/brand/rem-cat-avatar-96-v4.png'), "实验室导航未使用统一的品牌图标");
 assert(!laboratory.includes('data-rem-parts'), "实验室不应在互动时替换核准主图");
 const laboratoryCssHref = laboratory.match(/href="(\/_astro\/xiaoyugan\.[^"]+\.css)"/)?.[1];
 assert(laboratoryCssHref, "实验室构建产物缺少独立样式表");
@@ -95,12 +88,13 @@ assert(robots.includes("Sitemap: https://leimuovo.com/sitemap-index.xml"), "robo
 assert(!sitemap.includes("/offline/"), "sitemap 不应包含离线页");
 assert(!sitemap.includes("/404/"), "sitemap 不应包含 404");
 assert(!sitemap.includes("/en/"), "首发 sitemap 不应包含未发布英文路由");
-assert(!sitemap.includes("/home/"), "sitemap 不应包含 Safari 收藏专用首页");
 
 const manifest = JSON.parse(manifestSource);
 assert(manifest.lang === "zh-CN", "PWA 默认语言必须是 zh-CN");
 assert(manifest.name === "小鱼" && manifest.short_name === "小鱼", "PWA 品牌名称不正确");
 assert(manifest.start_url === "/" && manifest.scope === "/", "PWA scope/start_url 不正确");
+assert(manifest.icons?.some((icon) => icon.src === "/brand/rem-cat-avatar-192-v4.png"), "PWA 未使用统一的 192px 品牌图标");
+assert(manifest.icons?.some((icon) => icon.src === "/brand/rem-cat-avatar-512-v4.png"), "PWA 未使用统一的 512px 品牌图标");
 assert(manifest.icons?.some((icon) => icon.purpose === "maskable"), "PWA 缺少 maskable 图标");
 
 assert(!serviceWorker.includes("NavigationRoute"), "Service Worker 不应启用 SPA 首页导航回退");
@@ -113,7 +107,16 @@ assert(serviceWorker.includes('/vendor/tesseract/'), "OCR 资源缺少按需运�
 assert(!serviceWorker.includes('_astro/receipt-checker.'), "小票工具 JS/CSS 不应进入全站预缓存");
 assert(!serviceWorker.includes('url:"vendor/tesseract') && !serviceWorker.includes('url:"/vendor/tesseract'), "OCR 大文件不应进入全站预缓存");
 assert(!serviceWorker.includes('url:"scripts/home.js"'), "已退役首页脚本不应进入全站预缓存");
-for (const retiredAsset of ["favicon-rem", "apple-touch-icon-rem.png", "apple-touch-icon-rem-cat.png", "icons/rem-icon-", "icons/icon-"]) {
+for (const retiredAsset of [
+  "favicon-rem",
+  "apple-touch-icon-rem.png",
+  "apple-touch-icon-rem-cat.png",
+  "safari-favorite-rem-cat",
+  "icons/rem-cat-",
+  "icons/rem-icon-",
+  "icons/icon-",
+  "images/xiaoyugan-rem-face",
+]) {
   assert(!serviceWorker.includes(retiredAsset), `已退役品牌资源不应进入全站预缓存：${retiredAsset}`);
 }
 const precacheUrls = [...serviceWorker.matchAll(/\{url:"([^"]+)"/gu)].map((match) => match[1]);

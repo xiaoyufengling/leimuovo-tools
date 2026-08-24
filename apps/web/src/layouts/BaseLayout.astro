@@ -5,6 +5,7 @@ import "@leimuovo/design-system/components.css";
 import "../styles/site.css";
 import SiteFooter from "../components/SiteFooter.astro";
 import SiteHeader from "../components/SiteHeader.astro";
+import { brandAssets } from "../config/brand-assets";
 import { site } from "../config/site";
 
 interface Props {
@@ -12,7 +13,6 @@ interface Props {
   description?: string;
   image?: string;
   noindex?: boolean;
-  canonicalPath?: string;
   jsonLd?: Record<string, unknown> | readonly Record<string, unknown>[] | undefined;
   hideChrome?: boolean;
 }
@@ -22,11 +22,10 @@ const {
   description = site.description,
   image = "/og-default.png",
   noindex = false,
-  canonicalPath = Astro.url.pathname,
   jsonLd,
   hideChrome = false,
 } = Astro.props;
-const canonical = new URL(canonicalPath, site.url);
+const canonical = new URL(Astro.url.pathname, site.url);
 const socialImage = new URL(image, site.url);
 const analyticsToken = import.meta.env.PUBLIC_CF_WEB_ANALYTICS_TOKEN;
 ---
@@ -41,11 +40,10 @@ const analyticsToken = import.meta.env.PUBLIC_CF_WEB_ANALYTICS_TOKEN;
     <meta name="generator" content={Astro.generator} />
     {noindex && <meta name="robots" content="noindex, nofollow" />}
     <link rel="canonical" href={canonical} />
-    <link rel="icon" href="/icons/rem-cat-icon-512.png?v=safari-favorite-20260824" sizes="512x512" type="image/png" />
-    <link rel="icon" href="/safari-favorite-rem-cat-20260824.png" sizes="180x180" type="image/png" />
-    <link rel="icon" href="/favicon.ico?v=rem-cat-20260824" sizes="any" />
-    <link rel="icon" href="/favicon-32.png?v=rem-cat-20260824" sizes="32x32" type="image/png" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon-rem-cat-20260824.png" sizes="180x180" type="image/png" />
+    <link rel="icon" href={brandAssets.pwa512} sizes="512x512" type="image/png" />
+    <link rel="icon" href={brandAssets.favicon} sizes="any" />
+    <link rel="icon" href={brandAssets.favicon32} sizes="32x32" type="image/png" />
+    <link rel="apple-touch-icon" href={brandAssets.appleTouch} sizes="180x180" type="image/png" />
     <meta name="apple-mobile-web-app-title" content={site.name} />
     <link rel="manifest" href="/manifest.webmanifest" />
     <meta property="og:type" content="website" />

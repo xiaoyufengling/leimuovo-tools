@@ -1,6 +1,7 @@
 import sitemap from "@astrojs/sitemap";
 import AstroPWA from "@vite-pwa/astro";
 import { defineConfig } from "astro/config";
+import { brandAssets } from "./src/config/brand-assets";
 
 export default defineConfig({
   site: "https://leimuovo.com",
@@ -12,7 +13,7 @@ export default defineConfig({
   },
   integrations: [
     sitemap({
-      filter: (page) => !["/offline/", "/404/", "/403/", "/500/", "/xiaoyugan/", "/home/"].some((path) => page.includes(path)),
+      filter: (page) => !["/offline/", "/404/", "/403/", "/500/", "/xiaoyugan/"].some((path) => page.includes(path)),
     }),
     AstroPWA({
       registerType: "autoUpdate",
@@ -31,19 +32,19 @@ export default defineConfig({
         categories: ["lifestyle", "productivity"],
         icons: [
           {
-            src: "/icons/rem-cat-icon-192.png",
+            src: brandAssets.pwa192,
             sizes: "192x192",
             type: "image/png",
             purpose: "any",
           },
           {
-            src: "/icons/rem-cat-icon-512.png",
+            src: brandAssets.pwa512,
             sizes: "512x512",
             type: "image/png",
             purpose: "any",
           },
           {
-            src: "/icons/rem-cat-icon-maskable-512.png",
+            src: brandAssets.pwaMaskable512,
             sizes: "512x512",
             type: "image/png",
             purpose: "maskable",

@@ -9,6 +9,9 @@
 /_astro/*
   Cache-Control: public, max-age=31536000, immutable
 
+/brand/*
+  Cache-Control: public, max-age=31536000, immutable
+
 /vendor/tesseract/*
   Cache-Control: public, max-age=31536000, immutable
   Cross-Origin-Resource-Policy: same-origin

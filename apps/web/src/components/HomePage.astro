@@ -12,15 +12,12 @@ const jsonLd = {
   inLanguage: site.locale,
   description: site.description,
 };
-const isFavoriteAlias = Astro.url.pathname === "/home/";
 ---
 
 <BaseLayout
   title="小鱼｜AI 视觉、游戏 UI 与前端创作"
   description="带有 REMOVO 风格的 AI 视觉与前端创作者，为游戏 UI、视觉素材、网页原型和轻量工具提供定制设计与落地。"
   jsonLd={jsonLd}
-  canonicalPath="/"
-  noindex={isFavoriteAlias}
 >
   <div class="lm-page lm-page--home">
     <div class="home-atmosphere" aria-hidden="true">
