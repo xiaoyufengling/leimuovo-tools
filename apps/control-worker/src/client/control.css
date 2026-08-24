@@ -84,7 +84,7 @@ button:disabled {
   flex: 0 0 auto;
   border: 1px solid color-mix(in srgb, var(--control-ink) 10%, transparent);
   border-radius: 0.55rem;
-  background: #fff url("@leimuovo/design-system/brand-avatar.png") center / cover no-repeat;
+  background: transparent url("@leimuovo/design-system/brand-avatar.png") center / contain no-repeat;
 }
 
 .control-brand__section {

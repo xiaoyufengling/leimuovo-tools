@@ -3,30 +3,34 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from PIL import Image, ImageChops, ImageOps
+from PIL import Image, ImageOps
 
 
 BRAND_FILES = {
-    96: "rem-cat-avatar-96-v4.png",
-    180: "rem-cat-avatar-180-v4.png",
-    192: "rem-cat-avatar-192-v4.png",
-    512: "rem-cat-avatar-512-v4.png",
+    96: "rem-cat-avatar-96-v5.png",
+    180: "rem-cat-avatar-180-v5.png",
+    192: "rem-cat-avatar-192-v5.png",
+    512: "rem-cat-avatar-512-v5.png",
 }
+
+MASTER_FILE = "rem-cat-avatar-master-v5.png"
+MASKABLE_FILE = "rem-cat-avatar-maskable-512-v5.png"
 
 
 def load_master(path: Path) -> Image.Image:
-    image = ImageOps.exif_transpose(Image.open(path)).convert("RGB")
+    image = ImageOps.exif_transpose(Image.open(path)).convert("RGBA")
     if image.width < 512 or image.height < 512:
         raise SystemExit(f"{path} must be at least 512px on both axes")
+    alpha_minimum, alpha_maximum = image.getchannel("A").getextrema()
+    if alpha_minimum != 0 or alpha_maximum != 255:
+        raise SystemExit(f"{path} must contain both fully transparent and fully opaque pixels")
     return image
 
 
-def trim_white_border(source: Image.Image) -> Image.Image:
-    difference = ImageChops.difference(source, Image.new("RGB", source.size, "white")).convert("L")
-    foreground = difference.point(lambda value: 255 if value > 8 else 0)
-    bounds = foreground.getbbox()
+def trim_transparent_border(source: Image.Image) -> Image.Image:
+    bounds = source.getchannel("A").getbbox()
     if bounds is None:
-        raise SystemExit("The approved master image contains no visible artwork")
+        raise SystemExit("The approved master image contains no opaque artwork")
 
     padding = round(max(source.size) * 0.018)
     left, top, right, bottom = bounds
@@ -44,7 +48,7 @@ def render_square(
     size: int,
     *,
     fill_ratio: float = 0.98,
-    background: tuple[int, int, int] = (255, 255, 255),
+    background: tuple[int, int, int, int] = (0, 0, 0, 0),
 ) -> Image.Image:
     max_extent = max(1, round(size * fill_ratio))
     scale = min(max_extent / source.width, max_extent / source.height)
@@ -52,8 +56,8 @@ def render_square(
         (max(1, round(source.width * scale)), max(1, round(source.height * scale))),
         Image.Resampling.LANCZOS,
     )
-    canvas = Image.new("RGB", (size, size), background)
-    canvas.paste(rendered, ((size - rendered.width) // 2, (size - rendered.height) // 2))
+    canvas = Image.new("RGBA", (size, size), background)
+    canvas.alpha_composite(rendered, ((size - rendered.width) // 2, (size - rendered.height) // 2))
     return canvas
 
 
@@ -72,17 +76,18 @@ def main() -> None:
     source = load_master(args.source)
     brand_dir = args.public / "brand"
     brand_dir.mkdir(parents=True, exist_ok=True)
+    source_dir = Path(__file__).resolve().parent.parent / "assets" / "brand"
+    save_png(source, source_dir / MASTER_FILE)
 
-    icon_source = trim_white_border(source)
+    icon_source = trim_transparent_border(source)
     rendered = {size: render_square(icon_source, size, fill_ratio=0.94) for size in BRAND_FILES}
     for size, filename in BRAND_FILES.items():
         save_png(rendered[size], brand_dir / filename)
 
-    # Maskable icons need a wide safe zone because launchers may crop them into
-    # circles, squircles, or rounded squares. Keep the approved white backdrop
-    # continuous so the source never appears as a white rectangle on blue.
-    maskable = render_square(icon_source, 512, fill_ratio=0.68)
-    save_png(maskable, brand_dir / "rem-cat-avatar-maskable-512-v4.png")
+    # Maskable app icons require an opaque safe-zone background. UI avatars,
+    # favicons and Apple touch assets remain genuinely transparent.
+    maskable = render_square(icon_source, 512, fill_ratio=0.68, background=(11, 11, 13, 255))
+    save_png(maskable, brand_dir / MASKABLE_FILE)
 
     favicon = render_square(icon_source, 256, fill_ratio=0.94)
     save_png(favicon.resize((32, 32), Image.Resampling.LANCZOS), args.public / "favicon-32.png")
@@ -98,10 +103,11 @@ def main() -> None:
     save_png(rendered[512], args.design_system_avatar)
 
     print(f"source={args.source} {source.size} {source.mode}")
-    print(f"trimmed_icon_source={icon_source.size}")
+    print(f"trimmed_icon_source={icon_source.size} {icon_source.mode}")
     print(f"brand_dir={brand_dir}")
+    print(f"source_master={source_dir / MASTER_FILE}")
     print(f"design_system_avatar={args.design_system_avatar}")
-    print("compiled=master avatar, navigation, favicon, Apple touch, PWA, maskable, control center")
+    print("compiled=transparent master, navigation, favicon, Apple touch, PWA, control center; opaque maskable icon")
 
 
 if __name__ == "__main__":
