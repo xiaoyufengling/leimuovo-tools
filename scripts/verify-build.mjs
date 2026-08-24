@@ -21,6 +21,8 @@ const requiredFiles = [
   "manifest.webmanifest",
   "favicon.ico",
   "favicon-32.png",
+  "favicon-rem-cat-transparent-v5.ico",
+  "favicon-rem-cat-transparent-32-v5.png",
   "apple-touch-icon.png",
   "apple-touch-icon-precomposed.png",
   "brand/rem-cat-avatar-96-v5.png",
@@ -64,7 +66,8 @@ const [home, tools, receipt, laboratory, robots, sitemap, manifestSource, servic
 assert(home.includes('rel="canonical" href="https://leimuovo.com/"'), "首页 canonical 缺失或不正确");
 assert(home.includes('rel="manifest" href="/manifest.webmanifest"'), "页面未声明 PWA manifest");
 assert(home.includes('rel="icon" href="/brand/rem-cat-avatar-512-v5.png"'), "页面未声明统一的高分辨率透明品牌图标");
-assert(home.includes('rel="icon" href="/favicon.ico?v=rem-cat-v5-20260824"'), "页面未声明新蕾姆猫耳 favicon");
+assert(home.includes('rel="icon" href="/favicon-rem-cat-transparent-v5.ico"'), "页面未声明独立地址的透明蕾姆猫耳 favicon");
+assert(home.includes('rel="shortcut icon" href="/favicon-rem-cat-transparent-v5.ico"'), "页面未为 Safari 个人收藏声明独立 shortcut icon");
 assert(home.includes('rel="apple-touch-icon" href="/brand/rem-cat-avatar-180-v5.png"'), "页面未声明统一的 iOS 品牌图标");
 assert(!home.includes('rel="apple-touch-icon-precomposed"'), "页面不应声明会与主 Apple 图标竞争的旧式 precomposed 图标");
 assert(home.includes('/brand/rem-cat-avatar-96-v5.png'), "主站导航未使用统一的透明蕾姆猫耳品牌图标");
@@ -107,7 +110,8 @@ assert(!serviceWorker.includes('_astro/receipt-checker.'), "小票工具 JS/CSS 
 assert(!serviceWorker.includes('url:"vendor/tesseract') && !serviceWorker.includes('url:"/vendor/tesseract'), "OCR 大文件不应进入全站预缓存");
 assert(!serviceWorker.includes('url:"scripts/home.js"'), "已退役首页脚本不应进入全站预缓存");
 for (const retiredAsset of [
-  "favicon-rem",
+  "favicon-rem-cat.ico",
+  "favicon-rem-cat-32.png",
   "apple-touch-icon-rem.png",
   "apple-touch-icon-rem-cat.png",
   "safari-favorite-rem-cat",

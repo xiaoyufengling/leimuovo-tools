@@ -484,7 +484,8 @@ test("SEO and PWA artifacts are discoverable", async ({ page, request }) => {
   await page.goto("/");
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "https://leimuovo.com/");
   await expect(page.locator('link[rel="icon"][sizes="512x512"]')).toHaveAttribute("href", "/brand/rem-cat-avatar-512-v5.png");
-  await expect(page.locator('link[rel="icon"][sizes="any"]')).toHaveAttribute("href", "/favicon.ico?v=rem-cat-v5-20260824");
+  await expect(page.locator('link[rel="icon"][sizes="any"]')).toHaveAttribute("href", "/favicon-rem-cat-transparent-v5.ico");
+  await expect(page.locator('link[rel="shortcut icon"]')).toHaveAttribute("href", "/favicon-rem-cat-transparent-v5.ico");
   await expect(page.locator('link[rel="apple-touch-icon"]')).toHaveAttribute("href", "/brand/rem-cat-avatar-180-v5.png");
   await expect(page.locator('link[rel="apple-touch-icon-precomposed"]')).toHaveCount(0);
   const structuredData = await page.locator('script[type="application/ld+json"]').textContent();

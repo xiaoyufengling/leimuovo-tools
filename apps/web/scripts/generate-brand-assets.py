@@ -15,6 +15,8 @@ BRAND_FILES = {
 
 MASTER_FILE = "rem-cat-avatar-master-v5.png"
 MASKABLE_FILE = "rem-cat-avatar-maskable-512-v5.png"
+FAVICON_ICO_FILE = "favicon-rem-cat-transparent-v5.ico"
+FAVICON_PNG_FILE = "favicon-rem-cat-transparent-32-v5.png"
 
 
 def load_master(path: Path) -> Image.Image:
@@ -90,12 +92,15 @@ def main() -> None:
     save_png(maskable, brand_dir / MASKABLE_FILE)
 
     favicon = render_square(icon_source, 256, fill_ratio=0.94)
-    save_png(favicon.resize((32, 32), Image.Resampling.LANCZOS), args.public / "favicon-32.png")
-    favicon.save(
-        args.public / "favicon.ico",
-        format="ICO",
-        sizes=[(16, 16), (24, 24), (32, 32), (48, 48), (64, 64), (128, 128), (256, 256)],
-    )
+    favicon_32 = favicon.resize((32, 32), Image.Resampling.LANCZOS)
+    for favicon_png_name in ("favicon-32.png", FAVICON_PNG_FILE):
+        save_png(favicon_32, args.public / favicon_png_name)
+    for favicon_ico_name in ("favicon.ico", FAVICON_ICO_FILE):
+        favicon.save(
+            args.public / favicon_ico_name,
+            format="ICO",
+            sizes=[(16, 16), (24, 24), (32, 32), (48, 48), (64, 64), (128, 128), (256, 256)],
+        )
 
     for apple_name in ("apple-touch-icon.png", "apple-touch-icon-precomposed.png"):
         save_png(rendered[180], args.public / apple_name)
