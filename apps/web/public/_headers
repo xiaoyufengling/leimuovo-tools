@@ -28,11 +28,14 @@
 /favicon-32.png
   Cache-Control: public, max-age=0, must-revalidate
 
-/favicon-rem-cat-transparent-v5.ico
+/favicon-rem-cat-transparent-v6.ico
   Cache-Control: public, max-age=0, must-revalidate
 
-/favicon-rem-cat-transparent-32-v5.png
+/favicon-rem-cat-transparent-32-v6.png
   Cache-Control: public, max-age=0, must-revalidate
+
+/og-default-v6.png
+  Cache-Control: public, max-age=31536000, immutable
 
 /apple-touch-icon.png
   Cache-Control: public, max-age=0, must-revalidate

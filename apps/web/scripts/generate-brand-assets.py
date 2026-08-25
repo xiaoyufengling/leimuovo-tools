@@ -3,20 +3,21 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from PIL import Image, ImageOps
+from PIL import Image, ImageDraw, ImageFont, ImageOps
 
 
 BRAND_FILES = {
-    96: "rem-cat-avatar-96-v5.png",
-    180: "rem-cat-avatar-180-v5.png",
-    192: "rem-cat-avatar-192-v5.png",
-    512: "rem-cat-avatar-512-v5.png",
+    96: "rem-cat-avatar-96-v6.png",
+    180: "rem-cat-avatar-180-v6.png",
+    192: "rem-cat-avatar-192-v6.png",
+    512: "rem-cat-avatar-512-v6.png",
 }
 
-MASTER_FILE = "rem-cat-avatar-master-v5.png"
-MASKABLE_FILE = "rem-cat-avatar-maskable-512-v5.png"
-FAVICON_ICO_FILE = "favicon-rem-cat-transparent-v5.ico"
-FAVICON_PNG_FILE = "favicon-rem-cat-transparent-32-v5.png"
+MASTER_FILE = "rem-cat-avatar-master-v6.png"
+MASKABLE_FILE = "rem-cat-avatar-maskable-512-v6.png"
+FAVICON_ICO_FILE = "favicon-rem-cat-transparent-v6.ico"
+FAVICON_PNG_FILE = "favicon-rem-cat-transparent-32-v6.png"
+OG_FILE = "og-default-v6.png"
 
 
 def load_master(path: Path) -> Image.Image:
@@ -68,6 +69,33 @@ def save_png(image: Image.Image, path: Path) -> None:
     image.save(path, format="PNG", optimize=True)
 
 
+def load_font(size: int, *, bold: bool = False) -> ImageFont.FreeTypeFont:
+    candidates = [
+        Path("C:/Windows/Fonts/msyhbd.ttc" if bold else "C:/Windows/Fonts/msyh.ttc"),
+        Path("C:/Windows/Fonts/segoeuib.ttf" if bold else "C:/Windows/Fonts/segoeui.ttf"),
+    ]
+    for candidate in candidates:
+        if candidate.exists():
+            return ImageFont.truetype(str(candidate), size)
+    return ImageFont.load_default()
+
+
+def render_social_card(icon_source: Image.Image) -> Image.Image:
+    card = Image.new("RGB", (1200, 630), "#0B0B0D")
+    draw = ImageDraw.Draw(card)
+    draw.rounded_rectangle((64, 52, 1136, 578), radius=36, outline="#2C2C30", width=2)
+    icon = render_square(icon_source, 112, fill_ratio=0.94)
+    card.paste(icon, (96, 88), icon.getchannel("A"))
+    draw.text((240, 102), "LEIMUOVO.COM", fill="#F5F5F7", font=load_font(27, bold=True))
+    draw.text((240, 148), "PERSONAL WEBSITE", fill="#8E8E93", font=load_font(20))
+    draw.text((96, 258), "小鱼", fill="#F5F5F7", font=load_font(76, bold=True))
+    draw.text((96, 372), "把想法留下，让时间慢慢整理。", fill="#B6B6BC", font=load_font(39))
+    draw.line((96, 500, 1104, 500), fill="#2C2C30", width=2)
+    draw.ellipse((96, 530, 110, 544), fill="#F5F5F7")
+    draw.text((890, 524), "A PERSONAL SPACE", fill="#8E8E93", font=load_font(18))
+    return card
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Compile every website avatar from one approved master image.")
     parser.add_argument("--source", type=Path, required=True)
@@ -105,6 +133,10 @@ def main() -> None:
     for apple_name in ("apple-touch-icon.png", "apple-touch-icon-precomposed.png"):
         save_png(rendered[180], args.public / apple_name)
 
+    social_card = render_social_card(icon_source)
+    for social_name in ("og-default.png", OG_FILE):
+        save_png(social_card, args.public / social_name)
+
     save_png(rendered[512], args.design_system_avatar)
 
     print(f"source={args.source} {source.size} {source.mode}")
@@ -112,7 +144,7 @@ def main() -> None:
     print(f"brand_dir={brand_dir}")
     print(f"source_master={source_dir / MASTER_FILE}")
     print(f"design_system_avatar={args.design_system_avatar}")
-    print("compiled=transparent master, navigation, favicon, Apple touch, PWA, control center; opaque maskable icon")
+    print("compiled=transparent master, navigation, favicon, Apple touch, PWA, social card, control center; opaque maskable icon")
 
 
 if __name__ == "__main__":

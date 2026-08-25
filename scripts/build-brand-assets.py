@@ -10,12 +10,10 @@ BRAND_BACKGROUND = "#101940"
 source = Image.open(BRAND_SOURCE).convert("RGBA")
 
 def avatar(size: int) -> Image.Image:
-    return ImageOps.fit(
-        source,
-        (size, size),
-        method=Image.Resampling.LANCZOS,
-        centering=(0.5, 0.5),
-    )
+    artwork = ImageOps.contain(source, (round(size * 0.94), round(size * 0.94)), Image.Resampling.LANCZOS)
+    canvas = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    canvas.alpha_composite(artwork, ((size - artwork.width) // 2, (size - artwork.height) // 2))
+    return canvas
 
 
 def maskable_avatar(size: int) -> Image.Image:

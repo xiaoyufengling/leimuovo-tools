@@ -142,22 +142,6 @@ function mountPetCounter(page: HTMLElement): void {
     });
   };
 
-  const burst = (event: PointerEvent | MouseEvent) => {
-    const rect = button.getBoundingClientRect();
-    const x = event.clientX > 0 ? event.clientX - rect.left : rect.width / 2;
-    const y = event.clientY > 0 ? event.clientY - rect.top : rect.height / 2;
-    for (let index = 0; index < 8; index += 1) {
-      const particle = document.createElement("i");
-      particle.className = "xyg-pet-particle";
-      particle.style.setProperty("--particle-x", `${x}px`);
-      particle.style.setProperty("--particle-y", `${y}px`);
-      particle.style.setProperty("--particle-angle", `${index * 45 + Math.random() * 16 - 8}deg`);
-      particle.style.setProperty("--particle-distance", `${42 + Math.random() * 40}px`);
-      button.append(particle);
-      particle.addEventListener("animationend", () => particle.remove(), { once: true });
-    }
-  };
-
   const readPetSide = (event: PointerEvent | MouseEvent): number => {
     if (event.clientX <= 0) return petSide;
     const rect = button.getBoundingClientRect();
@@ -336,7 +320,6 @@ function mountPetCounter(page: HTMLElement): void {
       card.classList.add("is-petted");
       pulseTimer = window.setTimeout(() => card.classList.remove("is-petted"), 720);
     });
-    if (!reducedMotion.matches) burst(event);
     render();
     renderRecent();
     announcement?.replaceChildren(document.createTextNode(`这是你的第 ${localCount} 次摸摸`));

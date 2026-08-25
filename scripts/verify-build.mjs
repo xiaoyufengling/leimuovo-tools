@@ -21,15 +21,16 @@ const requiredFiles = [
   "manifest.webmanifest",
   "favicon.ico",
   "favicon-32.png",
-  "favicon-rem-cat-transparent-v5.ico",
-  "favicon-rem-cat-transparent-32-v5.png",
+  "favicon-rem-cat-transparent-v6.ico",
+  "favicon-rem-cat-transparent-32-v6.png",
   "apple-touch-icon.png",
   "apple-touch-icon-precomposed.png",
-  "brand/rem-cat-avatar-96-v5.png",
-  "brand/rem-cat-avatar-180-v5.png",
-  "brand/rem-cat-avatar-192-v5.png",
-  "brand/rem-cat-avatar-512-v5.png",
-  "brand/rem-cat-avatar-maskable-512-v5.png",
+  "brand/rem-cat-avatar-96-v6.png",
+  "brand/rem-cat-avatar-180-v6.png",
+  "brand/rem-cat-avatar-192-v6.png",
+  "brand/rem-cat-avatar-512-v6.png",
+  "brand/rem-cat-avatar-maskable-512-v6.png",
+  "og-default-v6.png",
   "sw.js",
   "_headers",
   "_redirects",
@@ -65,18 +66,19 @@ const [home, tools, receipt, laboratory, robots, sitemap, manifestSource, servic
 
 assert(home.includes('rel="canonical" href="https://leimuovo.com/"'), "首页 canonical 缺失或不正确");
 assert(home.includes('rel="manifest" href="/manifest.webmanifest"'), "页面未声明 PWA manifest");
-assert(home.includes('rel="icon" href="/brand/rem-cat-avatar-512-v5.png"'), "页面未声明统一的高分辨率透明品牌图标");
-assert(home.includes('rel="icon" href="/favicon-rem-cat-transparent-v5.ico"'), "页面未声明独立地址的透明蕾姆猫耳 favicon");
-assert(home.includes('rel="shortcut icon" href="/favicon-rem-cat-transparent-v5.ico"'), "页面未为 Safari 个人收藏声明独立 shortcut icon");
-assert(home.includes('rel="apple-touch-icon" href="/brand/rem-cat-avatar-180-v5.png"'), "页面未声明统一的 iOS 品牌图标");
+assert(home.includes('rel="icon" href="/brand/rem-cat-avatar-512-v6.png"'), "页面未声明统一的高分辨率透明品牌图标");
+assert(home.includes('rel="icon" href="/favicon-rem-cat-transparent-v6.ico"'), "页面未声明独立地址的透明蕾姆猫耳 favicon");
+assert(home.includes('rel="shortcut icon" href="/favicon-rem-cat-transparent-v6.ico"'), "页面未为 Safari 个人收藏声明独立 shortcut icon");
+assert(home.includes('rel="apple-touch-icon" href="/brand/rem-cat-avatar-180-v6.png"'), "页面未声明统一的 iOS 品牌图标");
 assert(!home.includes('rel="apple-touch-icon-precomposed"'), "页面不应声明会与主 Apple 图标竞争的旧式 precomposed 图标");
-assert(home.includes('/brand/rem-cat-avatar-96-v5.png'), "主站导航未使用统一的透明蕾姆猫耳品牌图标");
+assert(home.includes('/brand/rem-cat-avatar-96-v6.png'), "主站导航未使用统一的透明蕾姆猫耳品牌图标");
+assert(home.includes('property="og:image" content="https://leimuovo.com/og-default-v6.png"'), "首页未使用版本化的新品牌分享图");
 assert(home.includes('"@type":"WebSite"'), "首页 WebSite JSON-LD 缺失");
 assert(home.includes('"name":"小鱼"'), "首页品牌名称不正确");
 assert(tools.includes('"@type":"CollectionPage"'), "工具目录 CollectionPage JSON-LD 缺失");
 assert(receipt.includes('"@type":"SoftwareApplication"'), "工具页 SoftwareApplication JSON-LD 缺失");
-assert(laboratory.includes('/brand/rem-cat-avatar-512-v5.png'), "实验室未使用核准的透明统一头像");
-assert(laboratory.includes('/brand/rem-cat-avatar-96-v5.png'), "实验室导航未使用统一的透明品牌图标");
+assert(laboratory.includes('/brand/rem-cat-avatar-512-v6.png'), "实验室未使用核准的透明统一头像");
+assert(laboratory.includes('/brand/rem-cat-avatar-96-v6.png'), "实验室导航未使用统一的透明品牌图标");
 assert(!laboratory.includes('data-rem-parts'), "实验室不应在互动时替换核准主图");
 const laboratoryCssHref = laboratory.match(/href="(\/_astro\/xiaoyugan\.[^"]+\.css)"/)?.[1];
 assert(laboratoryCssHref, "实验室构建产物缺少独立样式表");
@@ -95,8 +97,8 @@ const manifest = JSON.parse(manifestSource);
 assert(manifest.lang === "zh-CN", "PWA 默认语言必须是 zh-CN");
 assert(manifest.name === "小鱼" && manifest.short_name === "小鱼", "PWA 品牌名称不正确");
 assert(manifest.start_url === "/" && manifest.scope === "/", "PWA scope/start_url 不正确");
-assert(manifest.icons?.some((icon) => icon.src === "/brand/rem-cat-avatar-192-v5.png"), "PWA 未使用统一的 192px 透明品牌图标");
-assert(manifest.icons?.some((icon) => icon.src === "/brand/rem-cat-avatar-512-v5.png"), "PWA 未使用统一的 512px 透明品牌图标");
+assert(manifest.icons?.some((icon) => icon.src === "/brand/rem-cat-avatar-192-v6.png"), "PWA 未使用统一的 192px 透明品牌图标");
+assert(manifest.icons?.some((icon) => icon.src === "/brand/rem-cat-avatar-512-v6.png"), "PWA 未使用统一的 512px 透明品牌图标");
 assert(manifest.icons?.some((icon) => icon.purpose === "maskable"), "PWA 缺少 maskable 图标");
 
 assert(!serviceWorker.includes("NavigationRoute"), "Service Worker 不应启用 SPA 首页导航回退");
@@ -119,6 +121,13 @@ for (const retiredAsset of [
   "icons/rem-icon-",
   "icons/icon-",
   "images/xiaoyugan-rem-face",
+  "rem-cat-avatar-96-v5.png",
+  "rem-cat-avatar-180-v5.png",
+  "rem-cat-avatar-192-v5.png",
+  "rem-cat-avatar-512-v5.png",
+  "rem-cat-avatar-maskable-512-v5.png",
+  "favicon-rem-cat-transparent-v5.ico",
+  "favicon-rem-cat-transparent-32-v5.png",
 ]) {
   assert(!serviceWorker.includes(retiredAsset), `已退役品牌资源不应进入全站预缓存：${retiredAsset}`);
 }
