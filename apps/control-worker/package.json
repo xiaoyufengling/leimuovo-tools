@@ -16,8 +16,8 @@
   "dependencies": {
     "@leimuovo/control-core": "workspace:*",
     "@leimuovo/design-system": "workspace:*",
-    "jose": "^6.2.8",
-    "lucide": "^1.28.0"
+    "jose": "^6.2.10",
+    "lucide": "^1.37.0"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^5.20260804.1",
