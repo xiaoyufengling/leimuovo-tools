@@ -36,11 +36,18 @@ test("field modes and interruptible glass spread retain the latest request", asy
   await expect.poll(() => page.locator("[data-glass-stage]").evaluate(el => Number(getComputedStyle(el).getPropertyValue("--spread")))).toBeGreaterThan(.99);
 });
 
-test("native fast reverse scrolling is never captured or snapped", async ({ page }) => {
+test("scroll position remains reversible without forced snapping", async ({ page, isMobile }) => {
   await page.goto("/");
   await page.evaluate(() => scrollTo(0, 500));
-  await page.mouse.wheel(0, 1500);
-  await page.mouse.wheel(0, -2200);
+  if (isMobile) {
+    // Mobile WebKit does not expose mouse.wheel. Check native programmatic
+    // scroll behavior here; physical touch scrolling still needs device QA.
+    await page.evaluate(() => scrollTo(0, 2000));
+    await page.evaluate(() => scrollTo(0, 0));
+  } else {
+    await page.mouse.wheel(0, 1500);
+    await page.mouse.wheel(0, -2200);
+  }
   await expect.poll(() => page.evaluate(() => scrollY)).toBeLessThan(50);
   const scrolling = await page.evaluate(() => ({
     behavior: getComputedStyle(document.documentElement).scrollBehavior,

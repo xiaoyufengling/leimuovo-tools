@@ -18,6 +18,7 @@ if (root) {
   let frame = 0;
   const hero = root.querySelector<HTMLElement>(".pg-hero")!;
   const sculpture = root.querySelector<HTMLElement>("[data-sculpture]")!;
+  const fallbackSculpture = root.querySelector<HTMLElement>(".pg-sculpture-fallback")!;
   const liquid = root.querySelector<HTMLCanvasElement>("[data-liquid-canvas]")!;
   const field = root.querySelector<HTMLCanvasElement>("[data-flow-canvas]")!;
   const glass = root.querySelector<HTMLElement>("[data-glass-stage]")!;
@@ -49,8 +50,7 @@ if (root) {
     button.addEventListener("click", () => {
       material = Number(button.dataset.material);
       root.querySelectorAll("[data-material]").forEach(el => el.setAttribute("aria-pressed", String(el === button)));
-      const fallback = root.querySelector<HTMLElement>(".pg-sculpture-fallback")!;
-      fallback.style.borderColor = ["#8bb3f6", "#b8c8d8", "#d8adc9"][material]!;
+      fallbackSculpture.style.borderColor = ["#8bb3f6", "#b8c8d8", "#d8adc9"][material]!;
       if (paused) currentMaterial = material;
       schedule();
     });
@@ -59,7 +59,6 @@ if (root) {
   shapeInput.addEventListener("input", () => {
     shape = Number(shapeInput.value) / 100;
     root.querySelector("#shape-value")!.textContent = shapeInput.value;
-    root.querySelector<HTMLElement>(".pg-sculpture-fallback")!.style.borderRadius = `${50 - shape * 18}%`;
     if (paused) currentShape = shape;
     schedule();
   });
@@ -158,8 +157,8 @@ if (root) {
       sculpture.classList.add("is-rendered");
     } catch (error) { program=null; console.warn("Sculpture uses its static fallback:",error); }
   }
-  liquid.addEventListener("webglcontextlost", () => { program=null;sculpture.classList.remove("is-rendered");root.querySelector("[data-render-label]")!.textContent="STATIC / 001"; });
-  if (!program) root.querySelector("[data-render-label]")!.textContent="STATIC / 001";
+  liquid.addEventListener("webglcontextlost", () => { program=null;sculpture.classList.remove("is-rendered");root.querySelector("[data-render-label]")!.textContent="FORM / 001"; });
+  if (!program) root.querySelector("[data-render-label]")!.textContent="FORM / 001";
   const ctx=field.getContext("2d");
   let fw=0, fh=0;
   const resize = () => {
@@ -190,6 +189,11 @@ if (root) {
     if(!paused)time+=dt;
     currentX+=(pointerX-currentX)*ease;currentY+=(pointerY-currentY)*ease;currentMaterial+=(material-currentMaterial)*ease;currentShape+=(shape-currentShape)*ease;currentField+=(fieldMode-currentField)*ease;currentSpread+=(spread-currentSpread)*ease;
     if(heroVisible&&gl&&program){gl.viewport(0,0,liquid.width,liquid.height);gl.uniform2f(uniforms.resolution ?? null,liquid.width,liquid.height);gl.uniform1f(uniforms.time ?? null,time);gl.uniform2f(uniforms.pointer ?? null,paused?0:currentX,paused?0:currentY);gl.uniform1f(uniforms.material ?? null,currentMaterial);gl.uniform1f(uniforms.shape ?? null,currentShape);gl.drawArrays(gl.TRIANGLES,0,6);}
+    if (heroVisible && !program) {
+      const tilt = paused ? 0 : currentX * 9 + Math.sin(time * .22) * 2.5;
+      fallbackSculpture.style.transform = `rotate(${-28 + tilt}deg) rotateX(${paused ? 0 : currentY * 12}deg) scaleY(${.75 + currentShape * .08})`;
+      fallbackSculpture.style.borderRadius = `${50 - currentShape * 18}%`;
+    }
     if(fieldVisible||needsFrame)drawField();
     if(glassVisible||needsFrame)glass.style.setProperty("--spread",currentSpread.toFixed(4));
     needsFrame=false;
