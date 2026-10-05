@@ -68,7 +68,13 @@ if (rootElement) {
     dashboard.classList.toggle("is-interactive", ready);
     dashboard.inert = !ready;
     dashboard.setAttribute("aria-hidden", String(!ready));
-    if (!ready && dialog.open) dialog.close();
+    if (!ready) {
+      if (dialog.open) dialog.close();
+      for (const key of ["search", "alerts", "profile"]) {
+        root.querySelector<HTMLElement>(`[data-${key}-panel]`)!.hidden = true;
+        root.querySelector(`[data-${key}-toggle]`)!.setAttribute("aria-expanded", "false");
+      }
+    }
     if (!ready && expanded) setExpanded(false);
     const phase = progress < .02 ? 0 : progress < .27 ? 1 : progress < .885 ? 2 : 3;
     root.querySelector("[data-scene-name]")!.textContent = sceneNames[phase]!;
@@ -78,7 +84,7 @@ if (rootElement) {
     skipButton.dataset.sceneReady = String(ready);
   }
   function skipIntro() {
-    if (reduced) { root.querySelector<HTMLButtonElement>("[data-console-view=overview]")?.focus(); return; }
+    if (reduced) { root.querySelector<HTMLButtonElement>("[data-console-view=overview]")?.focus({preventScroll:true}); return; }
     window.scrollTo({ top: stageTop + stageTravel * .96, behavior: "auto" });
     renderScene();
   }
@@ -93,8 +99,9 @@ if (rootElement) {
   window.addEventListener("resize", measure, {passive:true});
   new ResizeObserver(measure).observe(screen);
   const setReduced = (value: boolean) => {
-    reduced = value; root.classList.toggle("is-reduced", reduced); html.classList.toggle("rem-motion", !reduced);
+    reduced = value || reduceMedia.matches; root.classList.toggle("is-reduced", reduced); html.classList.toggle("rem-motion", !reduced);
     root.querySelector<HTMLInputElement>("[data-reduce-motion]")!.checked = reduced;
+    root.querySelector<HTMLInputElement>("[data-reduce-motion]")!.disabled = reduceMedia.matches;
     measure(); renderScene();
   };
   reduceMedia.addEventListener("change", () => setReduced(reduceMedia.matches));
@@ -182,8 +189,8 @@ if (rootElement) {
   root.querySelectorAll<HTMLButtonElement>("[data-kind-filter]").forEach(b=>b.addEventListener("click",()=>{kindFilter=b.dataset.kindFilter!;root.querySelectorAll("[data-kind-filter]").forEach(el=>el.setAttribute("aria-pressed",String(el===b)));updateRows();}));
   const searchPanel=root.querySelector<HTMLElement>("[data-search-panel]")!,searchInput=root.querySelector<HTMLInputElement>("[data-machine-search]")!;
   const searchToggle=root.querySelector<HTMLButtonElement>("[data-search-toggle]")!;
-  searchToggle.addEventListener("click",()=>{searchPanel.hidden=!searchPanel.hidden;searchToggle.setAttribute("aria-expanded",String(!searchPanel.hidden));if(!searchPanel.hidden)searchInput.focus();});
-  root.querySelector("[data-search-close]")!.addEventListener("click",()=>{searchPanel.hidden=true;query="";searchInput.value="";searchToggle.setAttribute("aria-expanded","false");updateRows();searchToggle.focus();});
+  searchToggle.addEventListener("click",()=>{searchPanel.hidden=!searchPanel.hidden;searchToggle.setAttribute("aria-expanded",String(!searchPanel.hidden));if(!searchPanel.hidden)searchInput.focus({preventScroll:true});});
+  root.querySelector("[data-search-close]")!.addEventListener("click",()=>{searchPanel.hidden=true;query="";searchInput.value="";searchToggle.setAttribute("aria-expanded","false");updateRows();searchToggle.focus({preventScroll:true});});
   searchInput.addEventListener("input",()=>{query=searchInput.value.trim().toLowerCase();updateRows();});
   const closePopovers=()=>{for(const key of ["alerts","profile"]){root.querySelector<HTMLElement>(`[data-${key}-panel]`)!.hidden=true;root.querySelector(`[data-${key}-toggle]`)!.setAttribute("aria-expanded","false");}};
   for(const key of ["alerts","profile"]){root.querySelector(`[data-${key}-toggle]`)!.addEventListener("click",()=>{const panel=root.querySelector<HTMLElement>(`[data-${key}-panel]`)!;const next=panel.hidden;closePopovers();panel.hidden=!next;root.querySelector(`[data-${key}-toggle]`)!.setAttribute("aria-expanded",String(next));});}

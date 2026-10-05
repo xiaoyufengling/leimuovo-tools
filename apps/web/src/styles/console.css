@@ -23,3 +23,26 @@ body:has([data-rem-experience]){margin:0;background:#f8fafc;background-image:non
 
 .console-dashboard.is-filtered .machine-row-group{flex:none}.console-dashboard.is-filtered .machine-row{flex:none}.machine-row>[data-cell=output],.machine-row>[data-cell=target],.machine-row>[data-cell=fm]{overflow:hidden;text-overflow:ellipsis}.console-dashboard[data-view=jobs] .machine-identity button{flex-direction:column-reverse}.console-dashboard[data-view=jobs] .machine-identity small{font-weight:600;color:#173859}.console-dashboard[data-view=jobs] .machine-identity strong{font-weight:400;color:#6b809e;font-size:.9em}
 .rem-motion .machine-table-panel{border-color:rgba(230,235,243,var(--power,0))}.rem-motion .console-dashboard:not(.is-interactive) .machine-table-scroll{overflow:visible;scrollbar-color:transparent transparent}
+/* Fit every approved field and all twelve rows inside the desktop monitor. */
+@media(min-width:1001px){
+  .production-charts{height:clamp(92px,8vw,136px)}
+  .machine-table{min-width:0;height:100%;min-height:0}
+  .machine-grid{grid-template-columns:16% 9% 9% 9% 4% 4% 4% 5% 13% 6% 4% 6% 11%}
+  .machine-table-head{min-height:clamp(26px,2.3vw,38px);font-size:clamp(8px,.66vw,11px)}
+  .machine-row-group{min-height:0}
+  .machine-row{min-height:0;font-size:clamp(9px,.67vw,11px)}
+  .machine-identity button{min-height:0;padding:0;line-height:1.05}
+  .machine-identity strong{font-size:clamp(9px,.71vw,12px)}
+  .machine-identity small{font-size:clamp(8px,.64vw,10px)}
+  .machine-type-icon{height:19px;width:19px}
+  .machine-state{min-height:15px;font-size:clamp(8px,.59vw,10px);padding:3px 5px}
+  .machine-state i{width:6px;height:6px}
+  .machine-history{padding-right:10px}
+  .console-dashboard.is-filtered .machine-row{min-height:28px}
+  .console-dashboard.is-comfortable .machine-row{min-height:42px}
+}
+/* Keep the surrounding Rem site visible without shortening the sticky end frame. */
+.rem-experience{position:relative}.rem-site-header{position:fixed}.rem-page-footer{position:absolute;bottom:0;left:0;right:0;z-index:20;min-height:18px;height:18px;padding:3px 4vw;border:0;background:transparent;font-size:8px}.console-story-progress{bottom:18px}
+@media(max-width:700px){.rem-page-footer{font-size:7px;padding:3px 5vw}.console-scroll-guide{bottom:27px}}
+/* Vertical wheel/touch input can naturally return from the table to the page. */
+.machine-table-scroll{overscroll-behavior-x:contain;overscroll-behavior-y:auto}

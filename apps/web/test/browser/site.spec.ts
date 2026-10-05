@@ -203,6 +203,107 @@ test("period and machine selections survive repeated filters and reverse replay"
   await expect(page.locator('[data-production-chart="cnc"] [data-chart-total]')).toHaveText("840");
 });
 
+test("search hides during black replay and preserves its query after reassembly", async ({ page }) => {
+  await page.goto("/");
+  await enterConsole(page);
+  const toggle = page.locator("[data-search-toggle]");
+  const panel = page.locator("[data-search-panel]");
+  const input = page.locator("[data-machine-search]");
+  await toggle.click();
+  await expect(input).toBeFocused();
+  // Fill the input the app already focused; refocusing or scrolling it into
+  // view can move the native sticky scene away from its ready position.
+  await input.fill("CNC-05");
+  await expect(page.locator("[data-machine-row]:visible")).toHaveCount(1);
+  await expect(page.locator("[data-machine-row]:visible")).toHaveAttribute("data-machine-row", "cnc-05");
+
+  await page.locator("button[data-skip-intro]").click();
+  await expect.poll(() => consoleProgress(page)).toBe(0);
+  await expect(page.locator(".monitor-power")).toHaveCSS("opacity", "0");
+  await expect(page.locator(dashboard)).not.toHaveClass(/is-interactive/);
+  await expect(panel).toBeHidden();
+  await expect(toggle).toHaveAttribute("aria-expanded", "false");
+  await expect(input).toHaveValue("CNC-05");
+
+  await scrollConsole(page, 0.45);
+  await expect(panel).toBeHidden();
+  await scrollConsole(page, 1);
+  await expect(page.locator(dashboard)).toHaveClass(/is-interactive/);
+  await expect(panel).toBeHidden();
+  await expect(input).toHaveValue("CNC-05");
+  await expect(page.locator("[data-machine-row]:visible")).toHaveCount(1);
+  await expect(page.locator("[data-machine-row]:visible")).toHaveAttribute("data-machine-row", "cnc-05");
+
+  await toggle.click();
+  await expect(input).toBeFocused();
+  await input.fill("");
+  await expect(page.locator("[data-machine-row]:visible")).toHaveCount(12);
+  await expect(page.locator(dashboard)).toHaveClass(/is-interactive/);
+  await page.locator("[data-search-close]").click();
+  await expect(panel).toBeHidden();
+  await expect(input).toHaveValue("");
+});
+
+test("compact desktop monitor fits all twelve rows and the Now column without table scrolling", async ({ page, isMobile }) => {
+  test.skip(isMobile, "The desktop fit contract excludes intentional mobile and tablet table overflow");
+  await page.setViewportSize({ width: 1180, height: 757 });
+  await page.goto("/");
+  await enterConsole(page);
+  await expect(page.locator("[data-machine-row]:visible")).toHaveCount(12);
+  const geometry = await page.locator(".machine-table-scroll").evaluate((element) => {
+    const box = element.getBoundingClientRect();
+    const bounds = {
+      left: box.left + element.clientLeft,
+      right: box.left + element.clientLeft + element.clientWidth,
+      top: box.top + element.clientTop,
+      bottom: box.top + element.clientTop + element.clientHeight,
+    };
+    const rows = [...element.querySelectorAll<HTMLElement>("[data-machine-row]")].map((row) => {
+      const rect = row.getBoundingClientRect();
+      const now = row.querySelector<HTMLElement>('[role="cell"]:last-child')!;
+      const state = now.querySelector<HTMLElement>(".machine-state")!;
+      return {
+        id: row.dataset.machineRow,
+        top: rect.top,
+        bottom: rect.bottom,
+        left: rect.left,
+        right: rect.right,
+        height: rect.height,
+        nowRight: now.getBoundingClientRect().right,
+        stateRight: state.getBoundingClientRect().right,
+      };
+    });
+    const nowHeader = element.querySelector<HTMLElement>('.machine-table-head [role="columnheader"]:last-child')!;
+    return {
+      bounds,
+      rows,
+      scrollLeft: element.scrollLeft,
+      scrollTop: element.scrollTop,
+      scrollWidth: element.scrollWidth,
+      clientWidth: element.clientWidth,
+      scrollHeight: element.scrollHeight,
+      clientHeight: element.clientHeight,
+      nowHeaderRight: nowHeader.getBoundingClientRect().right,
+    };
+  });
+  expect(geometry.scrollLeft).toBe(0);
+  expect(geometry.scrollTop).toBe(0);
+  expect(geometry.scrollWidth).toBeLessThanOrEqual(geometry.clientWidth + 2);
+  expect(geometry.scrollHeight).toBeLessThanOrEqual(geometry.clientHeight + 2);
+  expect(geometry.rows).toHaveLength(12);
+  expect(geometry.rows.at(-1)?.id).toBe("print-06");
+  expect(geometry.nowHeaderRight).toBeLessThanOrEqual(geometry.bounds.right + 2);
+  for (const row of geometry.rows) {
+    expect(row.height, `${row.id} has a rendered row`).toBeGreaterThan(1);
+    expect(row.top, `${row.id} top`).toBeGreaterThanOrEqual(geometry.bounds.top - 2);
+    expect(row.bottom, `${row.id} bottom`).toBeLessThanOrEqual(geometry.bounds.bottom + 2);
+    expect(row.left, `${row.id} left`).toBeGreaterThanOrEqual(geometry.bounds.left - 2);
+    expect(row.right, `${row.id} right`).toBeLessThanOrEqual(geometry.bounds.right + 2);
+    expect(row.nowRight, `${row.id} Now cell`).toBeLessThanOrEqual(geometry.bounds.right + 2);
+    expect(row.stateRight, `${row.id} state label`).toBeLessThanOrEqual(geometry.bounds.right + 2);
+  }
+});
+
 test("desktop wheel input scrolls naturally in both directions without snapping", async ({ page, isMobile }) => {
   test.skip(isMobile, "Mobile WebKit does not support mouse.wheel; programmatic native scrolling is covered separately");
   await page.goto("/");
@@ -219,6 +320,13 @@ test("desktop wheel input scrolls naturally in both directions without snapping"
     snap: getComputedStyle(document.documentElement).scrollSnapType,
   }));
   expect(scrolling).toEqual({ behavior: "auto", snap: "none" });
+  await enterConsole(page);
+  const tableBox = await page.locator(".machine-table-scroll").boundingBox();
+  expect(tableBox).not.toBeNull();
+  const beforeTableWheel = await page.evaluate(() => scrollY);
+  await page.mouse.move(tableBox!.x + tableBox!.width * 0.5, tableBox!.y + tableBox!.height * 0.4);
+  await page.mouse.wheel(0, -500);
+  await expect.poll(() => page.evaluate(() => scrollY)).toBeLessThan(beforeTableWheel - 100);
 });
 
 test("mobile native scrolling keeps page width fixed and the data table scrolls internally", async ({ page, isMobile }) => {
