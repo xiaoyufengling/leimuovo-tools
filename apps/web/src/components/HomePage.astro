@@ -6,7 +6,7 @@ const jsonLd = { "@context": "https://schema.org", "@type": "WebSite", name: sit
 ---
 <BaseLayout title="小鱼 LEIMUOVO｜Visual Playground" description="光、形状，以及一点好奇心。小鱼的视觉游乐场。" jsonLd={jsonLd} hideChrome>
   <div class="playground" data-playground>
-    <a class="pg-skip" href="#liquid-controls">跳到交互控制</a>
+    <a class="pg-skip" href="#flow">跳到交互内容</a>
     <header class="pg-header">
       <a class="pg-logo" href="/" aria-label="小鱼首页"><span class="pg-symbol" aria-hidden="true"></span>LEIMUOVO<span class="pg-logo-dot">®</span></a>
       <nav class="pg-nav site-nav" aria-label="主导航"><a class="pg-nav-active" href="#experiments">实验</a><a href="/tools/">工具</a><a href="/about/">关于</a></nav>
@@ -16,15 +16,9 @@ const jsonLd = { "@context": "https://schema.org", "@type": "WebSite", name: sit
     <section class="pg-hero" id="experiments" aria-labelledby="pg-title">
       <div class="pg-orbit-label" aria-hidden="true">VISUAL PLAYGROUND<br/>VOL. 01 / 2026</div>
       <div class="pg-hero-copy"><p class="pg-eyebrow"><span></span>光、形状，以及一点好奇心</p><h1 id="pg-title">BEYOND<br/><i>the</i> SURFACE<span class="pg-title-period">.</span></h1><p class="pg-hero-note">让感觉，自由成形。</p></div>
-      <div class="pg-sculpture" data-sculpture>
-        <div class="pg-sculpture-fallback" aria-hidden="true"><span></span></div>
-        <canvas class="pg-liquid-canvas" data-liquid-canvas aria-label="随指针与控制器变化的蓝色液态环形雕塑" role="img"></canvas>
-        <span class="pg-canvas-caption"><i></i><span data-render-label>LIQUID / 001</span></span>
-      </div>
-      <div class="pg-hero-bottom" id="liquid-controls">
+      <div class="pg-hero-bottom">
         <a class="pg-scroll-link" href="#flow"><span class="pg-scroll-mark" aria-hidden="true"></span><span>向下，继续感受<small>SCROLL TO DISCOVER</small></span></a>
-        <div class="pg-materials" aria-label="雕塑材质"><span class="pg-control-caption">材质</span><button type="button" data-material="0" aria-pressed="true"><i class="swatch swatch-ice"></i>冰蓝</button><button type="button" data-material="1" aria-pressed="false"><i class="swatch swatch-pearl"></i>月白</button><button type="button" data-material="2" aria-pressed="false"><i class="swatch swatch-pink"></i>微粉</button></div>
-        <label class="pg-shape-control" for="shape-control"><span>形变 <output id="shape-value">35</output></span><input id="shape-control" data-shape-control type="range" min="0" max="100" value="35" /></label>
+        <span class="pg-hero-index">01 / LIGHT FIELD</span>
       </div>
     </section>
 

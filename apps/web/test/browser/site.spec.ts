@@ -12,15 +12,10 @@ test("visual playground is visible and responsive on first paint", async ({ page
   expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
 });
 
-test("material and shape controls respond to repeated input immediately", async ({ page }) => {
+test("homepage has no sculpture or removed material controls", async ({ page }) => {
   await page.goto("/");
-  for (const material of [1, 2, 0, 2, 0]) {
-    await page.locator(`[data-material="${material}"]`).click();
-    await expect(page.locator(`[data-material="${material}"]`)).toHaveAttribute("aria-pressed", "true");
-    await expect(page.locator('[data-material][aria-pressed="true"]')).toHaveCount(1);
-  }
-  await page.locator("[data-shape-control]").fill("86");
-  await expect(page.locator("#shape-value")).toHaveText("86");
+  await expect(page.locator("[data-sculpture], [data-liquid-canvas], [data-material], [data-shape-control]")).toHaveCount(0);
+  await expect(page.locator(".pg-hero-copy")).toBeVisible();
 });
 
 test("field modes and interruptible glass spread retain the latest request", async ({ page }) => {
@@ -71,7 +66,6 @@ test("homepage remains readable when its motion bundle fails", async ({ page }) 
   await page.route("**/_astro/*.js", route => route.abort());
   await page.goto("/");
   await expect(page.locator(".pg-hero-copy")).toBeVisible();
-  await expect(page.locator(".pg-sculpture-fallback")).toBeVisible();
   await expect(page.getByRole("heading", { level: 1 })).toContainText("BEYOND");
 });
 

@@ -20,3 +20,7 @@ body:has([data-playground]){margin:0;background:#f2f6fb;color:#14223b;background
 .pg-space{min-height:980px}.pg-space-controls{position:absolute;left:50%;bottom:60px;transform:translateX(-50%);width:min(480px,86%);margin:0}.pg-glass-stack{left:34%}
 @media(min-width:701px) and (max-width:1200px){.pg-glass-stage{right:1%;width:68%;transform:scale(.84);transform-origin:center center}.pg-glass-stack{left:31%}}
 @media(max-width:700px){.pg-space{min-height:980px}.pg-space-controls{bottom:50px;gap:13px}.pg-glass-stack{left:30%}.pg-glass-stage{top:32%;transform:scale(.7)}}
+
+/* Sculpture removed at the owner's request; keep the opening compact and typographic. */
+.pg-hero{height:80svh;min-height:640px;max-height:860px;background:#f2f6fb}.pg-hero-copy{padding-top:190px}.pg-hero-index{font-family:monospace;font-size:12px;letter-spacing:.12em;color:#73859d}.pg-hero-bottom{min-height:96px}
+@media(max-width:700px){.pg-hero{height:72svh;min-height:530px;max-height:680px}.pg-hero-copy{padding-top:166px}.pg-hero-bottom{min-height:80px;flex-wrap:nowrap;padding:0}.pg-scroll-link{position:static}.pg-hero-index{font-size:10px}}
