@@ -256,7 +256,7 @@ test("original chart title chips unfold into x-domain traces that retract on rev
     expect(chip.visibleWidth).toBeLessThanOrEqual(chip.seedWidth + 14);
     chipHeights.set(kind, chip.visibleHeight);
     await expect(page.locator(`${selector} .chart-periods`)).toHaveCSS("opacity", "0");
-    await expect(page.locator(`${selector} .chart-grid`)).toHaveCSS("opacity", "0");
+    await expect(page.locator(`${selector} .chart-plot`)).toHaveCSS("opacity", "0");
     await expect(page.locator(`${selector} [data-chart-reveal]`)).toHaveAttribute("width", "0");
     await expect(page.locator(`${selector} [data-chart-trace]`)).toHaveAttribute("clip-path", `url(#chart-reveal-${kind})`);
     await expect(page.locator(`${selector} clipPath`)).toHaveAttribute("clipPathUnits", "userSpaceOnUse");
@@ -1074,6 +1074,7 @@ test("one persistent surface grows continuously and never exposes cut glyphs", a
     expect(state.width).toBeGreaterThan(30);
     expect(state.buttonFill).toBe("rgba(0, 0, 0, 0)");
     expect(state.buttonShadow).toBe("none");
+    expect(state.fill).not.toBe("rgba(0, 0, 0, 0)");
     if(fraction>=.60&&fraction<=.70)widths.push(state.width);
     const cut=await page.locator("[data-assembly]").evaluateAll(pieces=>pieces.flatMap(piece=>{
       if(Number(getComputedStyle(piece).opacity)<.01)return [];
@@ -1091,6 +1092,7 @@ test("one persistent surface grows continuously and never exposes cut glyphs", a
       await testInfo.attach(`surface-${fraction}`,{body:await page.screenshot(),contentType:"image/png"});
     }
   }
+  expect((states.get(.60) as {fill:string}).fill).toBe((states.get(.70) as {fill:string}).fill);
   for(let i=1;i<widths.length;i++)expect(widths[i]!).toBeGreaterThan(widths[i-1]!);
   expect(widths[1]!-widths[0]!).toBeLessThan(20);
   expect(await seed!.evaluate(node=>node===document.querySelector('[data-machine-row="cnc-01"]'))).toBe(true);
