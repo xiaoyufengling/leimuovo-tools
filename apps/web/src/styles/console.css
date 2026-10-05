@@ -108,3 +108,8 @@ body:has([data-rem-experience]){margin:0;background:#f8fafc;background-image:non
 .rem-motion .console-toolbar-actions,.rem-motion .chart-grid,.rem-motion [data-chart-labels]{opacity:1;transform:none}
 .rem-motion .machine-row>.machine-identity small{max-height:calc(var(--detail-opacity,0)*16px)}
 .rem-motion .machine-state{transform:none}
+/* Read final geometry in one synchronous measuring pass, independent of replay. */
+.rem-motion .is-measuring .assembly-piece{transform:none!important;clip-path:none!important}
+.rem-motion .is-measuring [data-morph-detail]{opacity:1!important;transform:none!important}
+.rem-motion .is-measuring .machine-identity small{max-height:none!important}
+.rem-motion .is-measuring .machine-table-scroll{overflow:hidden!important}

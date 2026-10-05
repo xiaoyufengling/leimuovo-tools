@@ -1058,6 +1058,7 @@ test("SEO and PWA artifacts are discoverable", async ({ page, request }) => {
 
 test("one persistent surface grows continuously and never exposes cut glyphs", async ({ page, isMobile }, testInfo) => {
   test.skip(isMobile, "Dense visual frame audit is desktop; mobile keeps functional morph coverage");
+  await page.setViewportSize({width:1180,height:757});
   await page.goto("/");
   await expectConsoleReady(page);
   const seed = await page.locator('[data-machine-row="cnc-01"]').elementHandle();
@@ -1134,4 +1135,32 @@ test("first native scroll reconciles even if animation-frame delivery is suspend
   await scrollConsole(page,.70);
   await scrollConsole(page,0);
   await expect(page.locator(".monitor-boot")).toHaveCSS("opacity","1");
+});
+
+test("flight lanes avoid sidebar controls and repeated replays have identical geometry", async ({ page, isMobile }, testInfo) => {
+  test.skip(isMobile,"Dense collision and replay frame audit uses the desktop viewport");
+  await page.setViewportSize({width:1180,height:757});
+  await page.goto("/");await expectConsoleReady(page);
+  for(const fraction of [.30,.324,.35,.371,.39,.41,.43,.45,.476,.493,.512,.53,.55,.57,.59,.61,.63,.65]){
+    await scrollConsole(page,fraction);
+    const collisions=await page.locator("[data-assembly]").evaluateAll(pieces=>{
+      const nav=[...document.querySelectorAll<HTMLElement>(".console-nav button")].filter(el=>Number(getComputedStyle(el).opacity)>.05).map(el=>({name:el.dataset.consoleView,rect:el.getBoundingClientRect()}));
+      return pieces.flatMap(piece=>{
+        const el=piece as HTMLElement;
+        if(el.dataset.assembly==="nav"||Number(el.dataset.morphDock)>=1||Number(getComputedStyle(el).opacity)<.05)return [];
+        const r=el.getBoundingClientRect(),left=r.left+Number(el.dataset.surfaceLeft),top=r.top+Number(el.dataset.surfaceTop),right=left+Number(el.dataset.surfaceWidth),bottom=top+Number(el.dataset.surfaceHeight);
+        return nav.filter(n=>Math.min(right,n.rect.right)-Math.max(left,n.rect.left)>.5&&Math.min(bottom,n.rect.bottom)-Math.max(top,n.rect.top)>.5).map(n=>({piece:el.dataset.assembly,nav:n.name}));
+      });
+    });
+    expect(collisions,`clear flight corridor at ${fraction}`).toEqual([]);
+    if([.324,.371,.493,.512].includes(fraction))await testInfo.attach(`clear-flight-${fraction}`,{body:await page.screenshot(),contentType:"image/png"});
+  }
+  const read=()=>page.locator("[data-assembly]").evaluateAll(pieces=>pieces.map(el=>({id:el.getAttribute("data-assembly"),surface:["surfaceLeft","surfaceTop","surfaceWidth","surfaceHeight","surfaceRadius"].map(key=>(el as HTMLElement).dataset[key]),details:[...el.querySelectorAll<HTMLElement>("[data-morph-detail]")].map(child=>[child.dataset.detailGate,getComputedStyle(child).opacity])})));
+  await scrollConsole(page,.7145);const original=await read();
+  for(let i=0;i<3;i++){
+    await scrollConsole(page,1);
+    await page.getByRole("button",{name:"重播演示",exact:true}).click();
+    await scrollConsole(page,.7145);
+    expect(await read(),`replay ${i+1} uses the same canonical geometry`).toEqual(original);
+  }
 });

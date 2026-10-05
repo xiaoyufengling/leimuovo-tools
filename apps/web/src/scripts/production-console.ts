@@ -43,6 +43,7 @@ if (rootElement) {
   type Bounds = { x:number; y:number; w:number; h:number; seedX:number; seedY:number; seedW:number; seedH:number; row:boolean; borderX:number; borderY:number; details:Detail[] };
   const bounds = new Map<HTMLElement,Bounds>();
   const chartPoints = new Map<HTMLElement,number[][]>();
+  let sidebarContentBottom=0,leftRowLift=0;
   const layoutPosition = (element:HTMLElement) => {
     let x=0,y=0,node:HTMLElement|null=element;
     while(node){x+=node.offsetLeft;y+=node.offsetTop;node=node.offsetParent as HTMLElement|null;}
@@ -58,6 +59,9 @@ if (rootElement) {
     return {left,top,right,bottom,width:right-left,height:bottom-top};
   }
   function measurePieces(){
+    // Measure a canonical final layout synchronously, never the animated frame.
+    // This class is removed before paint and preserves the same actual DOM.
+    root.classList.add("is-measuring");
     const origin=layoutPosition(screen);
     for(const piece of pieces){
       if(!piece.offsetWidth)continue;
@@ -66,11 +70,11 @@ if (rootElement) {
       const p=layoutPosition(piece),pr=piece.getBoundingClientRect(),sr=seed.getBoundingClientRect();
       const computed=getComputedStyle(piece);
       const row=piece.hasAttribute("data-machine-row"),pad=row?10:6;
-      const seedH=row?Math.min(22,piece.offsetHeight):Math.min(piece.offsetHeight,seed.offsetHeight+pad*2);
-      const seedX=Math.max(0,sr.left-pr.left-pad),seedY=row?(piece.offsetHeight-seedH)/2:Math.max(0,sr.top-pr.top-pad);
-      const box:Bounds={x:p.x-origin.x,y:p.y-origin.y,w:piece.offsetWidth,h:piece.offsetHeight,seedX,seedY,
-        seedW:Math.min(piece.offsetWidth-seedX,(key==="summary"?Math.min(85,seed.offsetWidth):seed.offsetWidth)+pad*2),
-        seedH:Math.min(piece.offsetHeight-seedY,seedH),row,borderX:parseFloat(computed.borderLeftWidth)||0,borderY:parseFloat(computed.borderTopWidth)||0,details:[]};
+      const seedH=row?Math.min(22,pr.height):Math.min(pr.height,sr.height+pad*2);
+      const seedX=Math.max(0,sr.left-pr.left-pad),seedY=row?(pr.height-seedH)/2:Math.max(0,sr.top-pr.top-pad);
+      const box:Bounds={x:p.x-origin.x,y:p.y-origin.y,w:pr.width,h:pr.height,seedX,seedY,
+        seedW:Math.min(pr.width-seedX,(key==="summary"?Math.min(85,sr.width):sr.width)+pad*2),
+        seedH:Math.min(pr.height-seedY,seedH),row,borderX:parseFloat(computed.borderLeftWidth)||0,borderY:parseFloat(computed.borderTopWidth)||0,details:[]};
       let children:HTMLElement[]=[];
       if(row)children=[...piece.querySelectorAll<HTMLElement>(":scope > span, .machine-type-icon, .machine-identity small")];
       else if(key==="nav")children=[...piece.querySelectorAll<HTMLElement>(".console-brand, .sidebar-bottom, .console-nav button:not(:first-child)")];
@@ -102,10 +106,17 @@ if (rootElement) {
       }
       bounds.set(piece,box);
     }
+    const lastNav=root.querySelector<HTMLElement>(".console-nav button:last-child")!;
+    sidebarContentBottom=layoutPosition(lastNav).y-origin.y+lastNav.offsetHeight;
+    const firstLeft=rowElements.find(row=>row.dataset.kind==="cnc"&&!row.hidden&&row.offsetWidth>0);
+    const firstBox=firstLeft?bounds.get(firstLeft):undefined;
+    leftRowLift=firstBox?Math.max(0,sidebarContentBottom+12+firstBox.seedH/2-(firstBox.y+firstBox.seedY+firstBox.seedH/2)):0;
+    root.classList.remove("is-measuring");
   }
   function renderMorphs(){
     for(const piece of pieces){
       const key=piece.dataset.assembly!,spec=recipe[key],box=bounds.get(piece);if(!spec||!box)continue;
+      const localDock=clamp((progress-spec.dock[0])/(spec.dock[1]-spec.dock[0]));
       const dock=smooth(...spec.dock,progress),open=smooth(...spec.open,progress),remain=1-dock;
       const surface=surfaceBox(box,open),endRadius=key.startsWith("chart-")?5:0;
       const radius=Math.min(13,box.seedH/2)*(1-open)+endRadius*open;
@@ -120,10 +131,18 @@ if (rootElement) {
       if(spec.side==="right")x=screenWidth-box.x-box.seedX+24;
       if(spec.side==="top")y=-(box.y+box.seedY+box.seedH+24);
       if(spec.side==="bottom")y=screenHeight-box.y-box.seedY+24;
+      let tx=x*remain,ty=y*remain;
+      if(key==="chart-cnc" || (box.row&&spec.side==="left")){
+        // Cross below every sidebar label, then rise only after clearing its edge.
+        // All CNC rows share the same lift, so seeds keep their vertical spacing.
+        const lift=box.row?leftRowLift:Math.max(0,sidebarContentBottom+16+box.seedH/2-(box.y+box.seedY+box.seedH/2));
+        tx=x*(1-smooth(0,.65,localDock));
+        ty=lift*(1-smooth(.45,box.row ? .9 : 1,localDock));
+      }
       piece.style.setProperty("--piece-opacity",String(smooth(spec.dock[0],spec.dock[0]+.025,progress)));
       // In-flight controls live above all docked surfaces. No tilted cut-outs.
       piece.style.setProperty("--piece-layer",String(dock<1?50:box.row?5:key==="nav"?2:4));
-      piece.style.setProperty("--piece-transform",`translate3d(${x*remain}px,${y*remain}px,0)`);
+      piece.style.setProperty("--piece-transform",`translate3d(${tx}px,${ty}px,0)`);
       piece.style.setProperty("--morph-open",String(open));
       // Keep the growing shape visibly coherent until it has finished growing.
       const settled=smooth(spec.open[1]+.025,spec.open[1]+.055,progress);
@@ -257,7 +276,7 @@ if (rootElement) {
   };
   reduceMedia.addEventListener("change", () => setReduced(reduceMedia.matches));
   root.querySelector<HTMLInputElement>("[data-reduce-motion]")!.addEventListener("change", e => setReduced((e.target as HTMLInputElement).checked));
-  root.querySelector<HTMLInputElement>("[data-comfortable]")!.addEventListener("change", e => { dashboard.classList.toggle("is-comfortable", (e.target as HTMLInputElement).checked); measure(); });
+  root.querySelector<HTMLInputElement>("[data-comfortable]")!.addEventListener("change", e => { dashboard.classList.toggle("is-comfortable", (e.target as HTMLInputElement).checked); measure(); renderNow(); });
 
   const compact = (value:number) => value >= 1_000_000 ? `${(value/1_000_000).toFixed(value>=100_000_000?1:2)}M` : formatNumber(value);
   const historySvg = (record:MachinePeriod, name:string, cssClass="") => {
@@ -315,7 +334,7 @@ if (rootElement) {
     root!.querySelector("[data-history-note]")!.textContent=periods.cnc==="day"&&periods.print==="day"?"History 08:00–16:00":`CNC ${periods.cnc} / Print ${periods.print} · Synthetic periods`;
     root!.querySelector("[data-period-label]")!.textContent=periods.cnc==="day"&&periods.print==="day"?"Shift 08:00 – 16:00":"Selected demo periods";
     // Filters, longer totals, and alternate views must replay their current DOM geometry.
-    measurePieces();
+    measurePieces();renderMorphs();
   }
   root.querySelectorAll<HTMLButtonElement>("[data-chart-period]").forEach(button=>button.addEventListener("click",()=>{
     const kind=button.dataset.chartKind as MachineKind;periods[kind]=button.dataset.chartPeriod as Period;updateChart(kind);updateRows();renderChartTraces();
