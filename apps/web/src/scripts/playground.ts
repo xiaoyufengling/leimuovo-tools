@@ -106,3 +106,5 @@ if (root) {
   }
   resize();syncMotion();
 }
+
+export {};
