@@ -188,7 +188,7 @@ if (rootElement) {
   };
   reduceMedia.addEventListener("change", () => setReduced(reduceMedia.matches));
   root.querySelector<HTMLInputElement>("[data-reduce-motion]")!.addEventListener("change", e => setReduced((e.target as HTMLInputElement).checked));
-  root.querySelector<HTMLInputElement>("[data-comfortable]")!.addEventListener("change", e => dashboard.classList.toggle("is-comfortable", (e.target as HTMLInputElement).checked));
+  root.querySelector<HTMLInputElement>("[data-comfortable]")!.addEventListener("change", e => { dashboard.classList.toggle("is-comfortable", (e.target as HTMLInputElement).checked); measure(); });
 
   const compact = (value:number) => value >= 1_000_000 ? `${(value/1_000_000).toFixed(value>=100_000_000?1:2)}M` : formatNumber(value);
   const historySvg = (record:MachinePeriod, name:string, cssClass="") => {
@@ -243,6 +243,8 @@ if (rootElement) {
     root!.querySelector("[data-history-heading]")!.textContent=periods.cnc==="day"&&periods.print==="day"?"Shift mix (past 8 hours)":"Selected period mix";
     root!.querySelector("[data-history-note]")!.textContent=periods.cnc==="day"&&periods.print==="day"?"History 08:00–16:00":`CNC ${periods.cnc} / Print ${periods.print} · Synthetic periods`;
     root!.querySelector("[data-period-label]")!.textContent=periods.cnc==="day"&&periods.print==="day"?"Shift 08:00 – 16:00":"Selected demo periods";
+    // Filters, longer totals, and alternate views must replay their current DOM geometry.
+    measurePieces();
   }
   root.querySelectorAll<HTMLButtonElement>("[data-chart-period]").forEach(button=>button.addEventListener("click",()=>{
     const kind=button.dataset.chartKind as MachineKind;periods[kind]=button.dataset.chartPeriod as Period;updateChart(kind);updateRows();renderChartTraces();
