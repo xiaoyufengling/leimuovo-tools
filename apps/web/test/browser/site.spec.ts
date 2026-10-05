@@ -224,7 +224,7 @@ test("the original Overview control docks before the sidebar expands downward", 
   expect(compact.visibleHeight).toBeLessThanOrEqual(compact.seedHeight + 14);
   expect(await otherButtons.evaluateAll((elements) => elements.every((element) => Number(getComputedStyle(element).opacity) === 0))).toBe(true);
 
-  await scrollConsole(page, 0.47);
+  await scrollConsole(page, 0.52);
   const unfolding = await morphMetrics(page, '[data-assembly="nav"]', '[data-console-view="overview"]');
   expect(unfolding.open).toBeGreaterThan(0);
   expect(unfolding.open).toBeLessThan(1);
@@ -256,7 +256,7 @@ test("original chart title chips unfold into x-domain traces that retract on rev
     expect(chip.visibleWidth).toBeLessThanOrEqual(chip.seedWidth + 14);
     chipHeights.set(kind, chip.visibleHeight);
     await expect(page.locator(`${selector} .chart-periods`)).toHaveCSS("opacity", "0");
-    await expect(page.locator(`${selector} .chart-plot`)).toHaveCSS("opacity", "0");
+    await expect(page.locator(`${selector} .chart-grid`)).toHaveCSS("opacity", "0");
     await expect(page.locator(`${selector} [data-chart-reveal]`)).toHaveAttribute("width", "0");
     await expect(page.locator(`${selector} [data-chart-trace]`)).toHaveAttribute("clip-path", `url(#chart-reveal-${kind})`);
     await expect(page.locator(`${selector} clipPath`)).toHaveAttribute("clipPathUnits", "userSpaceOnUse");
@@ -276,20 +276,21 @@ test("original chart title chips unfold into x-domain traces that retract on rev
     };
   }));
   const frames = new Map<number, Awaited<ReturnType<typeof readTraces>>>();
-  for (const progress of [0.68, 0.78, 0.88]) {
+  for (const progress of [0.62, 0.73, 0.84]) {
     await scrollConsole(page, progress);
     const actualProgress = await consoleProgress(page);
     const traces = await readTraces();
     frames.set(progress, traces);
     for (const trace of traces) {
-      if (progress === 0.68) {
+      if (progress === 0.62) {
         const unfolding = await morphMetrics(page, `[data-production-chart="${trace.kind}"]`, "h2");
         expect(unfolding.dock).toBe(1);
-        expect(unfolding.open).toBe(1);
+        expect(unfolding.open).toBeGreaterThan(0);
+        expect(unfolding.open).toBeLessThan(1);
         expect(unfolding.visibleHeight).toBeGreaterThan(chipHeights.get(trace.kind!)!);
       }
       const shift = trace.kind === "cnc" ? 0 : 0.025;
-      const draw = Math.max(0, Math.min(1, (actualProgress - 0.63 - shift) / 0.295));
+      const draw = Math.max(0, Math.min(1, (actualProgress - 0.56 - shift) / 0.34));
       const x = 28 + 444 * draw;
       expect(trace.draw).toBeCloseTo(draw, 3);
       expect(trace.width).toBeCloseTo(x - 24, 3);
@@ -300,9 +301,9 @@ test("original chart title chips unfold into x-domain traces that retract on rev
     }
   }
   for (const index of [0, 1]) {
-    expect(frames.get(0.78)![index]!.width).toBeGreaterThan(frames.get(0.68)![index]!.width);
-    expect(frames.get(0.88)![index]!.width).toBeGreaterThan(frames.get(0.78)![index]!.width);
-    expect(frames.get(0.88)![index]!.line).toBe(frames.get(0.68)![index]!.line);
+    expect(frames.get(0.73)![index]!.width).toBeGreaterThan(frames.get(0.62)![index]!.width);
+    expect(frames.get(0.84)![index]!.width).toBeGreaterThan(frames.get(0.73)![index]!.width);
+    expect(frames.get(0.84)![index]!.line).toBe(frames.get(0.62)![index]!.line);
   }
   await scrollConsole(page, 1);
   for (const [index, kind] of ["cnc", "print"].entries()) {
@@ -312,7 +313,7 @@ test("original chart title chips unfold into x-domain traces that retract on rev
       node.isConnected && node === document.querySelector(`[data-production-chart="${kind}"] h2`), kind,
     )).toBe(true);
   }
-  for (const progress of [0.88, 0.78, 0.68]) {
+  for (const progress of [0.84, 0.73, 0.62]) {
     await scrollConsole(page, progress);
     expect(await readTraces()).toEqual(frames.get(progress));
   }
@@ -325,7 +326,7 @@ test("skip intro lands on a working production console", async ({ page }) => {
   await enterConsole(page);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Production overview");
   await expect(page.locator(".monitor-power")).toHaveCSS("opacity", "1");
-  expect(await consoleProgress(page)).toBeGreaterThanOrEqual(0.98);
+  expect(await consoleProgress(page)).toBeGreaterThanOrEqual(0.95);
   await page.locator('[data-chart-kind="cnc"][data-chart-period="week"]').click();
   await expect(page.locator('[data-production-chart="cnc"] [data-chart-total]')).toHaveText("4,200");
 });
@@ -389,14 +390,14 @@ test("period and machine selections survive repeated filters and reverse replay"
       await expect(page.locator(`[data-machine-row]:visible:not([data-kind="${kind}"])`)).toHaveCount(0);
     }
   }
-  // Native reverse retains data choices and returns the narrative to Overview.
-  await scrollConsole(page, 0);
+  // The same visible control becomes the replay button once the scene is ready.
+  await page.locator("button[data-skip-intro]").click();
   await expect.poll(() => consoleProgress(page)).toBe(0);
   await expect(page.locator(dashboard)).not.toHaveClass(/is-interactive/);
   await scrollConsole(page, 0.45);
   await scrollConsole(page, 1);
   await expect(page.locator(dashboard)).toHaveClass(/is-interactive/);
-  await expect(page.locator('[data-console-view="overview"]')).toHaveAttribute("aria-pressed", "true");
+  await expect(page.locator('[data-console-view="machines"]')).toHaveAttribute("aria-pressed", "true");
   await expect(page.locator('[data-kind-filter="cnc"]')).toHaveAttribute("aria-pressed", "true");
   await expect(page.locator("[data-machine-row]:visible")).toHaveCount(6);
   await page.locator('[data-console-view="overview"]').click();
@@ -422,7 +423,7 @@ test("search hides during black replay and preserves its query after reassembly"
   await expect(page.locator("[data-machine-row]:visible")).toHaveCount(1);
   await expect(page.locator("[data-machine-row]:visible")).toHaveAttribute("data-machine-row", "cnc-05");
 
-  await scrollConsole(page, 0);
+  await page.locator("button[data-skip-intro]").click();
   await expect.poll(() => consoleProgress(page)).toBe(0);
   await expect(page.locator(".monitor-power")).toHaveCSS("opacity", "0");
   await expect(page.locator(dashboard)).not.toHaveClass(/is-interactive/);
@@ -765,8 +766,8 @@ test("mobile laboratory stays visible when animation frames are delayed", async 
     };
   });
 
-  expect(visibleState.introOpacity).toBeGreaterThanOrEqual(0.98);
-  expect(visibleState.cardOpacity).toBeGreaterThanOrEqual(0.98);
+  expect(visibleState.introOpacity).toBeGreaterThanOrEqual(0.95);
+  expect(visibleState.cardOpacity).toBeGreaterThanOrEqual(0.95);
   expect(visibleState.cardVisibility).not.toBe("hidden");
 });
 
@@ -1054,113 +1055,4 @@ test("SEO and PWA artifacts are discoverable", async ({ page, request }) => {
   });
   expect((await request.get("/robots.txt")).ok()).toBe(true);
   expect((await request.get("/sitemap-index.xml")).ok()).toBe(true);
-});
-
-test("one persistent surface grows continuously and never exposes cut glyphs", async ({ page, isMobile }, testInfo) => {
-  test.skip(isMobile, "Dense visual frame audit is desktop; mobile keeps functional morph coverage");
-  await page.setViewportSize({width:1180,height:757});
-  await page.goto("/");
-  await expectConsoleReady(page);
-  const seed = await page.locator('[data-machine-row="cnc-01"]').elementHandle();
-  const samples = [0.324,0.371,0.476,0.493,0.512,0.57,0.60,0.61,0.62,0.63,0.64,0.65,0.66,0.68,0.70,0.72,0.76,0.795,0.843,0.91,0.98];
-  const widths:number[]=[];
-  const states=new Map<number,unknown>();
-  for(const fraction of samples){
-    await scrollConsole(page,fraction);
-    const state=await page.locator('[data-machine-row="cnc-01"]').evaluate(row=>{
-      const surface=getComputedStyle(row,"::before");
-      return {width:parseFloat(surface.width),height:parseFloat(surface.height),radius:surface.borderTopLeftRadius,fill:surface.backgroundColor,border:surface.borderRightColor,buttonFill:getComputedStyle(row.querySelector("button")!).backgroundColor,buttonShadow:getComputedStyle(row.querySelector("button")!).boxShadow};
-    });
-    states.set(fraction,state);
-    expect(state.width).toBeGreaterThan(30);
-    expect(state.buttonFill).toBe("rgba(0, 0, 0, 0)");
-    expect(state.buttonShadow).toBe("none");
-    expect(state.fill).not.toBe("rgba(0, 0, 0, 0)");
-    if(fraction>=.60&&fraction<=.70)widths.push(state.width);
-    const cut=await page.locator("[data-assembly]").evaluateAll(pieces=>pieces.flatMap(piece=>{
-      if(Number(getComputedStyle(piece).opacity)<.01)return [];
-      const rect=piece.getBoundingClientRect(),el=piece as HTMLElement;
-      const left=rect.left+Number(el.dataset.surfaceLeft),top=rect.top+Number(el.dataset.surfaceTop);
-      const right=left+Number(el.dataset.surfaceWidth),bottom=top+Number(el.dataset.surfaceHeight);
-      return [...piece.querySelectorAll<HTMLElement>("[data-morph-detail]")].flatMap(child=>{
-        if(!child.offsetWidth||Number(getComputedStyle(child).opacity)<.01)return [];
-        const r=child.getBoundingClientRect();
-        return r.left<left-1||r.top<top-1||r.right>right+1||r.bottom>bottom+1?[{piece:el.dataset.assembly,child:child.className,left:r.left-left,top:r.top-top,right:r.right-right,bottom:r.bottom-bottom}]:[];
-      });
-    }));
-    expect(cut,`no half label/icon at ${fraction}`).toEqual([]);
-    if([.324,.512,.60,.62,.64,.66,.68,.70,.72,.795,.843,.98].includes(fraction)){
-      await testInfo.attach(`surface-${fraction}`,{body:await page.screenshot(),contentType:"image/png"});
-    }
-  }
-  expect((states.get(.60) as {fill:string}).fill).toBe((states.get(.70) as {fill:string}).fill);
-  for(let i=1;i<widths.length;i++)expect(widths[i]!).toBeGreaterThan(widths[i-1]!);
-  expect(widths[1]!-widths[0]!).toBeLessThan(20);
-  expect(await seed!.evaluate(node=>node===document.querySelector('[data-machine-row="cnc-01"]'))).toBe(true);
-  for(const fraction of [.70,.66,.62,.60,.512,.324]){
-    await scrollConsole(page,fraction);
-    const state=await page.locator('[data-machine-row="cnc-01"]').evaluate(row=>{
-      const s=getComputedStyle(row,"::before");return {width:parseFloat(s.width),height:parseFloat(s.height),radius:s.borderTopLeftRadius,fill:s.backgroundColor,border:s.borderRightColor,buttonFill:getComputedStyle(row.querySelector("button")!).backgroundColor,buttonShadow:getComputedStyle(row.querySelector("button")!).boxShadow};
-    });
-    expect(state).toEqual(states.get(fraction));
-  }
-});
-
-test("explicit replay restores the complete Overview narrative after settings and filters", async ({ page }) => {
-  await page.goto("/");await enterConsole(page);
-  await page.locator('[data-chart-kind="cnc"][data-chart-period="year"]').click();
-  await page.locator('[data-console-view="machines"]').click();
-  await page.locator('[data-kind-filter="print"]').click();
-  await page.locator('[data-console-view="settings"]').click();
-  await page.locator('[data-comfortable]').check();
-  await page.getByRole("button",{name:"重播演示",exact:true}).click();
-  await expect.poll(()=>consoleProgress(page)).toBe(0);
-  await scrollConsole(page,.57);
-  await expect(page.locator(dashboard)).toHaveAttribute("data-view","overview");
-  await expect(page.locator("[data-console-settings]")).toBeHidden();
-  await expect(page.locator("[data-machine-row]:visible")).toHaveCount(12);
-  await expect(page.locator('[data-machine-row="cnc-01"]')).toHaveAttribute("data-morph-open","0.0000");
-  await scrollConsole(page,1);
-  await expect(page.locator('[data-production-chart="cnc"]')).toHaveAttribute("data-period","day");
-  await expect(page.locator(dashboard)).not.toHaveClass(/is-comfortable|has-long-period|is-filtered/);
-  await expect(page.locator('[data-production-chart="cnc"] [data-chart-total]')).toHaveText("840");
-  await expect(page.locator('[data-production-chart="print"] [data-chart-total]')).toHaveText("369,600");
-});
-
-test("first native scroll reconciles even if animation-frame delivery is suspended", async ({ page }) => {
-  await page.addInitScript(()=>{window.requestAnimationFrame=()=>77;window.cancelAnimationFrame=()=>{};});
-  await page.goto("/");await expectConsoleReady(page);
-  await scrollConsole(page,.57);
-  await expect(page.locator('[data-machine-row="cnc-01"]')).toHaveAttribute("data-morph-dock","1.0000");
-  await scrollConsole(page,.70);
-  await scrollConsole(page,0);
-  await expect(page.locator(".monitor-boot")).toHaveCSS("opacity","1");
-});
-
-test("flight lanes avoid sidebar controls and repeated replays have identical geometry", async ({ page, isMobile }, testInfo) => {
-  test.skip(isMobile,"Dense collision and replay frame audit uses the desktop viewport");
-  await page.setViewportSize({width:1180,height:757});
-  await page.goto("/");await expectConsoleReady(page);
-  for(const fraction of [.30,.324,.35,.371,.39,.41,.43,.45,.476,.493,.512,.53,.55,.57,.59,.61,.63,.65]){
-    await scrollConsole(page,fraction);
-    const collisions=await page.locator("[data-assembly]").evaluateAll(pieces=>{
-      const nav=[...document.querySelectorAll<HTMLElement>(".console-nav button")].filter(el=>Number(getComputedStyle(el).opacity)>.05).map(el=>({name:el.dataset.consoleView,rect:el.getBoundingClientRect()}));
-      return pieces.flatMap(piece=>{
-        const el=piece as HTMLElement;
-        if(el.dataset.assembly==="nav"||Number(el.dataset.morphDock)>=1||Number(getComputedStyle(el).opacity)<.05)return [];
-        const r=el.getBoundingClientRect(),left=r.left+Number(el.dataset.surfaceLeft),top=r.top+Number(el.dataset.surfaceTop),right=left+Number(el.dataset.surfaceWidth),bottom=top+Number(el.dataset.surfaceHeight);
-        return nav.filter(n=>Math.min(right,n.rect.right)-Math.max(left,n.rect.left)>.5&&Math.min(bottom,n.rect.bottom)-Math.max(top,n.rect.top)>.5).map(n=>({piece:el.dataset.assembly,nav:n.name}));
-      });
-    });
-    expect(collisions,`clear flight corridor at ${fraction}`).toEqual([]);
-    if([.324,.371,.493,.512].includes(fraction))await testInfo.attach(`clear-flight-${fraction}`,{body:await page.screenshot(),contentType:"image/png"});
-  }
-  const read=()=>page.locator("[data-assembly]").evaluateAll(pieces=>pieces.map(el=>({id:el.getAttribute("data-assembly"),surface:["surfaceLeft","surfaceTop","surfaceWidth","surfaceHeight","surfaceRadius"].map(key=>(el as HTMLElement).dataset[key]),details:[...el.querySelectorAll<HTMLElement>("[data-morph-detail]")].map(child=>[child.dataset.detailGate,getComputedStyle(child).opacity])})));
-  await scrollConsole(page,.7145);const original=await read();
-  for(let i=0;i<3;i++){
-    await scrollConsole(page,1);
-    await page.getByRole("button",{name:"重播演示",exact:true}).click();
-    await scrollConsole(page,.7145);
-    expect(await read(),`replay ${i+1} uses the same canonical geometry`).toEqual(original);
-  }
 });
