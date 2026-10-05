@@ -50,32 +50,3 @@ body:has([data-rem-experience]){margin:0;background:#f8fafc;background-image:non
 /* Grid children must not let the intrinsic SVG height spill into the table. */
 .production-charts{grid-template-rows:minmax(0,1fr)}.production-chart{min-height:0}.production-chart-svg{flex:1 1 0;height:0;min-height:0}
 @media(max-width:700px){.production-charts{grid-template-rows:repeat(2,minmax(0,1fr))}.chart-grid text,[data-chart-labels] text{font-size:16px}}
-
-/* Compact, real controls dock first. Only then do their own surfaces unfold. */
-.rem-motion .monitor-boot{opacity:var(--boot-opacity,1)}
-.rem-motion .boot-track,.rem-motion .monitor-boot>small{opacity:var(--boot-progress,0)}
-.rem-motion .assembly-piece{clip-path:var(--piece-clip,inset(0 100% 0 0));transform-origin:left center;will-change:transform,clip-path,opacity}
-.rem-motion .console-sidebar{border-right-color:rgba(231,237,245,var(--morph-open,0))}
-.rem-motion .console-sidebar .console-brand,.rem-motion .sidebar-bottom{opacity:var(--morph-detail,0)}
-.rem-motion .console-nav button:not(:first-child){opacity:var(--nav-reveal,0);transform:translateY(calc((1 - var(--nav-reveal,0))*-9px))}
-.rem-motion .console-toolbar .demo-badge,.rem-motion .console-toolbar-actions{opacity:var(--morph-detail,0);transform:translateX(calc((1 - var(--morph-detail,0))*-10px))}
-.rem-motion .console-summary>span{opacity:var(--morph-detail,0);transform:translateX(calc((1 - var(--morph-detail,0))*-8px))}
-.rem-motion .production-chart{border-color:rgba(230,235,243,var(--morph-open,0))}
-.rem-motion .production-chart header p,.rem-motion .chart-periods,.rem-motion .chart-grid,.rem-motion [data-chart-labels]{opacity:var(--morph-detail,0)}
-[data-chart-tip]{fill:#0878ef;stroke:#fff;stroke-width:1.2;opacity:0;pointer-events:none}
-.rem-motion .machine-table-panel{border-color:rgba(230,235,243,var(--table-frame,0))}
-.machine-row{position:relative}
-.rem-motion .machine-row{border-bottom-color:rgba(237,241,247,var(--morph-open,0))}
-.rem-motion .machine-row>.machine-identity .machine-type-icon{opacity:var(--morph-detail,0)}
-.rem-motion .machine-row>.machine-identity small{opacity:var(--morph-detail,0);max-height:calc(var(--morph-detail,0)*16px);overflow:hidden}
-.rem-motion .machine-row>span{opacity:var(--cell-reveal,0);transform:translateX(calc((1 - var(--cell-reveal,0))*-9px))}
-.rem-motion .machine-history svg{clip-path:inset(0 calc((1 - var(--cell-reveal,0))*100%) 0 0)}
-.rem-motion .machine-state{transform-origin:left center;transform:scaleX(calc(.75 + .25*var(--cell-reveal,0)))}
-.rem-motion .machine-table-head{background:transparent;border-color:rgba(232,237,244,var(--table-head-open,0))}
-.rem-motion .machine-table-head>span{opacity:var(--heading-reveal,0);transform:translateY(calc((1 - var(--heading-reveal,0))*5px))}
-.rem-motion .machine-view-toolbar,.rem-motion .console-settings{opacity:var(--secondary-reveal,0)}
-@media(prefers-reduced-motion:reduce){.assembly-piece{clip-path:none!important}[data-chart-trace]{clip-path:none!important}}
-
-.note-icon{display:grid;place-items:center;flex:none}.rem-motion .console-data-note>span:not(.note-icon){opacity:var(--morph-detail,0)}
-/* The seed has its own soft control surface, not the edge of a cut-out panel. */
-.rem-motion .machine-identity button,.rem-motion .production-chart h2,.rem-motion .console-title h1,.rem-motion .console-summary>strong{border-radius:4px;background-color:rgba(239,245,253,calc(1 - var(--morph-open,0)));box-shadow:0 0 0 5px rgba(239,245,253,calc(1 - var(--morph-open,0))),0 0 0 6px rgba(217,229,246,calc(1 - var(--morph-open,0)))}
