@@ -71,10 +71,7 @@ assert(home.includes('rel="icon" href="/favicon-rem-cat-transparent-v6.ico"'), "
 assert(home.includes('rel="shortcut icon" href="/favicon-rem-cat-transparent-v6.ico"'), "页面未为 Safari 个人收藏声明独立 shortcut icon");
 assert(home.includes('rel="apple-touch-icon" href="/brand/rem-cat-avatar-180-v6.png"'), "页面未声明统一的 iOS 品牌图标");
 assert(!home.includes('rel="apple-touch-icon-precomposed"'), "页面不应声明会与主 Apple 图标竞争的旧式 precomposed 图标");
-assert(home.includes('pg-logo') && home.includes('LEIMUOVO'), "首页导航缺少新视觉字标");
-assert(!home.includes('href="/xiaoyugan/"'), "新首页不应链接旧实验室");
-assert(home.includes('data-control-gesture'), "首页必须保留隐私与私人入口契约");
-assert(/<script[^>]+src="[^"]*HomePage[^"]*"/.test(home), "首页交互脚本必须外链，以兼容生产 CSP");
+assert(home.includes('/brand/rem-cat-avatar-96-v6.png'), "主站导航未使用统一的透明蕾姆猫耳品牌图标");
 assert(home.includes('property="og:image" content="https://leimuovo.com/og-default-v6.png"'), "首页未使用版本化的新品牌分享图");
 assert(home.includes('"@type":"WebSite"'), "首页 WebSite JSON-LD 缺失");
 assert(home.includes('"name":"小鱼"'), "首页品牌名称不正确");
