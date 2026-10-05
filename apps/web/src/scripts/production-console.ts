@@ -87,6 +87,7 @@ if (rootElement) {
     if (reduced) { root.querySelector<HTMLButtonElement>("[data-console-view=overview]")?.focus({preventScroll:true}); return; }
     window.scrollTo({ top: stageTop + stageTravel * .96, behavior: "auto" });
     renderScene();
+    root.querySelector<HTMLButtonElement>("[data-console-view=overview]")?.focus({preventScroll:true});
   }
   root.querySelectorAll<HTMLElement>("[data-skip-intro], .console-skip-link").forEach(button => button.addEventListener("click", event => {
     event.preventDefault();
@@ -124,13 +125,13 @@ if (rootElement) {
     const rawMax=Math.max(...summary.buckets);
     const step=periods[kind]==="day"?(kind==="cnc"?50:20000):Math.pow(10,Math.floor(Math.log10(rawMax)))/2;
     const max=Math.ceil(rawMax/step)*step;
-    const points=summary.buckets.map((v,i)=>[28+i*444/(summary.buckets.length-1),74-v/max*60]);
+    const points=summary.buckets.map((v,i)=>[28+i*444/(summary.buckets.length-1),54-v/max*46]);
     panel.querySelector("[data-chart-line]")!.setAttribute("d",points.map((p,i)=>`${i?"L":"M"}${p[0]},${p[1]}`).join(" "));
-    panel.querySelector("[data-chart-area]")!.setAttribute("d",`M28,74 ${points.map(p=>`L${p[0]},${p[1]}`).join(" ")} L472,74 Z`);
+    panel.querySelector("[data-chart-area]")!.setAttribute("d",`M28,54 ${points.map(p=>`L${p[0]},${p[1]}`).join(" ")} L472,54 Z`);
     panel.querySelector("[data-chart-points]")!.innerHTML=points.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="3.6"/>`).join("");
     const axis=(v:number)=>v>=1_000_000?`${v/1_000_000}M`:v>=1000?`${v/1000}K`:String(v);
     panel.querySelector("[data-y-max]")!.textContent=axis(max);panel.querySelector("[data-y-mid]")!.textContent=axis(max/2);
-    panel.querySelector("[data-chart-labels]")!.innerHTML=summary.labels.map((label,i)=>`<text x="${28+i*444/(summary.labels.length-1)}" y="94" text-anchor="middle">${label}</text>`).join("");
+    panel.querySelector("[data-chart-labels]")!.innerHTML=summary.labels.map((label,i)=>`<text x="${28+i*444/(summary.labels.length-1)}" y="74" text-anchor="middle">${label}</text>`).join("");
     panel.querySelector("[data-chart-cursor]")!.setAttribute("visibility","hidden");
     panel.querySelectorAll<HTMLButtonElement>("[data-chart-period]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.chartPeriod===periods[kind])));
     panel.querySelector("[data-chart-svg]")!.setAttribute("aria-label",`${kind.toUpperCase()} ${summary.periodLabel}: ${formatNumber(summary.output)} ${summary.unit}. 方向键查看各时段。`);
@@ -168,7 +169,7 @@ if (rootElement) {
     const panel=root.querySelector<HTMLElement>(`[data-production-chart=${kind}]`)!;
     const svg=panel.querySelector<SVGElement>("[data-chart-svg]")!;let selected=0;
     const inspect=(index:number)=>{const summary=getKindSummary(kind,periods[kind]);selected=Math.max(0,Math.min(summary.buckets.length-1,index));const x=28+selected*444/(summary.buckets.length-1);const cursor=panel.querySelector("[data-chart-cursor]")!;cursor.setAttribute("x1",String(x));cursor.setAttribute("x2",String(x));cursor.setAttribute("visibility","visible");panel.querySelector("[data-chart-inspect]")!.textContent=`${summary.labels[selected]} · ${formatNumber(summary.buckets[selected]!)} ${summary.unit}`;};
-    svg.addEventListener("pointermove",e=>{const rect=svg.getBoundingClientRect();const count=getKindSummary(kind,periods[kind]).buckets.length;inspect(Math.round(clamp(((e.clientX-rect.left)/rect.width*500-28)/444)*(count-1)));},{passive:true});
+    svg.addEventListener("pointermove",e=>{const rect=svg.getBoundingClientRect();const scale=Math.min(rect.width/500,rect.height/80);const left=(rect.width-500*scale)/2;const x=(e.clientX-rect.left-left)/scale;const count=getKindSummary(kind,periods[kind]).buckets.length;inspect(Math.round(clamp((x-28)/444)*(count-1)));},{passive:true});
     svg.addEventListener("pointerleave",()=>{panel.querySelector("[data-chart-cursor]")!.setAttribute("visibility","hidden");const summary=getKindSummary(kind,periods[kind]);panel.querySelector("[data-chart-inspect]")!.textContent=periods[kind]==="day"?"Hourly output":`${summary.periodLabel} · ${summary.shiftCount} demo shifts`;},{passive:true});
     svg.addEventListener("keydown",e=>{if(e.key==="ArrowRight"||e.key==="ArrowLeft"){e.preventDefault();inspect(selected+(e.key==="ArrowRight"?1:-1));}});
   }
@@ -185,6 +186,7 @@ if (rootElement) {
     root!.querySelector("[data-view-description]")!.textContent=view==="jobs"?"12 demo work orders · completion by machine":view==="activity"?"Snapshot 16:00 · stopped, fault and maintenance":"Machine inventory · current snapshot";
     updateRows();schedule();
   }
+  root.querySelector(".console-brand")!.addEventListener("click",event=>{event.preventDefault();selectView("overview");});
   root.querySelectorAll<HTMLButtonElement>("[data-console-view]").forEach(b=>b.addEventListener("click",()=>selectView(b.dataset.consoleView!)));
   root.querySelectorAll<HTMLButtonElement>("[data-kind-filter]").forEach(b=>b.addEventListener("click",()=>{kindFilter=b.dataset.kindFilter!;root.querySelectorAll("[data-kind-filter]").forEach(el=>el.setAttribute("aria-pressed",String(el===b)));updateRows();}));
   const searchPanel=root.querySelector<HTMLElement>("[data-search-panel]")!,searchInput=root.querySelector<HTMLInputElement>("[data-machine-search]")!;
@@ -216,7 +218,7 @@ if (rootElement) {
   const siteMenu=root.querySelector<HTMLElement>("[data-site-menu]")!,siteMenuToggle=root.querySelector<HTMLButtonElement>("[data-site-menu-toggle]")!;
   function closeSiteMenu(){siteMenu.hidden=true;siteMenuToggle.setAttribute("aria-expanded","false");}
   siteMenuToggle.addEventListener("click",()=>{siteMenu.hidden=!siteMenu.hidden;siteMenuToggle.setAttribute("aria-expanded",String(!siteMenu.hidden));});
-  document.addEventListener("keydown",event=>{if(event.key!=="Escape")return;closePopovers();closeSiteMenu();if(expanded)setExpanded(false);});
+  document.addEventListener("keydown",event=>{if(event.key!=="Escape"||dialog.open)return;closePopovers();closeSiteMenu();if(expanded)setExpanded(false);});
   document.addEventListener("pointerdown",event=>{if(!(event.target as Element).closest(".rem-site-header"))closeSiteMenu();},{passive:true});
   root.dataset.ready="true";
   setReduced(reduced);

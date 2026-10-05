@@ -290,6 +290,18 @@ test("compact desktop monitor fits all twelve rows and the Now column without ta
   expect(geometry.scrollTop).toBe(0);
   expect(geometry.scrollWidth).toBeLessThanOrEqual(geometry.clientWidth + 2);
   expect(geometry.scrollHeight).toBeLessThanOrEqual(geometry.clientHeight + 2);
+  const chartClearance = await page.evaluate(() => {
+    const tableTop = document.querySelector(".machine-table-panel")!.getBoundingClientRect().top;
+    return [...document.querySelectorAll(".production-chart")].map(chart => ({
+      chartBottom: chart.getBoundingClientRect().bottom,
+      labelBottom: Math.max(...[...chart.querySelectorAll("[data-chart-labels] text")].map(label => label.getBoundingClientRect().bottom)),
+      tableTop,
+    }));
+  });
+  for (const chart of chartClearance) {
+    expect(chart.labelBottom).toBeLessThanOrEqual(chart.chartBottom + 1);
+    expect(chart.chartBottom).toBeLessThanOrEqual(chart.tableTop - 2);
+  }
   expect(geometry.rows).toHaveLength(12);
   expect(geometry.rows.at(-1)?.id).toBe("print-06");
   expect(geometry.nowHeaderRight).toBeLessThanOrEqual(geometry.bounds.right + 2);

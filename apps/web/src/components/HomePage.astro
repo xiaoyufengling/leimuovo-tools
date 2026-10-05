@@ -12,8 +12,8 @@ const jsonLd = { "@context":"https://schema.org", "@type":"WebSite", name:site.n
 function chart(kind: "cnc" | "print") {
   const summary = getKindSummary(kind, "day");
   const max = Math.ceil(Math.max(...summary.buckets) / (kind === "cnc" ? 50 : 20000)) * (kind === "cnc" ? 50 : 20000);
-  const points = summary.buckets.map((value, i) => [28 + i * (444 / (summary.buckets.length - 1)), 74 - value / max * 60]);
-  return { summary, max, line: points.map((p, i) => `${i ? "L" : "M"}${p[0]},${p[1]}`).join(" "), area: `M28,74 ${points.map(p => `L${p[0]},${p[1]}`).join(" ")} L472,74 Z`, points };
+  const points = summary.buckets.map((value, i) => [28 + i * (444 / (summary.buckets.length - 1)), 54 - value / max * 46]);
+  return { summary, max, line: points.map((p, i) => `${i ? "L" : "M"}${p[0]},${p[1]}`).join(" "), area: `M28,54 ${points.map(p => `L${p[0]},${p[1]}`).join(" ")} L472,54 Z`, points };
 }
 ---
 <BaseLayout title="Rem｜Production console · 小鱼" description="向下滚动，开启 Rem 生产数据界面。12 台 CNC 与印刷设备的交互演示。" jsonLd={jsonLd} hideChrome>
@@ -52,10 +52,10 @@ function chart(kind: "cnc" | "print") {
                 <div class="production-charts" data-production-charts>
                   {(["cnc","print"] as const).map(kind => {const c = chart(kind);return <section class="production-chart assembly-piece" data-assembly={`chart-${kind}`} data-production-chart={kind} aria-label={`${kind === "cnc" ? "CNC" : "Print"} production chart`}>
                     <header><div><h2><span>{kind === "cnc" ? "CNC" : "Print"}</span> · <strong data-chart-total>{formatNumber(c.summary.output)}</strong> <span data-chart-unit>{kind === "cnc" ? "pcs" : "sheets"}</span></h2><p data-chart-inspect>Hourly output</p></div><div class="chart-periods" aria-label={`${kind === "cnc" ? "CNC" : "Print"} time range`}>{(["day","week","month","year"] as const).map(period=><button type="button" data-chart-period={period} data-chart-kind={kind} aria-pressed={period === "day"}>{period[0]!.toUpperCase()+period.slice(1)}</button>)}</div></header>
-                    <svg viewBox="0 0 500 98" class="production-chart-svg" data-chart-svg tabindex="0" role="img" aria-label={`${kind} 分时产量，方向键查看数据`}>
+                    <svg viewBox="0 0 500 80" class="production-chart-svg" data-chart-svg tabindex="0" role="img" aria-label={`${kind} 分时产量，方向键查看数据`}>
                       <defs><linearGradient id={`chart-fill-${kind}`} x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#1274ef" stop-opacity=".12"/><stop offset="100%" stop-color="#1274ef" stop-opacity=".01"/></linearGradient></defs>
-                      <g class="chart-grid"><path d="M28 14H478M28 44H478M28 74H478"/><text x="0" y="17" data-y-max>{kind === "cnc" ? c.max : `${c.max/1000}K`}</text><text x="0" y="47" data-y-mid>{kind === "cnc" ? c.max/2 : `${c.max/2000}K`}</text><text x="8" y="77">0</text></g>
-                      <path data-chart-area d={c.area} fill={`url(#chart-fill-${kind})`}/><path data-chart-line class="chart-line" d={c.line}/><g data-chart-points>{c.points.map(p=><circle cx={p[0]} cy={p[1]} r="3.6"/>)}</g><g data-chart-labels>{c.summary.labels.map((label,i)=><text x={28+i*444/(c.summary.labels.length-1)} y="94" text-anchor="middle">{label}</text>)}</g><line data-chart-cursor x1="28" x2="28" y1="10" y2="76" visibility="hidden"/>
+                      <g class="chart-grid"><path d="M28 8H478M28 31H478M28 54H478"/><text x="0" y="11" data-y-max>{kind === "cnc" ? c.max : `${c.max/1000}K`}</text><text x="0" y="34" data-y-mid>{kind === "cnc" ? c.max/2 : `${c.max/2000}K`}</text><text x="8" y="57">0</text></g>
+                      <path data-chart-area d={c.area} fill={`url(#chart-fill-${kind})`}/><path data-chart-line class="chart-line" d={c.line}/><g data-chart-points>{c.points.map(p=><circle cx={p[0]} cy={p[1]} r="3.6"/>)}</g><g data-chart-labels>{c.summary.labels.map((label,i)=><text x={28+i*444/(c.summary.labels.length-1)} y="74" text-anchor="middle">{label}</text>)}</g><line data-chart-cursor x1="28" x2="28" y1="5" y2="56" visibility="hidden"/>
                     </svg>
                   </section>;})}
                 </div>

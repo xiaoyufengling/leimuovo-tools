@@ -46,3 +46,7 @@ body:has([data-rem-experience]){margin:0;background:#f8fafc;background-image:non
 @media(max-width:700px){.rem-page-footer{font-size:7px;padding:3px 5vw}.console-scroll-guide{bottom:27px}}
 /* Vertical wheel/touch input can naturally return from the table to the page. */
 .machine-table-scroll{overscroll-behavior-x:contain;overscroll-behavior-y:auto}
+
+/* Grid children must not let the intrinsic SVG height spill into the table. */
+.production-charts{grid-template-rows:minmax(0,1fr)}.production-chart{min-height:0}.production-chart-svg{flex:1 1 0;height:0;min-height:0}
+@media(max-width:700px){.production-charts{grid-template-rows:repeat(2,minmax(0,1fr))}.chart-grid text,[data-chart-labels] text{font-size:16px}}
