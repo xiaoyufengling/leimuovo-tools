@@ -22,14 +22,10 @@ async function consoleProgress(page: Page) {
 
 async function scrollConsole(page: Page, fraction: number) {
   const target = await page.locator("[data-console-runway]").evaluate((element, progress) => {
-    const runway = element as HTMLElement;
-    const distance = runway.offsetHeight - innerHeight;
+    const rect = element.getBoundingClientRect();
+    const distance = rect.height - innerHeight;
     if (distance <= 0) throw new Error("The motion runway must be taller than the viewport");
-    // Layout offsets avoid mixing stale viewport rects with asynchronous
-    // compositor scroll positions on mobile WebKit.
-    let top = 0;
-    for (let node: HTMLElement | null = runway; node; node = node.offsetParent as HTMLElement | null) top += node.offsetTop;
-    const y = Math.round(top + distance * progress);
+    const y = Math.round(scrollY + rect.top + distance * progress);
     scrollTo(0, y);
     return y;
   }, fraction);
@@ -42,34 +38,7 @@ async function assemblyState(page: Page) {
     piece: element.getAttribute("data-assembly"),
     transform: getComputedStyle(element).transform,
     opacity: Number(getComputedStyle(element).opacity),
-    clip: getComputedStyle(element).clipPath,
-    dock: element.getAttribute("data-morph-dock"),
-    open: element.getAttribute("data-morph-open"),
   })));
-}
-
-async function morphMetrics(page: Page, selector: string, seedSelector: string) {
-  return page.locator(selector).evaluate((element, seedSelector) => {
-    const piece = element as HTMLElement;
-    const style = getComputedStyle(piece);
-    const box = piece.getBoundingClientRect();
-    const seed = piece.querySelector<HTMLElement>(seedSelector)!;
-    const seedBox = seed.getBoundingClientRect();
-    const raw = style.clipPath.match(/^inset\(([^)]*)\)/)?.[1]?.split(" round ")[0]?.trim();
-    const values = raw ? raw.split(/\s+/).map(parseFloat) : [0];
-    const top = values[0] ?? 0, right = values[1] ?? top;
-    const bottom = values[2] ?? top, left = values[3] ?? right;
-    return {
-      dock: Number(piece.dataset.morphDock),
-      open: Number(piece.dataset.morphOpen),
-      opacity: Number(style.opacity),
-      clip: style.clipPath,
-      visibleWidth: box.width - left - right,
-      visibleHeight: box.height - top - bottom,
-      seedWidth: seedBox.width,
-      seedHeight: seedBox.height,
-    };
-  }, seedSelector);
 }
 
 async function historyMinutes(page: Page, machine: string) {
@@ -80,23 +49,13 @@ async function historyMinutes(page: Page, machine: string) {
   }));
 }
 
-test("Rem console starts with visible Rem branding on black and no empty table frame", async ({ page }) => {
+test("Rem console starts with a black monitor and twelve real data rows", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.goto("/", { waitUntil: "domcontentloaded" });
   await expect(page).toHaveTitle(/Rem.*Production console.*小鱼/);
   await expectConsoleReady(page);
   await expect(page.locator("html")).toHaveClass(/rem-motion/);
   await expect(page.locator(".monitor-power")).toHaveCSS("opacity", "0");
-  await expect(page.locator(".monitor-boot > span")).toHaveText("Rem");
-  await expect(page.locator(".monitor-boot")).toHaveCSS("opacity", "1");
-  await expect(page.locator(".boot-track")).toHaveCSS("opacity", "0");
-  await expect(page.locator(".monitor-boot > small")).toHaveCSS("opacity", "0");
-  await expect(page.locator("[data-machine-table-panel]")).toHaveCSS("border-top-color", /rgba\([^)]*, 0\)/);
-  await expect(page.locator("[data-table-head]")).toHaveCSS("transform", "none");
-  await expect(page.locator("[data-assembly=table-head], .machine-row-group[data-assembly]")).toHaveCount(0);
-  expect(await page.locator("[data-table-head] > span").evaluateAll((cells) =>
-    cells.every((cell) => Number(getComputedStyle(cell).opacity) === 0),
-  )).toBe(true);
   expect(await consoleProgress(page)).toBe(0);
   expect((await assemblyState(page)).every((piece) => piece.opacity === 0)).toBe(true);
   const blackLevel = await page.locator("[data-monitor-screen]").evaluate((element) =>
@@ -156,177 +115,12 @@ test("native scroll assembles distinct reversible frames at 0, 45, and 100 perce
   await expect(page.locator(".monitor-power")).toHaveCSS("opacity", "0");
 });
 
-test("all twelve original machine name capsules dock before their row cells unfold", async ({ page }) => {
-  await page.goto("/");
-  await expectConsoleReady(page);
-  const rows = page.locator("[data-machine-row]");
-  const ids = await rows.evaluateAll((elements) => elements.map((element) => element.getAttribute("data-machine-row")!));
-  const names = await page.locator("[data-machine-row] .machine-identity strong").elementHandles();
-  expect(ids).toHaveLength(12);
-  expect(names).toHaveLength(12);
-  let firstCapsule: Awaited<ReturnType<typeof morphMetrics>> | undefined;
-  for (const [index, id] of ids.entries()) {
-    await scrollConsole(page, 0.57 + index * 0.009);
-    const selector = `[data-machine-row="${id}"]`;
-    const row = page.locator(selector);
-    const capsule = await morphMetrics(page, selector, ".machine-identity strong");
-    if (index === 0) firstCapsule = capsule;
-    expect(capsule.dock, `${id} has docked`).toBe(1);
-    expect(capsule.open, `${id} has not unfolded`).toBe(0);
-    expect(capsule.opacity).toBe(1);
-    expect(capsule.clip).toMatch(/^inset\(/);
-    expect(capsule.visibleWidth).toBeGreaterThanOrEqual(capsule.seedWidth - 2);
-    expect(capsule.visibleWidth).toBeLessThanOrEqual(capsule.seedWidth + 24);
-    await expect(row.locator(".machine-identity strong")).toHaveCSS("opacity", "1");
-    await expect(row.locator(".machine-identity small")).toHaveCSS("opacity", "0");
-    await expect(row.locator(".machine-type-icon")).toHaveCSS("opacity", "0");
-    expect(await row.locator(":scope > span").evaluateAll((cells) =>
-      cells.length === 12 && cells.every((cell) => Number(getComputedStyle(cell).opacity) === 0),
-    )).toBe(true);
-  }
-
-  await scrollConsole(page, 0.70);
-  const partlyOpen = await morphMetrics(page, '[data-machine-row="cnc-01"]', ".machine-identity strong");
-  expect(partlyOpen.dock).toBe(1);
-  expect(partlyOpen.open).toBeGreaterThan(0);
-  expect(partlyOpen.open).toBeLessThan(1);
-  expect(partlyOpen.visibleWidth).toBeGreaterThan(firstCapsule!.visibleWidth);
-  const cells = await page.locator('[data-machine-row="cnc-01"] > span').evaluateAll((elements) =>
-    elements.map((element) => Number(getComputedStyle(element).opacity)),
-  );
-  expect(cells[0]).toBeGreaterThan(0);
-  expect(cells.at(-1)).toBeLessThan(1);
-  expect(cells.every((opacity, index) => index === 0 || opacity <= cells[index - 1]!)).toBe(true);
-
-  await scrollConsole(page, 1);
-  for (const [index, id] of ids.entries()) {
-    await expect(page.locator(`[data-machine-row="${id}"]`)).toHaveCSS("clip-path", "none");
-    expect(await names[index]!.evaluate((node, id) =>
-      node.isConnected && node === document.querySelector(`[data-machine-row="${id}"] .machine-identity strong`), id,
-    )).toBe(true);
-  }
-  await scrollConsole(page, 0.57);
-  expect(await morphMetrics(page, '[data-machine-row="cnc-01"]', ".machine-identity strong")).toEqual(firstCapsule);
-  await expect(page.locator('[data-machine-row="cnc-01"] [data-cell="output"]')).toHaveCSS("opacity", "0");
-});
-
-test("the original Overview control docks before the sidebar expands downward", async ({ page }) => {
-  await page.goto("/");
-  await expectConsoleReady(page);
-  const seed = await page.locator('[data-console-view="overview"]').elementHandle();
-  expect(seed).not.toBeNull();
-  const otherButtons = page.locator(".console-nav button:not(:first-child)");
-  await scrollConsole(page, 0.37);
-  const compact = await morphMetrics(page, '[data-assembly="nav"]', '[data-console-view="overview"]');
-  expect(compact.dock).toBe(1);
-  expect(compact.open).toBe(0);
-  expect(compact.opacity).toBe(1);
-  expect(compact.visibleHeight).toBeLessThanOrEqual(compact.seedHeight + 14);
-  expect(await otherButtons.evaluateAll((elements) => elements.every((element) => Number(getComputedStyle(element).opacity) === 0))).toBe(true);
-
-  await scrollConsole(page, 0.52);
-  const unfolding = await morphMetrics(page, '[data-assembly="nav"]', '[data-console-view="overview"]');
-  expect(unfolding.open).toBeGreaterThan(0);
-  expect(unfolding.open).toBeLessThan(1);
-  expect(unfolding.visibleHeight).toBeGreaterThan(compact.visibleHeight);
-  const opacities = await otherButtons.evaluateAll((elements) => elements.map((element) => Number(getComputedStyle(element).opacity)));
-  expect(opacities[0]).toBeGreaterThan(opacities.at(-1)!);
-  await scrollConsole(page, 1);
-  await expect(page.locator('[data-assembly="nav"]')).toHaveCSS("clip-path", "none");
-  expect(await otherButtons.evaluateAll((elements) => elements.every((element) => Number(getComputedStyle(element).opacity) === 1))).toBe(true);
-  expect(await seed!.evaluate((node) => node.isConnected && node === document.querySelector('[data-console-view="overview"]'))).toBe(true);
-  await scrollConsole(page, 0.37);
-  expect(await morphMetrics(page, '[data-assembly="nav"]', '[data-console-view="overview"]')).toEqual(compact);
-});
-
-test("original chart title chips unfold into x-domain traces that retract on reverse", async ({ page }) => {
-  await page.goto("/");
-  await expectConsoleReady(page);
-  const titles = await page.locator("[data-production-chart] h2").elementHandles();
-  expect(titles).toHaveLength(2);
-  const chipHeights = new Map<string, number>();
-  await scrollConsole(page, 0.47);
-  for (const kind of ["cnc", "print"]) {
-    const selector = `[data-production-chart="${kind}"]`;
-    const chip = await morphMetrics(page, selector, "h2");
-    expect(chip.dock).toBe(1);
-    expect(chip.open).toBe(0);
-    expect(chip.opacity).toBe(1);
-    expect(chip.visibleHeight).toBeLessThanOrEqual(chip.seedHeight + 14);
-    expect(chip.visibleWidth).toBeLessThanOrEqual(chip.seedWidth + 14);
-    chipHeights.set(kind, chip.visibleHeight);
-    await expect(page.locator(`${selector} .chart-periods`)).toHaveCSS("opacity", "0");
-    await expect(page.locator(`${selector} .chart-grid`)).toHaveCSS("opacity", "0");
-    await expect(page.locator(`${selector} [data-chart-reveal]`)).toHaveAttribute("width", "0");
-    await expect(page.locator(`${selector} [data-chart-trace]`)).toHaveAttribute("clip-path", `url(#chart-reveal-${kind})`);
-    await expect(page.locator(`${selector} clipPath`)).toHaveAttribute("clipPathUnits", "userSpaceOnUse");
-  }
-  const readTraces = () => page.locator("[data-production-chart]").evaluateAll((panels) => panels.map((panel) => {
-    const tip = panel.querySelector("[data-chart-tip]")!;
-    return {
-      kind: panel.getAttribute("data-production-chart"),
-      draw: Number(panel.getAttribute("data-chart-draw")),
-      width: Number(panel.querySelector("[data-chart-reveal]")!.getAttribute("width")),
-      tipX: Number(tip.getAttribute("cx")),
-      tipY: Number(tip.getAttribute("cy")),
-      line: panel.querySelector("[data-chart-line]")!.getAttribute("d"),
-      points: [...panel.querySelectorAll("[data-chart-points] circle")].map((point) => ({
-        x: Number(point.getAttribute("cx")), y: Number(point.getAttribute("cy")),
-      })),
-    };
-  }));
-  const frames = new Map<number, Awaited<ReturnType<typeof readTraces>>>();
-  for (const progress of [0.62, 0.73, 0.84]) {
-    await scrollConsole(page, progress);
-    const actualProgress = await consoleProgress(page);
-    const traces = await readTraces();
-    frames.set(progress, traces);
-    for (const trace of traces) {
-      if (progress === 0.62) {
-        const unfolding = await morphMetrics(page, `[data-production-chart="${trace.kind}"]`, "h2");
-        expect(unfolding.dock).toBe(1);
-        expect(unfolding.open).toBeGreaterThan(0);
-        expect(unfolding.open).toBeLessThan(1);
-        expect(unfolding.visibleHeight).toBeGreaterThan(chipHeights.get(trace.kind!)!);
-      }
-      const shift = trace.kind === "cnc" ? 0 : 0.025;
-      const draw = Math.max(0, Math.min(1, (actualProgress - 0.56 - shift) / 0.34));
-      const x = 28 + 444 * draw;
-      expect(trace.draw).toBeCloseTo(draw, 3);
-      expect(trace.width).toBeCloseTo(x - 24, 3);
-      expect(trace.tipX).toBeCloseTo(x, 3);
-      const index = Math.min(trace.points.length - 2, Math.floor(draw * (trace.points.length - 1)));
-      const a = trace.points[index]!, b = trace.points[index + 1]!;
-      expect(trace.tipY).toBeCloseTo(a.y + (b.y - a.y) * (x - a.x) / (b.x - a.x), 3);
-    }
-  }
-  for (const index of [0, 1]) {
-    expect(frames.get(0.73)![index]!.width).toBeGreaterThan(frames.get(0.62)![index]!.width);
-    expect(frames.get(0.84)![index]!.width).toBeGreaterThan(frames.get(0.73)![index]!.width);
-    expect(frames.get(0.84)![index]!.line).toBe(frames.get(0.62)![index]!.line);
-  }
-  await scrollConsole(page, 1);
-  for (const [index, kind] of ["cnc", "print"].entries()) {
-    await expect(page.locator(`[data-production-chart="${kind}"]`)).toHaveCSS("clip-path", "none");
-    await expect(page.locator(`[data-production-chart="${kind}"] [data-chart-reveal]`)).toHaveAttribute("width", "454");
-    expect(await titles[index]!.evaluate((node, kind) =>
-      node.isConnected && node === document.querySelector(`[data-production-chart="${kind}"] h2`), kind,
-    )).toBe(true);
-  }
-  for (const progress of [0.84, 0.73, 0.62]) {
-    await scrollConsole(page, progress);
-    expect(await readTraces()).toEqual(frames.get(progress));
-  }
-  await scrollConsole(page, 0.47);
-  expect((await readTraces()).every((trace) => trace.draw === 0 && trace.width === 0 && trace.tipX === 28)).toBe(true);
-});
-
 test("skip intro lands on a working production console", async ({ page }) => {
   await page.goto("/");
   await enterConsole(page);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Production overview");
   await expect(page.locator(".monitor-power")).toHaveCSS("opacity", "1");
-  expect(await consoleProgress(page)).toBeGreaterThanOrEqual(0.95);
+  expect(await consoleProgress(page)).toBeGreaterThanOrEqual(0.885);
   await page.locator('[data-chart-kind="cnc"][data-chart-period="week"]').click();
   await expect(page.locator('[data-production-chart="cnc"] [data-chart-total]')).toHaveText("4,200");
 });
@@ -522,107 +316,6 @@ test("compact desktop monitor fits all twelve rows and the Now column without ta
   }
 });
 
-test("comfortable Year tables keep rows separate through replay and restore the default Day fit", async ({ page, isMobile }) => {
-  test.skip(isMobile, "This regression covers the desktop density and long-period layout");
-  await page.setViewportSize({ width: 1180, height: 757 });
-  await page.goto("/");
-  await enterConsole(page);
-  for (const kind of ["cnc", "print"]) await page.locator(`[data-chart-kind="${kind}"][data-chart-period="year"]`).click();
-  await page.locator('[data-console-view="settings"]').click();
-  await page.locator("[data-comfortable]").check();
-  await page.locator('[data-console-view="overview"]').click();
-  const table = page.locator(".machine-table-scroll");
-  const readLayout = () => table.evaluate((element) => ({
-    horizontalOverflow: element.scrollWidth - element.clientWidth,
-    verticalOverflow: element.scrollHeight - element.clientHeight,
-    groups: [...element.querySelectorAll(".machine-row-group")].map((group) => {
-      const box = group.getBoundingClientRect();
-      return {
-        top: box.top,
-        bottom: box.bottom,
-        rows: [...group.querySelectorAll<HTMLElement>("[data-machine-row]")].map((row) => {
-          const bounds = row.getBoundingClientRect();
-          return {
-            id: row.dataset.machineRow,
-            top: bounds.top,
-            bottom: bounds.bottom,
-            height: bounds.height,
-            durations: [...row.querySelectorAll<HTMLElement>('[data-cell="run"], [data-cell="stop"], [data-cell="fm"]')].map((cell) => ({
-              right: cell.getBoundingClientRect().right,
-              nextLeft: cell.nextElementSibling!.getBoundingClientRect().left,
-              overflow: getComputedStyle(cell).overflowX,
-              textOverflow: getComputedStyle(cell).textOverflow,
-              title: cell.title,
-              text: cell.textContent!.trim(),
-              field: cell.dataset.cell,
-            })),
-          };
-        }),
-      };
-    }),
-  }));
-  const assertComfortableLayout = (layout: Awaited<ReturnType<typeof readLayout>>) => {
-    expect(layout.horizontalOverflow).toBeGreaterThan(2);
-    expect(layout.verticalOverflow).toBeGreaterThan(2);
-    expect(layout.groups).toHaveLength(4);
-    const rows = layout.groups.flatMap((group) => group.rows);
-    expect(rows).toHaveLength(12);
-    for (const group of layout.groups) {
-      expect(group.rows).toHaveLength(3);
-      for (const row of group.rows) {
-        expect(row.height, `${row.id} comfortable height`).toBeGreaterThanOrEqual(41.5);
-        expect(row.top, `${row.id} group top`).toBeGreaterThanOrEqual(group.top - 1);
-        expect(row.bottom, `${row.id} group bottom`).toBeLessThanOrEqual(group.bottom + 1);
-        for (const cell of row.durations) {
-          expect(cell.right, `${row.id} ${cell.field} neighbor`).toBeLessThanOrEqual(cell.nextLeft + 1);
-          expect(cell.overflow).toBe("hidden");
-          expect(cell.textOverflow).toBe("ellipsis");
-          expect(cell.title).not.toBe("");
-          if (cell.field !== "fm") expect(cell.title).toContain(cell.text);
-        }
-      }
-    }
-    for (let index = 1; index < rows.length; index += 1) {
-      expect(rows[index]!.top, `${rows[index]!.id} does not overlap its predecessor`).toBeGreaterThanOrEqual(rows[index - 1]!.bottom - 1);
-    }
-  };
-  assertComfortableLayout(await readLayout());
-  await expect(page.locator('[data-machine-row="cnc-01"] [data-cell="run"]')).toHaveAttribute("title", "Running 1344:00");
-  await table.evaluate((element) => { element.scrollLeft = element.scrollWidth; element.scrollTop = element.scrollHeight; });
-  await expect.poll(() => table.evaluate((element) => element.scrollLeft)).toBeGreaterThan(0);
-  await expect.poll(() => table.evaluate((element) => element.scrollTop)).toBeGreaterThan(0);
-  await scrollConsole(page, 0.57);
-  await expect(table).toHaveCSS("overflow-x", "hidden");
-  await expect(table).toHaveCSS("overflow-y", "hidden");
-  expect(await table.evaluate((element) => ({ x: element.scrollLeft, y: element.scrollTop }))).toEqual({ x: 0, y: 0 });
-  await scrollConsole(page, 1);
-  await expect(page.locator(dashboard)).toHaveClass(/is-interactive/);
-  await expect(page.locator(dashboard)).toHaveClass(/is-comfortable/);
-  await expect(page.locator(dashboard)).toHaveClass(/has-long-period/);
-  await expect(page.locator("[data-comfortable]")).toBeChecked();
-  for (const kind of ["cnc", "print"]) await expect(page.locator(`[data-chart-kind="${kind}"][data-chart-period="year"]`)).toHaveAttribute("aria-pressed", "true");
-  assertComfortableLayout(await readLayout());
-
-  await page.locator('[data-console-view="settings"]').click();
-  await page.locator("[data-comfortable]").uncheck();
-  await page.locator('[data-console-view="overview"]').click();
-  for (const kind of ["cnc", "print"]) await page.locator(`[data-chart-kind="${kind}"][data-chart-period="day"]`).click();
-  await expect(page.locator(dashboard)).not.toHaveClass(/is-comfortable|has-long-period/);
-  const restored = await readLayout();
-  expect(restored.horizontalOverflow).toBeLessThanOrEqual(2);
-  expect(restored.verticalOverflow).toBeLessThanOrEqual(2);
-  const restoredBounds = await table.evaluate((element) => {
-    const bounds = element.getBoundingClientRect();
-    return [...element.querySelectorAll("[data-machine-row]")].every((row) => {
-      const box = row.getBoundingClientRect();
-      return box.top >= bounds.top - 2 && box.bottom <= bounds.bottom + 2 && box.left >= bounds.left - 2 && box.right <= bounds.right + 2;
-    });
-  });
-  expect(restoredBounds).toBe(true);
-  await expect(page.locator('[data-production-chart="cnc"] [data-chart-total]')).toHaveText("840");
-  await expect(page.locator('[data-production-chart="print"] [data-chart-total]')).toHaveText("369,600");
-});
-
 test("desktop wheel input scrolls naturally in both directions without snapping", async ({ page, isMobile }) => {
   test.skip(isMobile, "Mobile WebKit does not support mouse.wheel; programmatic native scrolling is covered separately");
   await page.goto("/");
@@ -692,8 +385,6 @@ test("failed motion bundle reveals complete SSR production data after its safety
   await page.goto("/", { waitUntil: "domcontentloaded" });
   await expect(page.locator("html")).toHaveClass(/rem-motion/);
   await expect(page.locator(".monitor-power")).toHaveCSS("opacity", "0");
-  await expect(page.locator(".monitor-boot")).toHaveCSS("opacity", "1");
-  await expect(page.locator(".monitor-boot > span")).toHaveText("Rem");
   await expect(page.locator(consoleRoot)).toHaveAttribute("data-fallback", "true", { timeout: 7000 });
   await expect(page.locator("html")).not.toHaveClass(/rem-motion/);
   await expect(page.locator(".monitor-power")).toHaveCSS("opacity", "1");

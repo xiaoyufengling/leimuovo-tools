@@ -23,100 +23,19 @@ if (rootElement) {
   const clamp = (value: number) => Math.max(0, Math.min(1, value));
   const smooth = (from: number, to: number, value: number) => { const p = clamp((value - from) / (to - from)); return p * p * (3 - 2 * p); };
   const sceneNames = ["READY WHEN YOU ARE", "POWERING ON", "ASSEMBLING WORKSPACE", "WORKSPACE READY"];
-  // Every seed is a part of the final interface. Docking and unfolding are
-  // separate scroll phases; nothing is cloned, swapped, or time-autoplayed.
-  type MorphSpec = { dock: [number,number]; open: [number,number]; seed: string; side: "left"|"right"|"top"|"bottom" };
-  const recipe: Record<string, MorphSpec> = {
-    nav: {dock:[.18,.35],open:[.39,.64],seed:"[data-console-view=overview]",side:"left"},
-    header: {dock:[.20,.37],open:[.40,.58],seed:"h1",side:"top"},
-    summary: {dock:[.24,.41],open:[.45,.65],seed:"strong",side:"right"},
-    "chart-cnc": {dock:[.27,.44],open:[.48,.68],seed:"h2",side:"left"},
-    "chart-print": {dock:[.29,.46],open:[.50,.70],seed:"h2",side:"right"},
-    note: {dock:[.81,.89],open:[.90,.95],seed:".note-icon",side:"bottom"},
+  const recipe: Record<string, readonly [number, number, number, number, number, number, number, number]> = {
+    nav: [.20,.49,-.57,.06,0,-48,-8,.58],
+    header: [.23,.52,.05,-.74,52,0,3,.72],
+    summary: [.29,.57,.24,-.54,34,-14,4,.68],
+    "chart-cnc": [.30,.65,-.44,-.25,32,24,-9,.56],
+    "chart-print": [.33,.68,.43,-.22,32,-24,9,.56],
+    "table-head": [.39,.72,.04,.63,-30,0,-2,.70],
+    "rows-0": [.43,.76,-.36,.69,-38,18,-6,.70],
+    "rows-1": [.47,.79,.34,.77,-34,-18,5,.72],
+    "rows-2": [.51,.82,-.29,.85,-30,14,-4,.74],
+    "rows-3": [.55,.85,.25,.94,-26,-14,4,.76],
+    note: [.61,.88,0,.97,-15,0,0,.82],
   };
-  const rowElements = [...root.querySelectorAll<HTMLElement>("[data-machine-row]")];
-  rowElements.forEach((row,index)=>{
-    recipe[row.dataset.assembly!] = {dock:[.37+index*.009,.55+index*.009],open:[.60+index*.008,.81+index*.008],seed:".machine-identity strong",side:index<6?"left":"right"};
-  });
-  type Bounds = { x:number; y:number; w:number; h:number; seedX:number; seedY:number; seedW:number; seedH:number; children:HTMLElement[] };
-  const bounds = new Map<HTMLElement,Bounds>();
-  const chartPoints = new Map<HTMLElement,number[][]>();
-  const layoutPosition = (element:HTMLElement) => {
-    let x=0,y=0,node:HTMLElement|null=element;
-    while(node){x+=node.offsetLeft;y+=node.offsetTop;node=node.offsetParent as HTMLElement|null;}
-    return {x,y};
-  };
-  function measurePieces(){
-    const origin=layoutPosition(screen);
-    for(const piece of pieces){
-      if(!piece.offsetWidth)continue;
-      const spec=recipe[piece.dataset.assembly!];if(!spec)continue;
-      const seed=piece.querySelector<HTMLElement>(spec.seed)!;
-      const p=layoutPosition(piece),s=layoutPosition(seed);
-      const isRow=piece.hasAttribute("data-machine-row"),isNav=piece.dataset.assembly==="nav";
-      const pad=isRow?10:6;
-      const seedX=Math.max(0,s.x-p.x-pad),seedY=isRow?0:Math.max(0,s.y-p.y-pad);
-      bounds.set(piece,{x:p.x-origin.x,y:p.y-origin.y,w:piece.offsetWidth,h:piece.offsetHeight,
-        seedX,seedY,seedW:Math.min(piece.offsetWidth-seedX,(piece.dataset.assembly==="summary"?Math.min(85,seed.offsetWidth):seed.offsetWidth)+pad*2),
-        seedH:isRow?piece.offsetHeight:Math.min(piece.offsetHeight-seedY,seed.offsetHeight+pad*2),
-        children:isRow?[...piece.children].slice(1) as HTMLElement[]:isNav?[...piece.querySelectorAll<HTMLElement>(".console-nav button")].slice(1):[]});
-    }
-  }
-  function renderMorphs(){
-    for(const piece of pieces){
-      const spec=recipe[piece.dataset.assembly!],box=bounds.get(piece);if(!spec||!box)continue;
-      const dock=smooth(...spec.dock,progress),open=smooth(...spec.open,progress),remain=1-dock;
-      const isRow=piece.hasAttribute("data-machine-row");
-      piece.dataset.morphDock=dock.toFixed(4);piece.dataset.morphOpen=open.toFixed(4);
-      const sx=box.seedX*(1-open),sy=box.seedY*(1-open);
-      const right=(box.w-box.seedX-box.seedW)*(1-open),bottom=(box.h-box.seedY-box.seedH)*(1-open);
-      piece.style.setProperty("--piece-clip",open>=1?"none":`inset(${sy}px ${Math.max(0,right)}px ${Math.max(0,bottom)}px ${sx}px round ${isRow?11*(1-open):6*(1-open)}px)`);
-      let x=0,y=0;
-      if(spec.side==="left")x=-(box.x+box.seedX+box.seedW+24);
-      if(spec.side==="right")x=screenWidth-box.x-box.seedX+24;
-      if(spec.side==="top")y=-(box.y+box.seedY+box.seedH+24);
-      if(spec.side==="bottom")y=screenHeight-box.y-box.seedY+24;
-      if(isRow)y=16*(spec.side==="left"?-1:1);
-      piece.style.setProperty("--piece-opacity",String(smooth(spec.dock[0],spec.dock[0]+.025,progress)));
-      piece.style.setProperty("--piece-shadow",String(.10*(1-open)));
-      piece.style.setProperty("--piece-transform",`translate3d(${x*remain}px,${y*remain}px,0) rotate(${(spec.side==="left"?-2:2)*remain}deg)`);
-      piece.style.setProperty("--morph-open",String(open));
-      piece.style.setProperty("--morph-detail",String(smooth(.08,.50,open)));
-      if(isRow){
-        for(const [index,cell] of box.children.entries()){
-          const local=smooth(.06+index*.052,.24+index*.06,open);
-          cell.style.setProperty("--cell-reveal",String(local));
-        }
-      }else if(piece.dataset.assembly==="nav"){
-        box.children.forEach((button,index)=>button.style.setProperty("--nav-reveal",String(smooth(.13+index*.13,.34+index*.16,open))));
-      }
-    }
-    const header=root.querySelector<HTMLElement>("[data-table-head]")!;
-    header.style.setProperty("--table-head-open",String(smooth(.63,.87,progress)));
-    [...header.children].forEach((cell,index)=>(cell as HTMLElement).style.setProperty("--heading-reveal",String(smooth(.60+index*.012,.70+index*.013,progress))));
-    root.style.setProperty("--table-frame",String(smooth(.89,.95,progress)));
-    root.style.setProperty("--secondary-reveal",String(smooth(.70,.94,progress)));
-    renderChartTraces();
-  }
-  function renderChartTraces(){
-    for(const panel of root.querySelectorAll<HTMLElement>("[data-production-chart]")){
-      const shift=panel.dataset.productionChart==="cnc"?0:.025;
-      // A linear x-domain reveal, not path-length timing: both curves grow
-      // rightward at the same reading speed even across steep segments.
-      const draw=clamp((progress-.56-shift)/.34);
-      const x=28+444*draw;
-      panel.dataset.chartDraw=draw.toFixed(4);
-      panel.querySelector("[data-chart-reveal]")!.setAttribute("width",String(draw>=1?454:draw<=0?0:x-24));
-      const tip=panel.querySelector<SVGCircleElement>("[data-chart-tip]")!;
-      const points=chartPoints.get(panel);
-      if(points?.length){
-        const index=Math.min(points.length-2,Math.floor(draw*(points.length-1)));
-        const a=points[index]!,b=points[index+1]!,fraction=(x-a[0]!)/(b[0]!-a[0]!);
-        tip.setAttribute("cx",String(x));tip.setAttribute("cy",String(a[1]!+(b[1]!-a[1]!)*fraction));
-      }
-      tip.style.opacity=String(draw>0&&draw<1?smooth(0,.04,draw)*(1-smooth(.94,1,draw)):0);
-    }
-  }
 
   function measure() {
     // Layout offsets stay consistent when mobile WebKit scrolls asynchronously.
@@ -131,7 +50,6 @@ if (rootElement) {
     stageTravel = Math.max(1, runway.offsetHeight - innerHeight);
     screenWidth = screen.clientWidth;
     screenHeight = screen.clientHeight;
-    measurePieces();
     schedule();
   }
   function schedule() { if (!frame) frame = requestAnimationFrame(renderScene); }
@@ -141,14 +59,20 @@ if (rootElement) {
     root.dataset.progress = progress.toFixed(4);
     root.style.setProperty("--story-progress", String(progress));
     root.style.setProperty("--power", String(reduced ? 1 : smooth(.14, .31, progress)));
-    root.style.setProperty("--boot-opacity", String(reduced ? 0 : 1-smooth(.16,.29,progress)));
+    root.style.setProperty("--boot-opacity", String(reduced ? 0 : smooth(.015,.065,progress)*(1-smooth(.19,.30,progress))));
     root.style.setProperty("--boot-progress", String(smooth(.025,.21,progress)));
-    renderMorphs();
-    const ready = progress >= .95 || reduced;
-    if(!ready && dashboard.classList.contains("is-interactive")){
-      const tableViewport=root.querySelector<HTMLElement>(".machine-table-scroll")!;
-      tableViewport.scrollLeft=0;tableViewport.scrollTop=0;
+    for (const piece of pieces) {
+      const spec = recipe[piece.dataset.assembly ?? ""];
+      if (!spec) continue;
+      const [start,end,x,y,rx,ry,rz,scale] = spec;
+      const local = reduced ? 1 : clamp((progress-start)/(end-start));
+      const eased = 1 - Math.pow(1-local,3);
+      const remaining = 1-eased;
+      piece.style.setProperty("--piece-opacity", String(smooth(0,.18,local)));
+      piece.style.setProperty("--piece-shadow", String(.16*remaining));
+      piece.style.setProperty("--piece-transform", `perspective(1100px) translate3d(${x*screenWidth*remaining}px,${y*screenHeight*remaining}px,${-90*remaining}px) rotateX(${rx*remaining}deg) rotateY(${ry*remaining}deg) rotateZ(${rz*remaining}deg) scale(${scale+(1-scale)*eased})`);
     }
+    const ready = progress >= .885 || reduced;
     dashboard.classList.toggle("is-interactive", ready);
     dashboard.inert = !ready;
     dashboard.setAttribute("aria-hidden", String(!ready));
@@ -160,7 +84,7 @@ if (rootElement) {
       }
     }
     if (!ready && expanded) setExpanded(false);
-    const phase = progress < .02 ? 0 : progress < .27 ? 1 : progress < .95 ? 2 : 3;
+    const phase = progress < .02 ? 0 : progress < .27 ? 1 : progress < .885 ? 2 : 3;
     root.querySelector("[data-scene-name]")!.textContent = sceneNames[phase]!;
     root.querySelector("[data-scroll-instruction]")!.textContent = reduced ? "已减少动态效果 · 可直接操作" : ready ? "界面已就绪 · 向上滚动可回放" : phase < 2 ? "向下滚动，开启界面" : "继续滚动，让组件归位";
     const skipButton = root.querySelector<HTMLButtonElement>(".console-scroll-guide [data-skip-intro]")!;
@@ -169,7 +93,7 @@ if (rootElement) {
   }
   function skipIntro() {
     if (reduced) { root.querySelector<HTMLButtonElement>("[data-console-view=overview]")?.focus({preventScroll:true}); return; }
-    window.scrollTo({ top: stageTop + stageTravel * .98, behavior: "auto" });
+    window.scrollTo({ top: stageTop + stageTravel * .96, behavior: "auto" });
     renderScene();
     root.querySelector<HTMLButtonElement>("[data-console-view=overview]")?.focus({preventScroll:true});
   }
@@ -192,7 +116,7 @@ if (rootElement) {
   };
   reduceMedia.addEventListener("change", () => setReduced(reduceMedia.matches));
   root.querySelector<HTMLInputElement>("[data-reduce-motion]")!.addEventListener("change", e => setReduced((e.target as HTMLInputElement).checked));
-  root.querySelector<HTMLInputElement>("[data-comfortable]")!.addEventListener("change", e => { dashboard.classList.toggle("is-comfortable", (e.target as HTMLInputElement).checked); measure(); });
+  root.querySelector<HTMLInputElement>("[data-comfortable]")!.addEventListener("change", e => dashboard.classList.toggle("is-comfortable", (e.target as HTMLInputElement).checked));
 
   const compact = (value:number) => value >= 1_000_000 ? `${(value/1_000_000).toFixed(value>=100_000_000?1:2)}M` : formatNumber(value);
   const historySvg = (record:MachinePeriod, name:string, cssClass="") => {
@@ -211,7 +135,6 @@ if (rootElement) {
     const step=periods[kind]==="day"?(kind==="cnc"?50:20000):Math.pow(10,Math.floor(Math.log10(rawMax)))/2;
     const max=Math.ceil(rawMax/step)*step;
     const points=summary.buckets.map((v,i)=>[28+i*444/(summary.buckets.length-1),54-v/max*46]);
-    chartPoints.set(panel,points);
     panel.querySelector("[data-chart-line]")!.setAttribute("d",points.map((p,i)=>`${i?"L":"M"}${p[0]},${p[1]}`).join(" "));
     panel.querySelector("[data-chart-area]")!.setAttribute("d",`M28,54 ${points.map(p=>`L${p[0]},${p[1]}`).join(" ")} L472,54 Z`);
     panel.querySelector("[data-chart-points]")!.innerHTML=points.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="3.6"/>`).join("");
@@ -223,7 +146,6 @@ if (rootElement) {
     panel.querySelector("[data-chart-svg]")!.setAttribute("aria-label",`${kind.toUpperCase()} ${summary.periodLabel}: ${formatNumber(summary.output)} ${summary.unit}. 方向键查看各时段。`);
   }
   function updateRows() {
-    dashboard.classList.toggle("has-long-period",periods.cnc!=="day"||periods.print!=="day");
     for(const machine of machines){
       const row=root!.querySelector<HTMLElement>(`[data-machine-row="${machine.id}"]`)!;
       const record=getMachinePeriod(machine,periods[machine.kind]);
@@ -232,7 +154,6 @@ if (rootElement) {
       cell("output").textContent=`${compact(record.output)} ${machine.unit}`;cell("output").title=`${formatNumber(record.output)} ${machine.unit} · ${record.rangeLabel}`;
       cell("target").textContent=`${compact(record.target)} ${machine.unit}`;cell("target").title=`${formatNumber(record.target)} ${machine.unit}`;
       cell("run").textContent=formatDuration(record.runMinutes);cell("stop").textContent=formatDuration(record.stopMinutes);
-      cell("run").title=`Running ${formatDuration(record.runMinutes)}`;cell("stop").title=`Stopped ${formatDuration(record.stopMinutes)}`;
       cell("fm").textContent=`${formatNumber(record.faultMinutes)} / ${formatNumber(record.maintenanceMinutes)}`;
       cell("fm").title=`Fault ${formatDuration(record.faultMinutes)} / Maintenance ${formatDuration(record.maintenanceMinutes)}`;
       cell("history").innerHTML=historySvg(record,machine.name);
@@ -249,11 +170,9 @@ if (rootElement) {
     root!.querySelector("[data-history-heading]")!.textContent=periods.cnc==="day"&&periods.print==="day"?"Shift mix (past 8 hours)":"Selected period mix";
     root!.querySelector("[data-history-note]")!.textContent=periods.cnc==="day"&&periods.print==="day"?"History 08:00–16:00":`CNC ${periods.cnc} / Print ${periods.print} · Synthetic periods`;
     root!.querySelector("[data-period-label]")!.textContent=periods.cnc==="day"&&periods.print==="day"?"Shift 08:00 – 16:00":"Selected demo periods";
-    // Filters, longer totals, and alternate views must replay their current DOM geometry.
-    measurePieces();
   }
   root.querySelectorAll<HTMLButtonElement>("[data-chart-period]").forEach(button=>button.addEventListener("click",()=>{
-    const kind=button.dataset.chartKind as MachineKind;periods[kind]=button.dataset.chartPeriod as Period;updateChart(kind);updateRows();renderChartTraces();
+    const kind=button.dataset.chartKind as MachineKind;periods[kind]=button.dataset.chartPeriod as Period;updateChart(kind);updateRows();
   }));
   for(const kind of ["cnc","print"] as const){
     const panel=root.querySelector<HTMLElement>(`[data-production-chart=${kind}]`)!;
@@ -274,7 +193,7 @@ if (rootElement) {
     root!.querySelector<HTMLElement>("[data-console-settings]")!.hidden=view!=="settings";
     root!.querySelector<HTMLElement>("[data-machine-view-toolbar]")!.hidden=view==="overview"||view==="settings";
     root!.querySelector("[data-view-description]")!.textContent=view==="jobs"?"12 demo work orders · completion by machine":view==="activity"?"Snapshot 16:00 · stopped, fault and maintenance":"Machine inventory · current snapshot";
-    updateRows();measure();schedule();
+    updateRows();schedule();
   }
   root.querySelector(".console-brand")!.addEventListener("click",event=>{event.preventDefault();selectView("overview");});
   root.querySelectorAll<HTMLButtonElement>("[data-console-view]").forEach(b=>b.addEventListener("click",()=>selectView(b.dataset.consoleView!)));
