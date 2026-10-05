@@ -1,74 +1,161 @@
 import { fileURLToPath } from "node:url";
 import { expect, test } from "@playwright/test";
 
-test("visual playground is visible and responsive on first paint", async ({ page }) => {
+test("brand homepage remains focused and responsive", async ({ page }) => {
+  await page.goto("/");
+  await expect(page).toHaveTitle(/小鱼/);
+  await expect(page.getByRole("heading", { level: 1, name: /把模糊的想法.*界面与视觉素材/ })).toBeVisible();
+  await expect(page.getByText(/我为独立开发者、小团队和内容创作者/)).toBeVisible();
+  await expect(page.locator(".signature-study")).toBeVisible();
+  await expect(page.locator(".advantage-card")).toHaveCount(3);
+  await expect(page.locator(".service-card")).toHaveCount(4);
+  await expect(page.locator(".price-card")).toHaveCount(4);
+  await expect(page.locator(".tool-card")).toHaveCount(0);
+  const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
+  expect(overflow).toBe(false);
+  for (const link of await page.locator(".portfolio-hero__actions a").all()) {
+    const box = await link.boundingBox();
+    expect(box?.height ?? 0).toBeGreaterThanOrEqual(44);
+  }
+});
+
+test("mobile homepage is readable on first paint without waiting for interaction or recovery", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "mobile", "This regression is specific to the touch/mobile media-query branch");
+
   await page.goto("/", { waitUntil: "domcontentloaded" });
-  await expect(page).toHaveTitle(/小鱼.*Visual Playground/);
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("BEYOND");
-  await expect(page.locator(".pg-hero-copy")).toBeVisible();
-  await expect(page.locator(".pg-hero-copy")).toHaveCSS("opacity", "1");
-  await expect(page.locator('a[href="/xiaoyugan/"]')).toHaveCount(0);
-  await expect(page.locator(".service-card, .price-card")).toHaveCount(0);
-  expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
+  const heroCopy = page.locator(".portfolio-hero__copy");
+  const firstPaint = await heroCopy.evaluate((element) => {
+    const style = getComputedStyle(element);
+    return {
+      opacity: Number(style.opacity),
+      visibility: style.visibility,
+      filter: style.filter,
+      motionReady: document.querySelector(".lm-page--home")?.classList.contains("is-motion-ready") ?? false,
+    };
+  });
+
+  expect(firstPaint.visibility).not.toBe("hidden");
+  expect(firstPaint.opacity).toBeGreaterThanOrEqual(0.95);
+  expect(["none", "blur(0px)"]).toContain(firstPaint.filter);
 });
 
-test("material and shape controls respond to repeated input immediately", async ({ page }) => {
+test("returning from the laboratory does not replay the homepage entrance", async ({ page }) => {
   await page.goto("/");
-  for (const material of [1, 2, 0, 2, 0]) {
-    await page.locator(`[data-material="${material}"]`).click();
-    await expect(page.locator(`[data-material="${material}"]`)).toHaveAttribute("aria-pressed", "true");
-    await expect(page.locator('[data-material][aria-pressed="true"]')).toHaveCount(1);
-  }
-  await page.locator("[data-shape-control]").fill("86");
-  await expect(page.locator("#shape-value")).toHaveText("86");
+  await page.goto("/xiaoyugan/");
+  await page.locator(".xyg-back").click();
+  await expect(page).toHaveURL(/\/$/);
+
+  const heroCopy = page.locator(".portfolio-hero__copy");
+  await expect(heroCopy).toBeVisible();
+  await expect(heroCopy).toHaveCSS("opacity", "1");
+  await expect(heroCopy).toHaveCSS("transform", "none");
 });
 
-test("field modes and interruptible glass spread retain the latest request", async ({ page }) => {
+test("homepage remains readable when the motion bundle is unavailable", async ({ page }) => {
+  await page.route("**/_astro/*.js", (route) => route.abort());
   await page.goto("/");
-  for (const mode of [1, 2, 0, 2]) {
-    await page.locator(`[data-field="${mode}"]`).click();
-    await expect(page.locator(`[data-field="${mode}"]`)).toHaveAttribute("aria-pressed", "true");
-  }
-  for (const value of [100, 0, 100, 0, 100]) {
-    await page.locator(`[data-space-preset="${value}"]`).click();
-    await expect(page.locator("#space-value")).toHaveText(`${value}%`);
-  }
-  await expect.poll(() => page.locator("[data-glass-stage]").evaluate(el => Number(getComputedStyle(el).getPropertyValue("--spread")))).toBeGreaterThan(.99);
+
+  const heroCopy = page.locator(".portfolio-hero__copy");
+  await expect(heroCopy).toBeVisible();
+  await expect(heroCopy).not.toHaveCSS("opacity", "0");
+  await expect(page.getByRole("heading", { level: 1, name: /把模糊的想法.*界面与视觉素材/ })).toBeVisible();
 });
 
-test("native fast reverse scrolling is never captured or snapped", async ({ page }) => {
+test("homepage recovers from the legacy transparent cache state", async ({ page }) => {
+  await page.route("**/_astro/*.js", (route) => route.abort());
   await page.goto("/");
-  await page.evaluate(() => scrollTo(0, 500));
-  await page.mouse.wheel(0, 1500);
-  await page.mouse.wheel(0, -2200);
-  await expect.poll(() => page.evaluate(() => scrollY)).toBeLessThan(50);
-  const scrolling = await page.evaluate(() => ({
-    behavior: getComputedStyle(document.documentElement).scrollBehavior,
-    snap: getComputedStyle(document.documentElement).scrollSnapType,
-    touch: getComputedStyle(document.querySelector("[data-flow-canvas]")!).touchAction,
+
+  const heroCopy = page.locator(".portfolio-hero__copy");
+  await heroCopy.evaluate((element) => {
+    element.classList.remove("is-visible");
+    element.style.opacity = "0";
+    element.style.visibility = "hidden";
+    element.style.transform = "translate3d(0, 2rem, 0)";
+  });
+
+  await expect(heroCopy).not.toHaveCSS("opacity", "0", { timeout: 4_000 });
+  await expect(heroCopy).toBeVisible();
+});
+
+test("homepage cat ears reveal the quiet easter egg", async ({ page }) => {
+  await page.goto("/");
+  const catEars = page.getByRole("button", { name: "摸摸小鱼名字上的猫耳" });
+  await expect(catEars).toBeVisible();
+  await expect(catEars).toHaveAttribute("aria-pressed", "false");
+  await catEars.click();
+  await expect(catEars).toHaveAttribute("aria-pressed", "true");
+  await expect(catEars).toHaveClass(/is-petted/);
+  await expect(catEars.locator(".cat-ear-easter-egg__message")).toHaveText("喵~");
+});
+
+test("dark homepage keeps glass hierarchy and silhouette action icons", async ({ page }) => {
+  await page.addInitScript(() => window.localStorage.setItem("leimuovo-theme", "dark"));
+  await page.goto("/");
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+
+  const actionIcons = page.locator(".portfolio-hero__actions .portfolio-button__icon");
+  await expect(actionIcons).toHaveCount(2);
+  await expect(actionIcons.locator("svg")).toHaveCount(2);
+  expect(await actionIcons.allTextContents()).toEqual(["", ""]);
+
+  const contactIcons = page.locator(".studio-contact .portfolio-button__icon");
+  await expect(contactIcons).toHaveCount(2);
+  await expect(contactIcons.locator("svg")).toHaveCount(2);
+  expect(await contactIcons.allTextContents()).toEqual(["", ""]);
+
+  const darkArtifacts = await page.evaluate(() => ({
+    canvasBackground: getComputedStyle(document.documentElement).backgroundColor,
+    bodyBackground: getComputedStyle(document.body).backgroundColor,
+    topBackdrop: getComputedStyle(document.body).backgroundImage,
+    pearlWash: getComputedStyle(document.querySelector(".home-atmosphere__wash--pearl")!).backgroundImage,
+    headerShadow: getComputedStyle(document.querySelector(".site-header")!).boxShadow,
+    cardShadow: getComputedStyle(document.querySelector(".studio-card")!).boxShadow,
+    archiveShadow: getComputedStyle(document.querySelector(".signature-study__frame")!).boxShadow,
   }));
-  expect(scrolling).toEqual({ behavior: "auto", snap: "none", touch: "pan-y" });
+
+  expect(darkArtifacts.canvasBackground).toBe("rgb(23, 25, 28)");
+  expect(darkArtifacts.bodyBackground).toBe("rgb(23, 25, 28)");
+  expect(darkArtifacts.topBackdrop).toContain("linear-gradient");
+  expect(darkArtifacts.topBackdrop).not.toContain("0, 0, 0");
+  expect(darkArtifacts.pearlWash).not.toContain("255, 255, 255");
+  expect(darkArtifacts.headerShadow).not.toContain("0.96");
+  expect(darkArtifacts.cardShadow).not.toContain("0.72");
+  expect(darkArtifacts.archiveShadow).not.toContain("0.98");
+  expect(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth)).toBe(false);
 });
 
-test("reduced motion starts paused and all controls still work", async ({ page }) => {
-  await page.emulateMedia({ reducedMotion: "reduce" });
+test("light homepage keeps a cool porcelain liquid-glass hierarchy", async ({ page }) => {
+  await page.addInitScript(() => window.localStorage.setItem("leimuovo-theme", "light"));
   await page.goto("/");
-  await expect(page.locator("[data-motion-toggle]")).toHaveAttribute("aria-pressed", "true");
-  await page.locator('[data-space-preset="100"]').click();
-  await expect(page.locator("#space-value")).toHaveText("100%");
-  await page.locator('[data-space-preset="0"]').click();
-  await expect(page.locator("#space-value")).toHaveText("0%");
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+
+  const palette = await page.evaluate(() => ({
+    canvas: getComputedStyle(document.documentElement).backgroundColor,
+    body: getComputedStyle(document.body).backgroundColor,
+    ink: getComputedStyle(document.querySelector(".lm-page--home")!).color,
+    backdrop: getComputedStyle(document.body).backgroundImage,
+    headerFilter: getComputedStyle(document.querySelector(".site-header")!).backdropFilter,
+    headerShadow: getComputedStyle(document.querySelector(".site-header")!).boxShadow,
+    archiveFilter: getComputedStyle(document.querySelector(".signature-study__frame")!).backdropFilter,
+    cardBackground: getComputedStyle(document.querySelector(".studio-card")!).backgroundColor,
+    cardBorder: getComputedStyle(document.querySelector(".studio-card")!).borderColor,
+    cardShadow: getComputedStyle(document.querySelector(".studio-card")!).boxShadow,
+  }));
+
+  expect(palette.canvas).toBe("rgb(242, 245, 247)");
+  expect(palette.body).toBe("rgb(242, 245, 247)");
+  expect(palette.ink).toBe("rgb(25, 27, 31)");
+  expect(palette.backdrop).toContain("radial-gradient");
+  expect(palette.backdrop).toContain("linear-gradient");
+  expect(palette.headerFilter).toContain("blur");
+  expect(palette.archiveFilter).toContain("blur");
+  expect(palette.cardBackground).not.toBe("rgba(0, 0, 0, 0)");
+  expect(palette.cardBorder).not.toBe("rgba(0, 0, 0, 0)");
+  expect(palette.cardShadow).not.toBe("none");
+  expect(palette.headerShadow).not.toBe("none");
 });
 
-test("homepage remains readable when its motion bundle fails", async ({ page }) => {
-  await page.route("**/_astro/*.js", route => route.abort());
-  await page.goto("/");
-  await expect(page.locator(".pg-hero-copy")).toBeVisible();
-  await expect(page.locator(".pg-sculpture-fallback")).toBeVisible();
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("BEYOND");
-});
-
-test("legacy noindex laboratory remains isolated and functional", async ({ page }) => {
+test("homepage opens the noindex Xiaoyugan visual laboratory", async ({ page }) => {
   let count = 3;
   await page.route("**/api/lab/pets**", async (route) => {
     if (route.request().method() === "POST") count += 1;
@@ -86,6 +173,12 @@ test("legacy noindex laboratory remains isolated and functional", async ({ page 
       }),
     });
   });
+  await page.goto("/");
+  await expect(page.locator(".brand-link .brand-mark")).toHaveAttribute("src", "/brand/rem-cat-avatar-96-v6.png");
+  const labEntry = page.locator(".lab-feature__link");
+  await labEntry.scrollIntoViewIfNeeded();
+  await expect(labEntry).toBeVisible();
+  await expect(labEntry).toHaveAttribute("href", "/xiaoyugan/");
   await page.goto("/xiaoyugan/");
 
   await expect(page).toHaveURL(/\/xiaoyugan\/$/);
@@ -260,7 +353,7 @@ test("tool catalog exposes the receipt checker only on the secondary page", asyn
 test("public pages share one page rhythm and typography contract", async ({ page }) => {
   for (const pathname of ["/", "/tools/", "/tools/receipt-checker/", "/about/", "/privacy/"]) {
     await page.goto(pathname);
-    await expect(page.locator("main > .lm-page, main > .playground").first()).toBeVisible();
+    await expect(page.locator("main > .lm-page").first()).toBeVisible();
     const pageHeading = page.getByRole("heading", { level: 1 });
     await expect(pageHeading).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth)).toBe(false);
@@ -285,7 +378,7 @@ test("receipt loading keeps a branded skeleton layout ready", async ({ page }) =
 });
 
 test("theme choice persists without hiding keyboard focus", async ({ browserName, page }) => {
-  await page.goto("/tools/");
+  await page.goto("/");
   const toggle = page.getByRole("button", { name: /切换为.*外观/ });
   await toggle.click();
   const selected = await page.locator("html").getAttribute("data-theme");
