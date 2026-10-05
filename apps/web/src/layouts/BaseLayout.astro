@@ -69,6 +69,7 @@ const analyticsToken = import.meta.env.PUBLIC_CF_WEB_ANALYTICS_TOKEN;
         data-cf-beacon={JSON.stringify({ token: analyticsToken })}
       ></script>
     )}
+    <slot name="head" />
   </head>
   <body>
     {!hideChrome && <SiteHeader />}

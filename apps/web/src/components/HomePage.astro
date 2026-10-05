@@ -1,53 +1,93 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import "../styles/playground.css";
+import { ChartNoAxesCombined, Cpu, ClipboardList, Activity, Settings, Search, Bell, Maximize2, Menu, X, Printer, Info } from "@lucide/astro";
+import { machines, getMachinePeriod, getKindSummary, getStatusCounts, formatDuration, formatNumber, stateLabels } from "../modules/production-data";
 import { site } from "../config/site";
-const jsonLd = { "@context": "https://schema.org", "@type": "WebSite", name: site.name, url: site.url, inLanguage: site.locale, description: "小鱼的视觉游乐场。探索光、形状与触感。" };
+import "../styles/console.css";
+const counts = getStatusCounts();
+const states = ["running", "stopped", "fault", "maintenance"] as const;
+const groups = Array.from({ length: 4 }, (_, i) => machines.slice(i * 3, i * 3 + 3));
+const nav = [{id:"overview",label:"Overview",icon:ChartNoAxesCombined},{id:"machines",label:"Machines",icon:Cpu},{id:"jobs",label:"Jobs",icon:ClipboardList},{id:"activity",label:"Activity",icon:Activity},{id:"settings",label:"Settings",icon:Settings}];
+const jsonLd = { "@context":"https://schema.org", "@type":"WebSite", name:site.name, url:site.url, inLanguage:site.locale, description:"Rem production console — a scroll-driven interface study." };
+function chart(kind: "cnc" | "print") {
+  const summary = getKindSummary(kind, "day");
+  const max = Math.ceil(Math.max(...summary.buckets) / (kind === "cnc" ? 50 : 20000)) * (kind === "cnc" ? 50 : 20000);
+  const points = summary.buckets.map((value, i) => [28 + i * (444 / (summary.buckets.length - 1)), 74 - value / max * 60]);
+  return { summary, max, line: points.map((p, i) => `${i ? "L" : "M"}${p[0]},${p[1]}`).join(" "), area: `M28,74 ${points.map(p => `L${p[0]},${p[1]}`).join(" ")} L472,74 Z`, points };
+}
 ---
-<BaseLayout title="小鱼 LEIMUOVO｜Visual Playground" description="光、形状，以及一点好奇心。小鱼的视觉游乐场。" jsonLd={jsonLd} hideChrome>
-  <div class="playground" data-playground>
-    <a class="pg-skip" href="#flow">跳到交互内容</a>
-    <header class="pg-header">
-      <a class="pg-logo" href="/" aria-label="小鱼首页"><span class="pg-symbol" aria-hidden="true"></span>LEIMUOVO<span class="pg-logo-dot">®</span></a>
-      <nav class="pg-nav site-nav" aria-label="主导航"><a class="pg-nav-active" href="#experiments">实验</a><a href="/tools/">工具</a><a href="/about/">关于</a></nav>
-      <button class="pg-motion" type="button" aria-pressed="false" data-motion-toggle><span class="pg-motion-icon" aria-hidden="true">Ⅱ</span><span data-motion-label>暂停动效</span></button>
+<BaseLayout title="Rem｜Production console · 小鱼" description="向下滚动，开启 Rem 生产数据界面。12 台 CNC 与印刷设备的交互演示。" jsonLd={jsonLd} hideChrome>
+  <script slot="head" is:inline src="/scripts/console-init.js"></script>
+  <div class="rem-experience" data-rem-experience>
+    <a class="console-skip-link" href="#console-content">跳到数据界面</a>
+    <header class="rem-site-header">
+      <a class="rem-wordmark" href="/" aria-label="Rem 小鱼首页">Rem<span class="sr-only"> LEIMUOVO</span></a>
+      <div class="rem-site-actions"><span class="rem-accent rem-accent--pink" aria-hidden="true"></span><span class="rem-accent rem-accent--blue" aria-hidden="true"></span><button type="button" class="rem-menu-button" data-site-menu-toggle aria-label="打开网站导航" aria-expanded="false"><Menu size={20}/></button></div>
+      <nav class="rem-site-menu site-nav" data-site-menu aria-label="网站导航" hidden><a href="#console-content" data-skip-intro>数据界面</a><a href="/tools/">工具箱</a><a href="/about/">关于小鱼</a><a href="/privacy/">隐私</a></nav>
     </header>
-
-    <section class="pg-hero" id="experiments" aria-labelledby="pg-title">
-      <div class="pg-orbit-label" aria-hidden="true">VISUAL PLAYGROUND<br/>VOL. 01 / 2026</div>
-      <div class="pg-hero-copy"><p class="pg-eyebrow"><span></span>光、形状，以及一点好奇心</p><h1 id="pg-title">BEYOND<br/><i>the</i> SURFACE<span class="pg-title-period">.</span></h1><p class="pg-hero-note">让感觉，自由成形。</p></div>
-      <div class="pg-hero-bottom">
-        <a class="pg-scroll-link" href="#flow"><span class="pg-scroll-mark" aria-hidden="true"></span><span>向下，继续感受<small>SCROLL TO DISCOVER</small></span></a>
-        <span class="pg-hero-index">01 / LIGHT FIELD</span>
-      </div>
-    </section>
-
-    <section class="pg-flow" id="flow" aria-labelledby="flow-title">
-      <div class="pg-section-top"><span>01 / FIELD NOTES</span><span>MOVE · TOUCH · FEEL</span></div>
-      <div class="pg-flow-heading"><p class="pg-eyebrow">每一次经过，都留下波纹</p><h2 id="flow-title">Go with<br/><i>the flow.</i></h2></div>
-      <canvas data-flow-canvas class="pg-flow-canvas" aria-label="响应指针或触摸位置的光线场" role="img"></canvas>
-      <div class="pg-flow-footer"><p>移动指针，扰动这片光。<span>手机上，轻点任意位置。</span></p><div class="pg-segmented" aria-label="光场形态"><button type="button" data-field="0" aria-pressed="true">流线</button><button type="button" data-field="1" aria-pressed="false">涟漪</button><button type="button" data-field="2" aria-pressed="false">轨道</button></div></div>
-      <div class="pg-field-coordinate" aria-hidden="true">X <span data-coordinate-x>0.50</span><br/>Y <span data-coordinate-y>0.50</span></div>
-    </section>
-
-    <section class="pg-space" id="space" aria-labelledby="space-title">
-      <div class="pg-section-top"><span>02 / SPATIAL STUDY</span><span>A LITTLE ROOM TO PLAY</span></div>
-      <div class="pg-space-copy"><p class="pg-eyebrow">在平面之外</p><h2 id="space-title">留一点<br/><i>想象的空间。</i></h2><p class="pg-space-description">从一片，到一整个维度。<br/>试着拉开它。</p></div>
-      <div class="pg-glass-stage" data-glass-stage aria-label="可控制展开程度的三层玻璃平面" role="img">
-        <div class="pg-glass-shadow"></div><div class="pg-glass-stack" data-glass-stack>
-          <div class="pg-glass-plane pg-glass-plane-back"><span>03</span><b>FEEL</b><small>LIGHT / DEPTH / SPACE</small></div>
-          <div class="pg-glass-plane pg-glass-plane-middle"><span>02</span><b>PLAY</b><small>LIGHT / DEPTH / SPACE</small></div>
-          <div class="pg-glass-plane pg-glass-plane-front"><span>01</span><b>FORM</b><small>LIGHT / DEPTH / SPACE</small><i class="pg-plane-cross"></i></div>
+    <section class="console-runway" data-console-runway aria-label="滚动开机与界面组装">
+      <div class="console-stage" data-console-stage>
+        <div class="console-stage-meta"><span>REM / INTERFACE STUDY 01</span><span data-scene-name>READY WHEN YOU ARE</span></div>
+        <div class="monitor-device" data-monitor-device>
+          <div class="monitor-frame"><div class="monitor-camera" aria-hidden="true"></div><div class="monitor-bezel"><div class="monitor-screen" data-monitor-screen>
+            <div class="monitor-power" aria-hidden="true"></div>
+            <div class="monitor-boot" aria-hidden="true"><span>Rem</span><div class="boot-track"><i></i></div><small>INITIALIZING WORKSPACE</small></div>
+            <div class="console-dashboard" id="console-content" data-console-dashboard>
+              <aside class="console-sidebar assembly-piece" data-assembly="nav">
+                <a href="#console-content" class="console-brand" aria-label="Rem 数据界面">Rem</a>
+                <nav class="console-nav" aria-label="生产工作区">
+                  {nav.map(({id,label,icon:Icon}) => <button type="button" data-console-view={id} aria-pressed={id === "overview"} title={label}><Icon size={18} stroke-width={1.65}/><span>{label}</span></button>)}
+                </nav>
+                <div class="sidebar-bottom"><span class="demo-dot"></span><span>LOCAL DEMO</span></div>
+              </aside>
+              <div class="console-main">
+                <header class="console-toolbar assembly-piece" data-assembly="header">
+                  <div class="console-title"><h1 data-console-title>Production overview</h1><span class="demo-badge">DEMO</span></div>
+                  <div class="console-toolbar-actions"><span class="shift-label" data-period-label>Shift 08:00 – 16:00</span><span class="snapshot-label">Snapshot 16:00</span><button class="console-icon-button" type="button" data-search-toggle aria-label="搜索设备或工单" aria-expanded="false"><Search size={17}/></button><button class="console-icon-button notification-button" type="button" data-alerts-toggle aria-label="查看 3 项设备提醒" aria-expanded="false"><Bell size={17}/><b>3</b></button><button class="console-icon-button" type="button" data-expand-console aria-label="展开数据界面" aria-pressed="false"><Maximize2 size={17}/></button><button class="console-avatar" type="button" data-profile-toggle aria-label="查看演示工作区说明" aria-expanded="false">A</button></div>
+                </header>
+                <div class="console-search" data-search-panel hidden><Search size={15}/><input type="search" data-machine-search placeholder="Search machine / work order" aria-label="搜索设备或工单"/><button type="button" data-search-close aria-label="关闭搜索"><X size={15}/></button></div>
+                <div class="console-popover" data-alerts-panel hidden><strong>Requires attention</strong>{machines.filter(m=>m.status === "fault" || m.status === "maintenance").map(m=><button type="button" data-machine-open={m.id}><span class={`state-dot state-${m.status}`}></span><span>{m.name}<small>{m.status === "fault" ? "Fault · review machine details" : "Scheduled maintenance"}</small></span></button>)}<p>Snapshot data · no live alerts</p></div>
+                <div class="console-popover profile-popover" data-profile-panel hidden><strong>Rem demo workspace</strong><p>12 machines. One 8-hour shift.<br/>No equipment is connected.</p><span>本地演示 · 不会控制真实设备</span></div>
+                <div class="console-summary assembly-piece" data-assembly="summary"><strong>12 machines</strong>{states.map(state=><span><i class={`state-dot state-${state}`}></i><b>{counts[state]}</b> {state}</span>)}<span class="console-result-count" data-result-count></span></div>
+                <div class="production-charts" data-production-charts>
+                  {(["cnc","print"] as const).map(kind => {const c = chart(kind);return <section class="production-chart assembly-piece" data-assembly={`chart-${kind}`} data-production-chart={kind} aria-label={`${kind === "cnc" ? "CNC" : "Print"} production chart`}>
+                    <header><div><h2><span>{kind === "cnc" ? "CNC" : "Print"}</span> · <strong data-chart-total>{formatNumber(c.summary.output)}</strong> <span data-chart-unit>{kind === "cnc" ? "pcs" : "sheets"}</span></h2><p data-chart-inspect>Hourly output</p></div><div class="chart-periods" aria-label={`${kind === "cnc" ? "CNC" : "Print"} time range`}>{(["day","week","month","year"] as const).map(period=><button type="button" data-chart-period={period} data-chart-kind={kind} aria-pressed={period === "day"}>{period[0]!.toUpperCase()+period.slice(1)}</button>)}</div></header>
+                    <svg viewBox="0 0 500 98" class="production-chart-svg" data-chart-svg tabindex="0" role="img" aria-label={`${kind} 分时产量，方向键查看数据`}>
+                      <defs><linearGradient id={`chart-fill-${kind}`} x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#1274ef" stop-opacity=".12"/><stop offset="100%" stop-color="#1274ef" stop-opacity=".01"/></linearGradient></defs>
+                      <g class="chart-grid"><path d="M28 14H478M28 44H478M28 74H478"/><text x="0" y="17" data-y-max>{kind === "cnc" ? c.max : `${c.max/1000}K`}</text><text x="0" y="47" data-y-mid>{kind === "cnc" ? c.max/2 : `${c.max/2000}K`}</text><text x="8" y="77">0</text></g>
+                      <path data-chart-area d={c.area} fill={`url(#chart-fill-${kind})`}/><path data-chart-line class="chart-line" d={c.line}/><g data-chart-points>{c.points.map(p=><circle cx={p[0]} cy={p[1]} r="3.6"/>)}</g><g data-chart-labels>{c.summary.labels.map((label,i)=><text x={28+i*444/(c.summary.labels.length-1)} y="94" text-anchor="middle">{label}</text>)}</g><line data-chart-cursor x1="28" x2="28" y1="10" y2="76" visibility="hidden"/>
+                    </svg>
+                  </section>;})}
+                </div>
+                <div class="machine-view-toolbar" data-machine-view-toolbar hidden><span data-view-description>All machines</span><div aria-label="Filter machines"><button type="button" data-kind-filter="all" aria-pressed="true">All 12</button><button type="button" data-kind-filter="cnc" aria-pressed="false">CNC 6</button><button type="button" data-kind-filter="print" aria-pressed="false">Print 6</button></div></div>
+                <div class="machine-table-panel" data-machine-table-panel>
+                  <div class="machine-table-scroll" tabindex="0" aria-label="设备数据表，可横向滚动查看全部字段">
+                    <div class="machine-table" role="table" aria-label="12 台设备生产数据" aria-rowcount="13">
+                      <div class="machine-table-head machine-grid assembly-piece" role="row" data-assembly="table-head"><span role="columnheader">Machine /<br/>Work order</span><span role="columnheader">Speed</span><span role="columnheader">Output</span><span role="columnheader">Target</span><span role="columnheader">Job %</span><span role="columnheader">Run<br/><small>h:mm</small></span><span role="columnheader">Stop<br/><small>h:mm</small></span><span role="columnheader">F / M<br/><small>min</small></span><span role="columnheader" data-history-heading>Shift mix (past 8 hours)</span><span role="columnheader">Program</span><span role="columnheader">Tool</span><span role="columnheader">Last cycle<br/><small>mm:ss</small></span><span role="columnheader">Now</span></div>
+                      {groups.map((group,index)=><div role="rowgroup" class="machine-row-group assembly-piece" data-assembly={`rows-${index}`}>{group.map(machine=>{const record=getMachinePeriod(machine,"day");const durations=[record.runMinutes,record.stopMinutes,record.faultMinutes,record.maintenanceMinutes];let x=0;return <div role="row" class="machine-row machine-grid" data-machine-row={machine.id} data-kind={machine.kind}>
+                        <div role="cell" class="machine-identity"><span class="machine-type-icon">{machine.kind === "cnc" ? <Cpu size={16} stroke-width={1.5}/> : <Printer size={16} stroke-width={1.5}/>}</span><button type="button" data-machine-open={machine.id}><strong>{machine.name}</strong><small>{machine.order}</small></button></div>
+                        <span role="cell" data-cell="speed">{formatNumber(machine.speed)} <small>{machine.kind === "cnc" ? "rpm" : "sheets/h"}</small></span><span role="cell" data-cell="output">{formatNumber(record.output)} <small>{machine.kind === "cnc" ? "pcs" : "sheets"}</small></span><span role="cell" data-cell="target">{formatNumber(record.target)} <small>{machine.kind === "cnc" ? "pcs" : "sheets"}</small></span><span role="cell" class="job-progress" data-cell="job"><b>{Math.round(record.output/record.target*100)}%</b><progress value={record.output} max={record.target} aria-label={`${machine.name} 工单完成度`}></progress></span><span role="cell" data-cell="run">{formatDuration(record.runMinutes)}</span><span role="cell" data-cell="stop">{formatDuration(record.stopMinutes)}</span><span role="cell" data-cell="fm">{record.faultMinutes} / {record.maintenanceMinutes}</span>
+                        <span role="cell" class="machine-history" data-cell="history"><svg viewBox="0 0 480 12" preserveAspectRatio="none" role="img" aria-label={`${machine.name} 八小时状态分布`}><title>{`运行 ${record.runMinutes} 分钟；停止 ${record.stopMinutes} 分钟；故障 ${record.faultMinutes} 分钟；维护 ${record.maintenanceMinutes} 分钟`}</title>{durations.map((value,i)=>{const start=x;x+=value;return <rect x={start} y="0" width={value} height="12" class={`history-${states[i]}`}><title>{stateLabels[states[i]!]}: {formatDuration(value)} · {(value/480*100).toFixed(1)}%</title></rect>;})}</svg></span>
+                        <span role="cell">{machine.program ?? "—"}</span><span role="cell">{machine.tool ?? "—"}</span><span role="cell">{machine.lastCycle ?? "—"}</span><span role="cell"><span class={`machine-state state-${machine.status}`}><i></i>{stateLabels[machine.status]}</span></span>
+                      </div>;})}</div>)}
+                    </div>
+                  </div>
+                  <p class="table-empty" data-table-empty hidden>No matching machine or work order</p>
+                </div>
+                <section class="console-settings" data-console-settings hidden><h2>Workspace preferences</h2><p>This is an interactive data demonstration. No machines are connected.</p><label><span>减少动态效果<small>直接进入界面，跳过滚动组装</small></span><input type="checkbox" data-reduce-motion/></label><label><span>宽松行距<small>增加设备数据的阅读间距</small></span><input type="checkbox" data-comfortable/></label><div class="settings-note"><Info size={16}/><span>All production figures are demo data. Day totals: 840 CNC parts and 369,600 printed sheets.</span></div></section>
+                <footer class="console-data-note assembly-piece" data-assembly="note"><Info size={12}/><span>Demo data · F/M = fault/maintenance minutes · <span data-history-note>History 08:00–16:00</span> · CNC fields: — = not applicable</span></footer>
+              </div>
+            </div>
+          </div></div></div>
+          <div class="monitor-stand" aria-hidden="true"><div class="monitor-neck"></div><div class="monitor-foot"></div></div>
         </div>
+        <div class="console-scroll-guide"><div><span class="scroll-guide-mark" aria-hidden="true"></span><span data-scroll-instruction>向下滚动，开启界面</span></div><button type="button" data-skip-intro>跳过动画</button></div>
+        <div class="console-story-progress" aria-hidden="true"><i data-story-progress></i></div>
       </div>
-      <div class="pg-space-controls"><button type="button" data-space-preset="0" aria-label="合拢玻璃平面">合拢</button><label for="space-control" class="pg-space-range"><span>展开程度 <output id="space-value">55%</output></span><input id="space-control" data-space-control type="range" min="0" max="100" value="55" /></label><button type="button" data-space-preset="100" aria-label="展开玻璃平面">展开</button></div>
     </section>
-
-    <footer class="pg-footer"><div class="pg-footer-top"><span>STAY CURIOUS.</span><a href="#experiments">回到开头 <span aria-hidden="true">↟</span></a></div><div class="pg-footer-bottom"><a class="pg-logo" href="/">LEIMUOVO<span class="pg-logo-dot">®</span></a><span>一个持续生长的视觉游乐场</span><div><a href="/tools/">工具箱</a><a href="/about/">关于小鱼</a><a href="/privacy/" data-control-gesture>隐私</a></div><span>© 2026</span></div></footer>
-    <noscript><p class="pg-noscript">当前显示静态版本。开启 JavaScript 后，可调整材质、光场与空间。</p></noscript>
+    <footer class="rem-page-footer"><span>Rem · Production console</span><span>INTERACTIVE DEMO / 2026</span><a href="/privacy/" data-control-gesture>隐私</a></footer>
+    <dialog class="machine-detail-dialog" data-machine-dialog aria-labelledby="machine-detail-title"><header><div><p data-detail-kind>CNC</p><h2 id="machine-detail-title" data-detail-title>Machine details</h2></div><button type="button" data-detail-close aria-label="关闭设备详情"><X size={20}/></button></header><div data-detail-content></div><footer><span>演示数据 · 不连接或控制真实设备</span><button type="button" data-detail-close>返回数据界面</button></footer></dialog>
+    <noscript><p class="console-noscript">当前显示静态数据。开启 JavaScript 后可体验滚动组装、时间范围切换与设备详情。</p></noscript>
   </div>
-  <script>
-    // Keep this bootstrap external: the production CSP intentionally forbids inline scripts.
-    import("../scripts/playground");
-  </script>
+  <script>import("../scripts/production-console");</script>
 </BaseLayout>

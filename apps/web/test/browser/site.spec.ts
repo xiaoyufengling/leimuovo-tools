@@ -1,72 +1,280 @@
 import { fileURLToPath } from "node:url";
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 
-test("visual playground is visible and responsive on first paint", async ({ page }) => {
+const consoleRoot = "[data-rem-experience]";
+const dashboard = ".console-dashboard";
+
+async function expectConsoleReady(page: Page) {
+  await expect(page.locator(consoleRoot)).toHaveAttribute("data-ready", "true");
+}
+
+async function enterConsole(page: Page) {
+  await expectConsoleReady(page);
+  await page.locator("button[data-skip-intro]").click();
+  await expect(page.locator(dashboard)).toHaveClass(/is-interactive/);
+}
+
+async function consoleProgress(page: Page) {
+  return page.locator("[data-story-progress]").evaluate((element) =>
+    Number(getComputedStyle(element).getPropertyValue("--story-progress")),
+  );
+}
+
+async function scrollConsole(page: Page, fraction: number) {
+  const target = await page.locator("[data-console-runway]").evaluate((element, progress) => {
+    const rect = element.getBoundingClientRect();
+    const distance = rect.height - innerHeight;
+    if (distance <= 0) throw new Error("The motion runway must be taller than the viewport");
+    const y = Math.round(scrollY + rect.top + distance * progress);
+    scrollTo(0, y);
+    return y;
+  }, fraction);
+  await expect.poll(() => page.evaluate(() => scrollY)).toBeCloseTo(target, 0);
+  await expect.poll(async () => Math.abs(await consoleProgress(page) - fraction)).toBeLessThan(0.01);
+}
+
+async function assemblyState(page: Page) {
+  return page.locator(".assembly-piece").evaluateAll((elements) => elements.map((element) => ({
+    piece: element.getAttribute("data-assembly"),
+    transform: getComputedStyle(element).transform,
+    opacity: Number(getComputedStyle(element).opacity),
+  })));
+}
+
+async function historyMinutes(page: Page, machine: string) {
+  return page.locator(`[data-machine-row="${machine}"] [data-cell="history"] svg`).evaluate((svg) => ({
+    duration: Number(svg.getAttribute("viewBox")?.split(/\s+/)[2]),
+    sum: [...svg.querySelectorAll("rect")].reduce((sum, segment) => sum + Number(segment.getAttribute("width")), 0),
+    segments: svg.querySelectorAll("rect").length,
+  }));
+}
+
+test("Rem console starts with a black monitor and twelve real data rows", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.goto("/", { waitUntil: "domcontentloaded" });
-  await expect(page).toHaveTitle(/小鱼.*Visual Playground/);
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("BEYOND");
-  await expect(page.locator(".pg-hero-copy")).toBeVisible();
-  await expect(page.locator(".pg-hero-copy")).toHaveCSS("opacity", "1");
-  await expect(page.locator('a[href="/xiaoyugan/"]')).toHaveCount(0);
-  await expect(page.locator(".service-card, .price-card")).toHaveCount(0);
-  expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
+  await expect(page).toHaveTitle(/Rem.*Production console.*小鱼/);
+  await expectConsoleReady(page);
+  await expect(page.locator("html")).toHaveClass(/rem-motion/);
+  await expect(page.locator(".monitor-power")).toHaveCSS("opacity", "0");
+  expect(await consoleProgress(page)).toBe(0);
+  expect((await assemblyState(page)).every((piece) => piece.opacity === 0)).toBe(true);
+  const blackLevel = await page.locator("[data-monitor-screen]").evaluate((element) =>
+    getComputedStyle(element).backgroundColor.match(/\d+/g)?.slice(0, 3).map(Number),
+  );
+  expect(blackLevel).toHaveLength(3);
+  expect(blackLevel?.every((channel) => channel <= 24)).toBe(true);
+  await expect(page.locator("[data-machine-row]")).toHaveCount(12);
+  await expect(page.locator('[data-machine-row][data-kind="cnc"]')).toHaveCount(6);
+  await expect(page.locator('[data-machine-row][data-kind="print"]')).toHaveCount(6);
+  await expect(page.locator('[data-production-chart="cnc"] [data-chart-total]')).toHaveText("840");
+  await expect(page.locator('[data-production-chart="print"] [data-chart-total]')).toHaveText("369,600");
+  await expect(page.locator("[data-sculpture], [data-liquid-canvas], [data-material], [data-shape-control], .pg-hero-copy")).toHaveCount(0);
+  await expect(page.locator('a[href="/xiaoyugan/"], .service-card, .price-card')).toHaveCount(0);
+  const giantCircles = await page.locator(consoleRoot).evaluate((root) => [...root.querySelectorAll("*")].filter((element) => {
+    const box = element.getBoundingClientRect();
+    const radius = getComputedStyle(element).borderTopLeftRadius;
+    const radiusPx = parseFloat(radius) * (radius.includes("%") ? box.width / 100 : 1);
+    return box.width > Math.min(innerWidth, innerHeight) * 0.45
+      && box.height > box.width * 0.8 && box.height < box.width * 1.2
+      && radiusPx >= Math.min(box.width, box.height) * 0.45;
+  }).length);
+  expect(giantCircles).toBe(0);
 });
 
-test("homepage has no sculpture or removed material controls", async ({ page }) => {
+test("native scroll assembles distinct reversible frames at 0, 45, and 100 percent", async ({ page }, testInfo) => {
+  await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.goto("/");
-  await expect(page.locator("[data-sculpture], [data-liquid-canvas], [data-material], [data-shape-control]")).toHaveCount(0);
-  await expect(page.locator(".pg-hero-copy")).toBeVisible();
+  await expectConsoleReady(page);
+  await scrollConsole(page, 0);
+  const start = await assemblyState(page);
+  const before = await page.screenshot();
+  await testInfo.attach("console-before-black-boot", { body: before, contentType: "image/png" });
+
+  await scrollConsole(page, 0.45);
+  const middle = await assemblyState(page);
+  expect(middle.some((piece) => piece.opacity > 0.01)).toBe(true);
+  await expect(page.locator(dashboard)).not.toHaveClass(/is-interactive/);
+  const midway = await page.screenshot();
+  await testInfo.attach("console-midway-assembly", { body: midway, contentType: "image/png" });
+
+  await scrollConsole(page, 1);
+  const end = await assemblyState(page);
+  expect(end.every((piece) => piece.opacity >= 0.99)).toBe(true);
+  expect(middle.some((piece, index) => piece.transform !== end[index]?.transform)).toBe(true);
+  await expect(page.locator(dashboard)).toHaveClass(/is-interactive/);
+  const after = await page.screenshot();
+  await testInfo.attach("console-after-ready", { body: after, contentType: "image/png" });
+  expect(before.equals(midway)).toBe(false);
+  expect(midway.equals(after)).toBe(false);
+
+  await scrollConsole(page, 0.45);
+  expect(await assemblyState(page)).toEqual(middle);
+  await scrollConsole(page, 0);
+  expect(await assemblyState(page)).toEqual(start);
+  await expect(page.locator(dashboard)).not.toHaveClass(/is-interactive/);
+  await expect(page.locator(".monitor-power")).toHaveCSS("opacity", "0");
 });
 
-test("field modes and interruptible glass spread retain the latest request", async ({ page }) => {
+test("skip intro lands on a working production console", async ({ page }) => {
   await page.goto("/");
-  for (const mode of [1, 2, 0, 2]) {
-    await page.locator(`[data-field="${mode}"]`).click();
-    await expect(page.locator(`[data-field="${mode}"]`)).toHaveAttribute("aria-pressed", "true");
-  }
-  for (const value of [100, 0, 100, 0, 100]) {
-    await page.locator(`[data-space-preset="${value}"]`).click();
-    await expect(page.locator("#space-value")).toHaveText(`${value}%`);
-  }
-  await expect.poll(() => page.locator("[data-glass-stage]").evaluate(el => Number(getComputedStyle(el).getPropertyValue("--spread")))).toBeGreaterThan(.99);
+  await enterConsole(page);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Production overview");
+  await expect(page.locator(".monitor-power")).toHaveCSS("opacity", "1");
+  expect(await consoleProgress(page)).toBeGreaterThanOrEqual(0.885);
+  await page.locator('[data-chart-kind="cnc"][data-chart-period="week"]').click();
+  await expect(page.locator('[data-production-chart="cnc"] [data-chart-total]')).toHaveText("4,200");
 });
 
-test("scroll position remains reversible without forced snapping", async ({ page, isMobile }) => {
+test("CNC and Print periods independently update matching rows and conserve history minutes", async ({ page }) => {
   await page.goto("/");
-  await page.evaluate(() => scrollTo(0, 500));
-  if (isMobile) {
-    // Mobile WebKit does not expose mouse.wheel. Check native programmatic
-    // scroll behavior here; physical touch scrolling still needs device QA.
-    await page.evaluate(() => scrollTo(0, 2000));
-    await page.evaluate(() => scrollTo(0, 0));
-  } else {
-    await page.mouse.wheel(0, 1500);
-    await page.mouse.wheel(0, -2200);
+  await enterConsole(page);
+  await page.locator('[data-chart-kind="cnc"][data-chart-period="week"]').click();
+  await expect(page.locator('[data-chart-kind="cnc"][data-chart-period="week"]')).toHaveAttribute("aria-pressed", "true");
+  await expect(page.locator('[data-chart-kind="print"][data-chart-period="day"]')).toHaveAttribute("aria-pressed", "true");
+  await expect(page.locator('[data-production-chart="cnc"] [data-chart-total]')).toHaveText("4,200");
+  await expect(page.locator('[data-production-chart="print"] [data-chart-total]')).toHaveText("369,600");
+  await expect(page.locator('[data-machine-row="cnc-01"] [data-cell="output"]')).toHaveText("720 pcs");
+  await expect(page.locator('[data-machine-row="print-01"] [data-cell="output"]')).toHaveText("84,000 sheets");
+  for (let index = 1; index <= 6; index += 1) {
+    const suffix = String(index).padStart(2, "0");
+    expect(await historyMinutes(page, `cnc-${suffix}`)).toEqual({ duration: 2400, sum: 2400, segments: 4 });
+    expect(await historyMinutes(page, `print-${suffix}`)).toEqual({ duration: 480, sum: 480, segments: 4 });
   }
-  await expect.poll(() => page.evaluate(() => scrollY)).toBeLessThan(50);
+  await page.locator('[data-chart-kind="print"][data-chart-period="month"]').click();
+  await expect(page.locator('[data-production-chart="print"]')).toHaveAttribute("data-total", "7392000");
+  await expect(page.locator('[data-production-chart="print"] [data-chart-total]')).toHaveAttribute("title", "7,392,000");
+  await expect(page.locator('[data-production-chart="cnc"] [data-chart-total]')).toHaveText("4,200");
+  expect(await historyMinutes(page, "print-01")).toEqual({ duration: 9600, sum: 9600, segments: 4 });
+  expect(await historyMinutes(page, "cnc-01")).toEqual({ duration: 2400, sum: 2400, segments: 4 });
+});
+
+test("machine details use a native modal and return focus after close and Escape", async ({ page }) => {
+  await page.goto("/");
+  await enterConsole(page);
+  const trigger = page.locator('[data-machine-row="cnc-01"] [data-machine-open="cnc-01"]');
+  const dialog = page.locator("dialog[data-machine-dialog]");
+  // Give the native dialog a keyboard-focused return target on Safari too.
+  await trigger.focus();
+  await page.keyboard.press("Enter");
+  await expect(dialog).toBeVisible();
+  expect(await dialog.evaluate((element) => element.matches(":modal"))).toBe(true);
+  await expect(dialog.locator("[data-detail-title]")).toHaveText("CNC-01");
+  await expect(dialog.locator("[data-detail-kind]")).toContainText("WO-101");
+  await dialog.locator("[data-detail-close]").first().click();
+  await expect(dialog).not.toBeVisible();
+  await expect(trigger).toBeFocused();
+  await trigger.click();
+  await expect(dialog).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(dialog).not.toBeVisible();
+  await expect(trigger).toBeFocused();
+  await expect(page.locator(dashboard)).toHaveClass(/is-interactive/);
+});
+
+test("period and machine selections survive repeated filters and reverse replay", async ({ page }) => {
+  await page.goto("/");
+  await enterConsole(page);
+  await page.locator('[data-chart-kind="cnc"][data-chart-period="week"]').click();
+  await page.locator('[data-console-view="machines"]').click();
+  for (const kind of ["cnc", "print", "all", "print", "all", "cnc"]) {
+    await page.locator(`[data-kind-filter="${kind}"]`).click();
+    await expect(page.locator(`[data-kind-filter="${kind}"]`)).toHaveAttribute("aria-pressed", "true");
+    await expect(page.locator("[data-machine-row]:visible")).toHaveCount(kind === "all" ? 12 : 6);
+    if (kind !== "all") {
+      await expect(page.locator(`[data-machine-row]:visible:not([data-kind="${kind}"])`)).toHaveCount(0);
+    }
+  }
+  // The same visible control becomes the replay button once the scene is ready.
+  await page.locator("button[data-skip-intro]").click();
+  await expect.poll(() => consoleProgress(page)).toBe(0);
+  await expect(page.locator(dashboard)).not.toHaveClass(/is-interactive/);
+  await scrollConsole(page, 0.45);
+  await scrollConsole(page, 1);
+  await expect(page.locator(dashboard)).toHaveClass(/is-interactive/);
+  await expect(page.locator('[data-console-view="machines"]')).toHaveAttribute("aria-pressed", "true");
+  await expect(page.locator('[data-kind-filter="cnc"]')).toHaveAttribute("aria-pressed", "true");
+  await expect(page.locator("[data-machine-row]:visible")).toHaveCount(6);
+  await page.locator('[data-console-view="overview"]').click();
+  await expect(page.locator('[data-chart-kind="cnc"][data-chart-period="week"]')).toHaveAttribute("aria-pressed", "true");
+  await expect(page.locator('[data-chart-kind="print"][data-chart-period="day"]')).toHaveAttribute("aria-pressed", "true");
+  await expect(page.locator('[data-production-chart="cnc"] [data-chart-total]')).toHaveText("4,200");
+  await expect(page.locator('[data-production-chart="print"] [data-chart-total]')).toHaveText("369,600");
+  await page.locator('[data-chart-kind="cnc"][data-chart-period="day"]').click();
+  await expect(page.locator('[data-production-chart="cnc"] [data-chart-total]')).toHaveText("840");
+});
+
+test("desktop wheel input scrolls naturally in both directions without snapping", async ({ page, isMobile }) => {
+  test.skip(isMobile, "Mobile WebKit does not support mouse.wheel; programmatic native scrolling is covered separately");
+  await page.goto("/");
+  await expectConsoleReady(page);
+  await page.mouse.move(15, 250);
+  await page.mouse.wheel(0, 600);
+  await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(100);
+  await expect.poll(() => consoleProgress(page)).toBeGreaterThan(0);
+  await page.mouse.wheel(0, -2000);
+  await expect.poll(() => page.evaluate(() => scrollY)).toBeLessThan(2);
+  await expect.poll(() => consoleProgress(page)).toBeLessThan(0.01);
   const scrolling = await page.evaluate(() => ({
     behavior: getComputedStyle(document.documentElement).scrollBehavior,
     snap: getComputedStyle(document.documentElement).scrollSnapType,
-    touch: getComputedStyle(document.querySelector("[data-flow-canvas]")!).touchAction,
   }));
-  expect(scrolling).toEqual({ behavior: "auto", snap: "none", touch: "pan-y" });
+  expect(scrolling).toEqual({ behavior: "auto", snap: "none" });
 });
 
-test("reduced motion starts paused and all controls still work", async ({ page }) => {
+test("mobile native scrolling keeps page width fixed and the data table scrolls internally", async ({ page, isMobile }) => {
+  test.skip(!isMobile, "This checks narrow touch-device layouts, including tablet WebKit");
+  await page.goto("/");
+  await expectConsoleReady(page);
+  for (const progress of [0, 0.45, 1]) {
+    await scrollConsole(page, progress);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
+  }
+  const table = page.locator(".machine-table-scroll");
+  const overflow = await table.evaluate((element) => ({
+    internal: element.scrollWidth > element.clientWidth,
+    overflowX: getComputedStyle(element).overflowX,
+  }));
+  expect(overflow.internal).toBe(true);
+  expect(["auto", "scroll"]).toContain(overflow.overflowX);
+  await table.evaluate((element) => { element.scrollLeft = element.scrollWidth; });
+  await expect.poll(() => table.evaluate((element) => element.scrollLeft)).toBeGreaterThan(0);
+  expect(await page.evaluate(() => scrollX)).toBe(0);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
+  await scrollConsole(page, 0);
+  await expect(page.locator(".monitor-power")).toHaveCSS("opacity", "0");
+});
+
+test("reduced motion opens a ready console immediately and keeps period controls working", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.goto("/");
-  await expect(page.locator("[data-motion-toggle]")).toHaveAttribute("aria-pressed", "true");
-  await page.locator('[data-space-preset="100"]').click();
-  await expect(page.locator("#space-value")).toHaveText("100%");
-  await page.locator('[data-space-preset="0"]').click();
-  await expect(page.locator("#space-value")).toHaveText("0%");
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+  await expectConsoleReady(page);
+  await expect(page.locator("html")).not.toHaveClass(/rem-motion/);
+  await expect(page.locator(dashboard)).toHaveClass(/is-interactive/);
+  await expect(page.locator(".monitor-power")).toHaveCSS("opacity", "1");
+  expect((await assemblyState(page)).every((piece) => piece.opacity === 1 && piece.transform === "none")).toBe(true);
+  expect(await page.evaluate(() => scrollY)).toBe(0);
+  await page.locator('[data-chart-kind="cnc"][data-chart-period="week"]').click();
+  await expect(page.locator('[data-production-chart="cnc"] [data-chart-total]')).toHaveText("4,200");
+  await page.locator('[data-chart-kind="cnc"][data-chart-period="day"]').click();
+  await expect(page.locator('[data-production-chart="cnc"] [data-chart-total]')).toHaveText("840");
 });
 
-test("homepage remains readable when its motion bundle fails", async ({ page }) => {
-  await page.route("**/_astro/*.js", route => route.abort());
-  await page.goto("/");
-  await expect(page.locator(".pg-hero-copy")).toBeVisible();
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("BEYOND");
+test("failed motion bundle reveals complete SSR production data after its safety timeout", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.route("**/_astro/*.js", (route) => route.abort());
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+  await expect(page.locator("html")).toHaveClass(/rem-motion/);
+  await expect(page.locator(".monitor-power")).toHaveCSS("opacity", "0");
+  await expect(page.locator(consoleRoot)).toHaveAttribute("data-fallback", "true", { timeout: 7000 });
+  await expect(page.locator("html")).not.toHaveClass(/rem-motion/);
+  await expect(page.locator(".monitor-power")).toHaveCSS("opacity", "1");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Production overview");
+  await expect(page.locator("[data-machine-row]")).toHaveCount(12);
+  await expect(page.locator('[data-production-chart="cnc"] [data-chart-total]')).toHaveText("840");
+  await expect(page.locator('[data-production-chart="print"] [data-chart-total]')).toHaveText("369,600");
+  await expect(page.locator('[data-machine-row="cnc-01"] [data-cell="output"]')).toHaveText("144 pcs");
+  expect(await historyMinutes(page, "cnc-01")).toEqual({ duration: 480, sum: 480, segments: 4 });
+  expect((await assemblyState(page)).every((piece) => piece.opacity === 1)).toBe(true);
 });
 
 test("legacy noindex laboratory remains isolated and functional", async ({ page }) => {
@@ -261,7 +469,8 @@ test("tool catalog exposes the receipt checker only on the secondary page", asyn
 test("public pages share one page rhythm and typography contract", async ({ page }) => {
   for (const pathname of ["/", "/tools/", "/tools/receipt-checker/", "/about/", "/privacy/"]) {
     await page.goto(pathname);
-    await expect(page.locator("main > .lm-page, main > .playground").first()).toBeVisible();
+    if (pathname === "/") await enterConsole(page);
+    await expect(page.locator("main > .lm-page, main > .rem-experience").first()).toBeVisible();
     const pageHeading = page.getByRole("heading", { level: 1 });
     await expect(pageHeading).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth)).toBe(false);
@@ -306,6 +515,8 @@ test("theme choice persists without hiding keyboard focus", async ({ browserName
 
 test("private control entry appears only after the non-sensitive login hint", async ({ context, page }) => {
   await page.goto("/");
+  await expectConsoleReady(page);
+  await page.locator("[data-site-menu-toggle]").click();
   await expect(page.getByRole("link", { name: "控制中心" })).toHaveCount(0);
 
   await context.addCookies([{
@@ -316,6 +527,8 @@ test("private control entry appears only after the non-sensitive login hint", as
     sameSite: "Strict",
   }]);
   await page.reload();
+  await expectConsoleReady(page);
+  await page.locator("[data-site-menu-toggle]").click();
   await expect(page.getByRole("link", { name: "控制中心" })).toHaveAttribute("href", "/control/");
 });
 
