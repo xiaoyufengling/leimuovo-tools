@@ -79,3 +79,12 @@ body:has([data-rem-experience]){margin:0;background:#f8fafc;background-image:non
 .note-icon{display:grid;place-items:center;flex:none}.rem-motion .console-data-note>span:not(.note-icon){opacity:var(--morph-detail,0)}
 /* The seed has its own soft control surface, not the edge of a cut-out panel. */
 .rem-motion .machine-identity button,.rem-motion .production-chart h2,.rem-motion .console-title h1,.rem-motion .console-summary>strong{border-radius:4px;background-color:rgba(239,245,253,calc(1 - var(--morph-open,0)));box-shadow:0 0 0 5px rgba(239,245,253,calc(1 - var(--morph-open,0))),0 0 0 6px rgba(217,229,246,calc(1 - var(--morph-open,0)))}
+/* Larger reading rows grow the table, never overflow fixed-height row groups. */
+.console-dashboard.is-comfortable .machine-table{height:auto;min-height:100%}
+.console-dashboard.is-comfortable .machine-row-group{flex:none}
+.console-dashboard.is-comfortable .machine-row{flex:none;min-height:42px}
+.console-dashboard.is-comfortable .machine-table,.console-dashboard.has-long-period .machine-table{min-width:1280px}
+.console-dashboard.is-comfortable .machine-grid,.console-dashboard.has-long-period .machine-grid{grid-template-columns:16% 9% 9% 9% 4% 5% 5% 7% 9% 6% 4% 6% 11%}
+.machine-row>[data-cell=run],.machine-row>[data-cell=stop]{overflow:hidden;text-overflow:ellipsis}
+.rem-motion .console-dashboard.is-comfortable:not(.is-interactive) .machine-table-scroll{overflow:hidden}
+.rem-motion .console-dashboard.has-long-period:not(.is-interactive) .machine-table-scroll{overflow:hidden}

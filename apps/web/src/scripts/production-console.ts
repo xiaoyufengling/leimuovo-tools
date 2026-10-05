@@ -145,6 +145,10 @@ if (rootElement) {
     root.style.setProperty("--boot-progress", String(smooth(.025,.21,progress)));
     renderMorphs();
     const ready = progress >= .95 || reduced;
+    if(!ready && dashboard.classList.contains("is-interactive")){
+      const tableViewport=root.querySelector<HTMLElement>(".machine-table-scroll")!;
+      tableViewport.scrollLeft=0;tableViewport.scrollTop=0;
+    }
     dashboard.classList.toggle("is-interactive", ready);
     dashboard.inert = !ready;
     dashboard.setAttribute("aria-hidden", String(!ready));
@@ -219,6 +223,7 @@ if (rootElement) {
     panel.querySelector("[data-chart-svg]")!.setAttribute("aria-label",`${kind.toUpperCase()} ${summary.periodLabel}: ${formatNumber(summary.output)} ${summary.unit}. 方向键查看各时段。`);
   }
   function updateRows() {
+    dashboard.classList.toggle("has-long-period",periods.cnc!=="day"||periods.print!=="day");
     for(const machine of machines){
       const row=root!.querySelector<HTMLElement>(`[data-machine-row="${machine.id}"]`)!;
       const record=getMachinePeriod(machine,periods[machine.kind]);
@@ -227,6 +232,7 @@ if (rootElement) {
       cell("output").textContent=`${compact(record.output)} ${machine.unit}`;cell("output").title=`${formatNumber(record.output)} ${machine.unit} · ${record.rangeLabel}`;
       cell("target").textContent=`${compact(record.target)} ${machine.unit}`;cell("target").title=`${formatNumber(record.target)} ${machine.unit}`;
       cell("run").textContent=formatDuration(record.runMinutes);cell("stop").textContent=formatDuration(record.stopMinutes);
+      cell("run").title=`Running ${formatDuration(record.runMinutes)}`;cell("stop").title=`Stopped ${formatDuration(record.stopMinutes)}`;
       cell("fm").textContent=`${formatNumber(record.faultMinutes)} / ${formatNumber(record.maintenanceMinutes)}`;
       cell("fm").title=`Fault ${formatDuration(record.faultMinutes)} / Maintenance ${formatDuration(record.maintenanceMinutes)}`;
       cell("history").innerHTML=historySvg(record,machine.name);

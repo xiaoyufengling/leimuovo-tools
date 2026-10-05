@@ -522,6 +522,107 @@ test("compact desktop monitor fits all twelve rows and the Now column without ta
   }
 });
 
+test("comfortable Year tables keep rows separate through replay and restore the default Day fit", async ({ page, isMobile }) => {
+  test.skip(isMobile, "This regression covers the desktop density and long-period layout");
+  await page.setViewportSize({ width: 1180, height: 757 });
+  await page.goto("/");
+  await enterConsole(page);
+  for (const kind of ["cnc", "print"]) await page.locator(`[data-chart-kind="${kind}"][data-chart-period="year"]`).click();
+  await page.locator('[data-console-view="settings"]').click();
+  await page.locator("[data-comfortable]").check();
+  await page.locator('[data-console-view="overview"]').click();
+  const table = page.locator(".machine-table-scroll");
+  const readLayout = () => table.evaluate((element) => ({
+    horizontalOverflow: element.scrollWidth - element.clientWidth,
+    verticalOverflow: element.scrollHeight - element.clientHeight,
+    groups: [...element.querySelectorAll(".machine-row-group")].map((group) => {
+      const box = group.getBoundingClientRect();
+      return {
+        top: box.top,
+        bottom: box.bottom,
+        rows: [...group.querySelectorAll<HTMLElement>("[data-machine-row]")].map((row) => {
+          const bounds = row.getBoundingClientRect();
+          return {
+            id: row.dataset.machineRow,
+            top: bounds.top,
+            bottom: bounds.bottom,
+            height: bounds.height,
+            durations: [...row.querySelectorAll<HTMLElement>('[data-cell="run"], [data-cell="stop"], [data-cell="fm"]')].map((cell) => ({
+              right: cell.getBoundingClientRect().right,
+              nextLeft: cell.nextElementSibling!.getBoundingClientRect().left,
+              overflow: getComputedStyle(cell).overflowX,
+              textOverflow: getComputedStyle(cell).textOverflow,
+              title: cell.title,
+              text: cell.textContent!.trim(),
+              field: cell.dataset.cell,
+            })),
+          };
+        }),
+      };
+    }),
+  }));
+  const assertComfortableLayout = (layout: Awaited<ReturnType<typeof readLayout>>) => {
+    expect(layout.horizontalOverflow).toBeGreaterThan(2);
+    expect(layout.verticalOverflow).toBeGreaterThan(2);
+    expect(layout.groups).toHaveLength(4);
+    const rows = layout.groups.flatMap((group) => group.rows);
+    expect(rows).toHaveLength(12);
+    for (const group of layout.groups) {
+      expect(group.rows).toHaveLength(3);
+      for (const row of group.rows) {
+        expect(row.height, `${row.id} comfortable height`).toBeGreaterThanOrEqual(41.5);
+        expect(row.top, `${row.id} group top`).toBeGreaterThanOrEqual(group.top - 1);
+        expect(row.bottom, `${row.id} group bottom`).toBeLessThanOrEqual(group.bottom + 1);
+        for (const cell of row.durations) {
+          expect(cell.right, `${row.id} ${cell.field} neighbor`).toBeLessThanOrEqual(cell.nextLeft + 1);
+          expect(cell.overflow).toBe("hidden");
+          expect(cell.textOverflow).toBe("ellipsis");
+          expect(cell.title).not.toBe("");
+          if (cell.field !== "fm") expect(cell.title).toContain(cell.text);
+        }
+      }
+    }
+    for (let index = 1; index < rows.length; index += 1) {
+      expect(rows[index]!.top, `${rows[index]!.id} does not overlap its predecessor`).toBeGreaterThanOrEqual(rows[index - 1]!.bottom - 1);
+    }
+  };
+  assertComfortableLayout(await readLayout());
+  await expect(page.locator('[data-machine-row="cnc-01"] [data-cell="run"]')).toHaveAttribute("title", "Running 1344:00");
+  await table.evaluate((element) => { element.scrollLeft = element.scrollWidth; element.scrollTop = element.scrollHeight; });
+  await expect.poll(() => table.evaluate((element) => element.scrollLeft)).toBeGreaterThan(0);
+  await expect.poll(() => table.evaluate((element) => element.scrollTop)).toBeGreaterThan(0);
+  await scrollConsole(page, 0.57);
+  await expect(table).toHaveCSS("overflow-x", "hidden");
+  await expect(table).toHaveCSS("overflow-y", "hidden");
+  expect(await table.evaluate((element) => ({ x: element.scrollLeft, y: element.scrollTop }))).toEqual({ x: 0, y: 0 });
+  await scrollConsole(page, 1);
+  await expect(page.locator(dashboard)).toHaveClass(/is-interactive/);
+  await expect(page.locator(dashboard)).toHaveClass(/is-comfortable/);
+  await expect(page.locator(dashboard)).toHaveClass(/has-long-period/);
+  await expect(page.locator("[data-comfortable]")).toBeChecked();
+  for (const kind of ["cnc", "print"]) await expect(page.locator(`[data-chart-kind="${kind}"][data-chart-period="year"]`)).toHaveAttribute("aria-pressed", "true");
+  assertComfortableLayout(await readLayout());
+
+  await page.locator('[data-console-view="settings"]').click();
+  await page.locator("[data-comfortable]").uncheck();
+  await page.locator('[data-console-view="overview"]').click();
+  for (const kind of ["cnc", "print"]) await page.locator(`[data-chart-kind="${kind}"][data-chart-period="day"]`).click();
+  await expect(page.locator(dashboard)).not.toHaveClass(/is-comfortable|has-long-period/);
+  const restored = await readLayout();
+  expect(restored.horizontalOverflow).toBeLessThanOrEqual(2);
+  expect(restored.verticalOverflow).toBeLessThanOrEqual(2);
+  const restoredBounds = await table.evaluate((element) => {
+    const bounds = element.getBoundingClientRect();
+    return [...element.querySelectorAll("[data-machine-row]")].every((row) => {
+      const box = row.getBoundingClientRect();
+      return box.top >= bounds.top - 2 && box.bottom <= bounds.bottom + 2 && box.left >= bounds.left - 2 && box.right <= bounds.right + 2;
+    });
+  });
+  expect(restoredBounds).toBe(true);
+  await expect(page.locator('[data-production-chart="cnc"] [data-chart-total]')).toHaveText("840");
+  await expect(page.locator('[data-production-chart="print"] [data-chart-total]')).toHaveText("369,600");
+});
+
 test("desktop wheel input scrolls naturally in both directions without snapping", async ({ page, isMobile }) => {
   test.skip(isMobile, "Mobile WebKit does not support mouse.wheel; programmatic native scrolling is covered separately");
   await page.goto("/");
