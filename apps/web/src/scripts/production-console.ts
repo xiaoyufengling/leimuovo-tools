@@ -38,7 +38,15 @@ if (rootElement) {
   };
 
   function measure() {
-    stageTop = runway.getBoundingClientRect().top + scrollY;
+    // Layout offsets stay consistent when mobile WebKit scrolls asynchronously.
+    // Mixing a compositor-updated scrollY with a stale viewport rect can move
+    // the origin and leave a newly scrolled scene at its previous phase.
+    stageTop = 0;
+    let ancestor: HTMLElement | null = runway;
+    while (ancestor) {
+      stageTop += ancestor.offsetTop;
+      ancestor = ancestor.offsetParent as HTMLElement | null;
+    }
     stageTravel = Math.max(1, runway.offsetHeight - innerHeight);
     screenWidth = screen.clientWidth;
     screenHeight = screen.clientHeight;
@@ -97,6 +105,7 @@ if (rootElement) {
     } else skipIntro();
   }));
   window.addEventListener("scroll", schedule, {passive:true});
+  document.addEventListener("scroll", schedule, {passive:true});
   window.addEventListener("resize", measure, {passive:true});
   new ResizeObserver(measure).observe(screen);
   const setReduced = (value: boolean) => {
