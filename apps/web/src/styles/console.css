@@ -77,3 +77,5 @@ body:has([data-rem-experience]){margin:0;background:#f8fafc;background-image:non
 @media(prefers-reduced-motion:reduce){.assembly-piece{clip-path:none!important}[data-chart-trace]{clip-path:none!important}}
 
 .note-icon{display:grid;place-items:center;flex:none}.rem-motion .console-data-note>span:not(.note-icon){opacity:var(--morph-detail,0)}
+/* The seed has its own soft control surface, not the edge of a cut-out panel. */
+.rem-motion .machine-identity button,.rem-motion .production-chart h2,.rem-motion .console-title h1,.rem-motion .console-summary>strong{border-radius:4px;background-color:rgba(239,245,253,calc(1 - var(--morph-open,0)));box-shadow:0 0 0 5px rgba(239,245,253,calc(1 - var(--morph-open,0))),0 0 0 6px rgba(217,229,246,calc(1 - var(--morph-open,0)))}
