@@ -74,6 +74,7 @@ assert(!home.includes('rel="apple-touch-icon-precomposed"'), "页面不应声明
 assert(home.includes('pg-logo') && home.includes('LEIMUOVO'), "首页导航缺少新视觉字标");
 assert(!home.includes('href="/xiaoyugan/"'), "新首页不应链接旧实验室");
 assert(home.includes('data-control-gesture'), "首页必须保留隐私与私人入口契约");
+assert(/<script[^>]+src="[^"]*HomePage[^"]*"/.test(home), "首页交互脚本必须外链，以兼容生产 CSP");
 assert(home.includes('property="og:image" content="https://leimuovo.com/og-default-v6.png"'), "首页未使用版本化的新品牌分享图");
 assert(home.includes('"@type":"WebSite"'), "首页 WebSite JSON-LD 缺失");
 assert(home.includes('"name":"小鱼"'), "首页品牌名称不正确");

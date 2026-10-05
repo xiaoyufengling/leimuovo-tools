@@ -46,5 +46,8 @@ const jsonLd = { "@context": "https://schema.org", "@type": "WebSite", name: sit
     <footer class="pg-footer"><div class="pg-footer-top"><span>STAY CURIOUS.</span><a href="#experiments">回到开头 <span aria-hidden="true">↟</span></a></div><div class="pg-footer-bottom"><a class="pg-logo" href="/">LEIMUOVO<span class="pg-logo-dot">®</span></a><span>一个持续生长的视觉游乐场</span><div><a href="/tools/">工具箱</a><a href="/about/">关于小鱼</a><a href="/privacy/" data-control-gesture>隐私</a></div><span>© 2026</span></div></footer>
     <noscript><p class="pg-noscript">当前显示静态版本。开启 JavaScript 后，可调整材质、光场与空间。</p></noscript>
   </div>
-  <script>import "../scripts/playground";</script>
+  <script>
+    // Keep this bootstrap external: the production CSP intentionally forbids inline scripts.
+    import("../scripts/playground");
+  </script>
 </BaseLayout>
